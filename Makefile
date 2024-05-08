@@ -31,5 +31,14 @@ benchmark: install warp_install
 benchmark_with_pprof: debug = 1
 benchmark_with_pprof: benchmark
 
+ec2-binaries:
+	export SWCOMMIT=$(shell git rev-parse --short HEAD)
+	export SWLDFLAGS="-X github.com/seaweedfs/seaweedfs/weed/util.COMMIT=$(SWCOMMIT)"
+	cd ./weed && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build $(options) -tags "$(tags)" -ldflags "-s -w -extldflags -static $(SWLDFLAGS)" && mv weed ../bin/
+	cd ./weed/mq/client/cmd/weed_pub_kv && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build && mv weed_pub_kv ../../../../../bin/
+	cd ./weed/mq/client/cmd/weed_pub_record && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build && mv weed_pub_record ../../../../../bin/
+	cd ./weed/mq/client/cmd/weed_sub_kv && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build && mv weed_sub_kv ../../../../../bin/
+	cd ./weed/mq/client/cmd/weed_sub_record && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build && mv weed_sub_record ../../../../../bin/
+
 test:
 	cd weed; go test -tags "elastic gocdk sqlite ydb tikv rclone" -v ./...
