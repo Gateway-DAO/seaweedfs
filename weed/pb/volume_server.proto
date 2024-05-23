@@ -451,6 +451,7 @@ message DiskStatus {
     float percent_free = 5;
     float percent_used = 6;
     string disk_type = 7;
+    string checksum = 8;
 }
 
 message MemStatus {
@@ -511,6 +512,7 @@ message VolumeServerStatusResponse {
     string version = 3;
     string data_center = 4;
     string rack = 5;
+    string checksum = 6;
 }
 
 message VolumeServerLeaveRequest {

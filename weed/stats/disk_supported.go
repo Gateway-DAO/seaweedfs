@@ -4,7 +4,9 @@
 package stats
 
 import (
+	"encoding/hex"
 	"syscall"
+	"time"
 
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
 )
@@ -20,5 +22,26 @@ func fillInDiskStatus(disk *volume_server_pb.DiskStatus) {
 	disk.Used = disk.All - disk.Free
 	disk.PercentFree = float32((float64(disk.Free) / float64(disk.All)) * 100)
 	disk.PercentUsed = float32((float64(disk.Used) / float64(disk.All)) * 100)
+
+	checksum, err := computeDiskChecksum(disk)
+	if err != nil {
+		checksum = []byte(err.Error())
+	}
+	disk.Checksum = hex.EncodeToString(checksum)
+
 	return
+}
+
+func computeDiskChecksum(disk *volume_server_pb.DiskStatus) ([]byte, error) {
+	timeStart := time.Now()
+
+	hash, err := hashDirectory(disk.Dir)
+	if err != nil {
+		return nil, err
+	}
+
+	timeDuration := float64(time.Since(timeStart).Milliseconds())
+	VolumeServerChecksumDuration.Set(timeDuration)
+
+	return hash, nil
 }

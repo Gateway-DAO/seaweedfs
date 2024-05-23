@@ -234,6 +234,13 @@ var (
 			Help:      "Resource usage",
 		}, []string{"name", "type"})
 
+	VolumeServerChecksumDuration = prometheus.NewGauge(prometheus.GaugeOpts{
+		Namespace: Namespace,
+		Subsystem: "volumeServer",
+		Name:      "checksum_duration",
+		Help:      "Volume Server Checksum Duration",
+	})
+
 	S3RequestCounter = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Namespace: Namespace,
@@ -296,6 +303,7 @@ func init() {
 	Gather.MustRegister(VolumeServerReadOnlyVolumeGauge)
 	Gather.MustRegister(VolumeServerDiskSizeGauge)
 	Gather.MustRegister(VolumeServerResourceGauge)
+	Gather.MustRegister(VolumeServerChecksumDuration)
 
 	Gather.MustRegister(S3RequestCounter)
 	Gather.MustRegister(S3HandlerCounter)
