@@ -1,0 +1,14 @@
+[Private Networking]
+	☐ Configure Private VPC for Masters
+		☐ Configure IG for Masters VPC
+	☐ Configure Private VPC across Masters + Volumes
+		- Host global distribution (different AZ)
+
+[Security]
+	☐ Create special users for custom Gateway Docker image
+
+	[DevOps]
+		☐	Define IAM / role-based policies for Docker (Linux) runtime
+
+[Stress Test]
+	☐ Try to corrupt container data and check recovery
