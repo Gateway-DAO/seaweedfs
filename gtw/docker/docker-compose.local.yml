@@ -1,0 +1,165 @@
+networks:
+    seaweedfs:
+        name: seaweedfs
+
+x-default-network: &default-networks
+    networks:
+        - seaweedfs
+
+x-default-build: &default-build
+    build:
+        context: ../..
+        dockerfile: gtw/docker/Dockerfile.local
+
+x-default: &defaults
+    <<: [*default-build, *default-networks]
+
+services:
+    # MARK: Master Servers
+    master0:
+        container_name: master0
+        <<: *defaults
+        ports:
+            - 9333:9333
+            - 19333:19333
+        command: "-v=1 master -resumeState=false -ip=master0 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
+        environment:
+            WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
+            WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
+            WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
+    master1:
+        container_name: master1
+        <<: *defaults
+        ports:
+            - 9334:9333
+            - 19334:19333
+        command: "-v=1 master -resumeState=false -ip=master1 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
+        environment:
+            WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
+            WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
+            WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
+    master2:
+        container_name: master2
+        <<: *defaults
+        ports:
+            - 9335:9333
+            - 19335:19333
+        command: "-v=1 master -resumeState=false -ip=master2 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
+        environment:
+            WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
+            WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
+            WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
+
+    # MARK: Volume Servers
+    volume1:
+        container_name: volume1
+        <<: *defaults
+        ports:
+            - 8080:8080
+            - 18080:18080
+        command: >
+            volume -dataCenter=gateway -rack=gtw1 \
+                -port=8080 -ip=volume1 -publicUrl=localhost:8080 -metricsPort=1234 \
+                -mserver="master0:9333,master1:9333,master2:9333" \
+                -preStopSeconds=1 \
+                --dir=/etc/seaweedfs
+        # --dir argument is to make sure it does not persist on restart
+
+    volume2:
+        container_name: volume2
+        <<: *defaults
+        ports:
+            - 8081:8080
+            - 18081:18080
+        command: 'volume -dataCenter=gateway -rack=gtw2 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume2 -publicUrl=localhost:8081 -preStopSeconds=1 -metricsPort=1234'
+    volume3:
+        container_name: volume3
+        <<: *defaults
+        ports:
+            - 8082:8080
+            - 18082:18080
+        command: 'volume -dataCenter=lifi -rack=lifi1 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume3 -publicUrl=localhost:8082 -preStopSeconds=1 -metricsPort=1234'
+        depends_on:
+            - master0
+            - master1
+            - master2
+    volume4:
+        container_name: volume4
+        <<: *defaults
+        ports:
+            - 8083:8080
+            - 18083:18080
+        command: 'volume -dataCenter=dimo -rack=dimo1 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume4 -publicUrl=localhost:8083 -preStopSeconds=1 -metricsPort=1234'
+        depends_on:
+            - master0
+            - master1
+            - master2
+
+    # MARK: Filer
+    filer:
+        container_name: filer
+        <<: *defaults
+        ports:
+            - 8888:8888
+            - 18888:18888
+            - 8111:8111
+        command: >
+            filer -ip filer \
+                -master="master0:9333,master1:9333,master2:9333" \
+                -encryptVolumeData \
+                -ui.deleteDir
+        depends_on:
+            - master0
+            - master1
+            - master2
+            - volume1
+            - volume2
+            - volume3
+
+    # # MARK: S3
+    # s3:
+    #     container_name: s3
+    #     <<: *defaults
+    #     ports:
+    #         - 8333:8333
+    #     command: '-v=9 s3 -filer="filer:8888"'
+    #     depends_on:
+    #         - master0
+    #         - master1
+    #         - master2
+    #         - volume1
+    #         - volume2
+    #         - volume3
+    #         - filer
+
+    # MARK: Metrics
+    metrics-fe:
+        <<: *default-networks
+        image: grafana/grafana:8.1.2 # Match the Grafana version with your requirements
+        depends_on:
+            - metrics
+        volumes:
+            - ./metrics/mnt/grafana:/var/lib/grafana
+        environment:
+            - GF_SECURITY_ADMIN_PASSWORD=password # Change the password
+            - GF_DATASOURCES_DEFAULT_DATASOURCE_URL=http://prometheus:9090
+        ports:
+            - "3000:3000"
+        restart: unless-stopped
+
+    metrics:
+        container_name: metrics
+        <<: *default-networks
+        image: prom/prometheus
+        ports:
+            - 9090:9090
+        volumes:
+            - ./metrics/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+        depends_on:
+            - master0
+            - master1
+            - master2
+            - volume1
+            - volume2
+            - volume3
+            - filer

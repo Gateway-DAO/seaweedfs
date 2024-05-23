@@ -31,6 +31,15 @@ benchmark: install warp_install
 benchmark_with_pprof: debug = 1
 benchmark_with_pprof: benchmark
 
+.PHONY: network logs stop
+network:
+	docker compose -f ./gtw/docker/docker-compose.local.yml up -d --build
+stop:
+	docker compose -f ./gtw/docker/docker-compose.local.yml down -v
+
+logs:
+	docker compose -f ./gtw/docker/docker-compose.local.yml logs -f
+
 ec2-binaries:
 	export SWCOMMIT=$(shell git rev-parse --short HEAD)
 	export SWLDFLAGS="-X github.com/seaweedfs/seaweedfs/weed/util.COMMIT=$(SWCOMMIT)"
@@ -39,6 +48,9 @@ ec2-binaries:
 	cd ./weed/mq/client/cmd/weed_pub_record && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build && mv weed_pub_record ../../../../../bin/
 	cd ./weed/mq/client/cmd/weed_sub_kv && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build && mv weed_sub_kv ../../../../../bin/
 	cd ./weed/mq/client/cmd/weed_sub_record && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build && mv weed_sub_record ../../../../../bin/
+
+.PHONY: rebuild
+rebuild: ec2-binaries network
 
 test:
 	cd weed; go test -tags "elastic gocdk sqlite ydb tikv rclone" -v ./...
