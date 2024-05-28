@@ -1,14 +1,66 @@
-[Private Networking]
+[EDV]:
+	☐ Capture chunk metadata into Rocks/Level/etc (checksum, *DataNode.Id)
+		- Database schema is agnostic to RDS, expectation is EDV is hostable without blockchain
+
+		FileId_Metadata:
+			```
+			Key: fid
+
+			Value:
+			{
+				status: "ASSIGNED" | "UPLOADED" | "DELETED",
+				ca_timestamp: <ms>,
+				lu_timestamp:	<ms>
+			}
+			```
+			- Input: duration timestamp
+
+
+		FileId_To_ChunkIds:
+			```
+			Key: fid
+
+			Value:
+			{
+				checksum: <hex>,
+				chunks: [ ...chunkId ],
+				volume: <string>,
+				ca_timestamp: <ms>,	(created)
+				lu_timetsamp: <ms>,	(last updated)
+				lt_timetsamp: <ms>	(last touched)
+			}
+			```
+
+		ChunkId_Metadata:
+			```
+			Key: chunkId
+
+			Value:
+			{
+				checksum: <hex>,
+				volume: <string>,
+				dataNodes: [
+					{ }
+				]
+				ca_timestamp: <ms>,	(created)
+				lu_timestamp: <ms>	(last updated)
+				lt_timestamp: <ms>	(last touched)
+			}
+			```
+
+	☐ API needs to be able to pull information from Chunk Datastore
+
+[Private Networking]:
 	☐ Configure Private VPC for Masters
 		☐ Configure IG for Masters VPC
 	☐ Configure Private VPC across Masters + Volumes
 		- Host global distribution (different AZ)
 
-[Security]
+[Security]:
 	☐ Create special users for custom Gateway Docker image
 
-	[DevOps]
+	[DevOps]:
 		☐	Define IAM / role-based policies for Docker (Linux) runtime
 
-[Stress Test]
+[Stress Test]:
 	☐ Try to corrupt container data and check recovery
