@@ -109,3 +109,6 @@ gateway/weed_pub_kv
 gateway/weed_pub_record
 gateway/weed_sub_kv
 gateway/weed_sub_record
+
+**/mnt/*
+data

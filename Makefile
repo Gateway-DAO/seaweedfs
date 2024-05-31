@@ -35,7 +35,7 @@ benchmark_with_pprof: benchmark
 network:
 	docker compose -f ./gtw/docker/docker-compose.local.yml up -d --build
 stop:
-	docker compose -f ./gtw/docker/docker-compose.local.yml down -v
+	docker compose -f ./gtw/docker/docker-compose.local.yml down
 
 logs:
 	docker compose -f ./gtw/docker/docker-compose.local.yml logs -f
