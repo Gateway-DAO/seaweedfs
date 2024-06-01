@@ -22,7 +22,7 @@ services:
         ports:
             - 9333:9333
             - 19333:19333
-        command: "-v=1 master -resumeState=false -ip=master0 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
+        command: "-v=4 master -resumeState=false -ip=master0 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
         environment:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
@@ -33,7 +33,7 @@ services:
         ports:
             - 9334:9333
             - 19334:19333
-        command: "-v=1 master -resumeState=false -ip=master1 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
+        command: "-v=4 master -resumeState=false -ip=master1 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
         environment:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
@@ -44,7 +44,7 @@ services:
         ports:
             - 9335:9333
             - 19335:19333
-        command: "-v=1 master -resumeState=false -ip=master2 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
+        command: "-v=4 master -resumeState=false -ip=master2 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
         environment:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
@@ -58,7 +58,7 @@ services:
             - 8080:8080
             - 18080:18080
         command: >
-            volume -dataCenter=gateway -rack=gtw1 \
+            -v=4 volume -dataCenter=gateway -rack=gtw1 \
                 -port=8080 -ip=volume1 -publicUrl=localhost:8080 -metricsPort=1234 \
                 -mserver="master0:9333,master1:9333,master2:9333" \
                 -preStopSeconds=1 \
@@ -71,7 +71,7 @@ services:
         ports:
             - 8081:8080
             - 18081:18080
-        command: 'volume -dataCenter=gateway -rack=gtw2 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume2 -publicUrl=localhost:8081 -preStopSeconds=1 -metricsPort=1234'
+        command: '-v=4 volume -dataCenter=gateway -rack=gtw2 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume2 -publicUrl=localhost:8081 -preStopSeconds=1 -metricsPort=1234'
     volume3:
         container_name: volume3
         <<: *defaults
@@ -89,7 +89,7 @@ services:
         ports:
             - 8083:8080
             - 18083:18080
-        command: 'volume -dataCenter=dimo -rack=dimo1 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume4 -publicUrl=localhost:8083 -preStopSeconds=1 -metricsPort=1234'
+        command: '-v=4 volume -dataCenter=dimo -rack=dimo1 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume4 -publicUrl=localhost:8083 -preStopSeconds=1 -metricsPort=1234'
         depends_on:
             - master0
             - master1
