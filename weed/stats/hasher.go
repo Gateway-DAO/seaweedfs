@@ -9,10 +9,7 @@ import (
 	"golang.org/x/crypto/blake2b"
 )
 
-func newHasher() (hash.Hash, error) {
-	// return sha256.New(nil)
-	return blake2b.New256(nil)
-}
+func Blake2b() (hash.Hash, error) { return blake2b.New256(nil) }
 
 func hashFile(path string) ([]byte, error) {
 	file, err := os.Open(path)
@@ -22,7 +19,7 @@ func hashFile(path string) ([]byte, error) {
 	defer file.Close()
 
 	// Create a new BLAKE2b hasher, here 256 bit for compatibility
-	hasher, err := newHasher()
+	hasher, err := Blake2b()
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +31,7 @@ func hashFile(path string) ([]byte, error) {
 
 func hashDirectory(directoryPath string) ([]byte, error) {
 	// Create a new BLAKE2b hasher, here 256 bit for compatibility
-	dirHasher, err := newHasher()
+	dirHasher, err := Blake2b()
 	if err != nil {
 		return nil, err
 	}
