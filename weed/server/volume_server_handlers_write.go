@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/seaweedfs/seaweedfs/weed/event"
+	event_types "github.com/seaweedfs/seaweedfs/weed/event/types"
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/seaweedfs/seaweedfs/weed/operation"
 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
@@ -39,6 +40,9 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	bytesBuffer := buffer_pool.SyncPoolGetBuffer()
 	defer buffer_pool.SyncPoolPutBuffer(bytesBuffer)
 
+	// Create needle for new upload request
+	// - mechanism to parse upload chunks in a storage's context
+	// - storage replication enforced by configured topology
 	reqNeedle, originalSize, contentMd5, ne := needle.CreateNeedleFromRequest(r, vs.FixJpgOrientation, vs.fileSizeLimitBytes, bytesBuffer)
 	if ne != nil {
 		writeJsonError(w, r, http.StatusBadRequest, ne)
@@ -53,7 +57,7 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// http 204 status code does not allow body
-	if writeError == nil && isUnchanged {
+	if isUnchanged {
 		setEtag(w, reqNeedle.Etag())
 		w.WriteHeader(http.StatusNoContent)
 		return
@@ -75,8 +79,11 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	\t- Uploaded hash: %v
 	`, contentMd5)
 
-	eventsDir := vs.eventsDir
-	event.RegisterEvent(eventsDir)
+	write_event := event_types.NewNeedleEvent(reqNeedle.Id, reqNeedle.Checksum, contentMd5, event_types.WRITE)
+	if event.RegisterEvent(vs.eventsDir, write_event) != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	writeJsonQuiet(w, r, httpStatus, ret)
 }
