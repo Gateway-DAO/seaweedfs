@@ -22,7 +22,13 @@ services:
         ports:
             - 9333:9333
             - 19333:19333
-        command: "-v=4 master -resumeState=false -ip=master0 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
+        command: >
+            -v=${MASTER_LOG_LEVEL:-3}
+            master -resumeState=false
+            -ip=master0 -port=9333
+            -peers=master0:9333,master1:9333,master2:9333
+            -mdir=/tmp
+            --metricsPort=1234
         environment:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
@@ -33,7 +39,13 @@ services:
         ports:
             - 9334:9333
             - 19334:19333
-        command: "-v=4 master -resumeState=false -ip=master1 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
+        command: >
+            -v=${MASTER_LOG_LEVEL:-3}
+            master -resumeState=false
+            -ip=master1 -port=9333
+            -peers=master0:9333,master1:9333,master2:9333
+            -mdir=/tmp
+            --metricsPort=1234
         environment:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
@@ -44,7 +56,12 @@ services:
         ports:
             - 9335:9333
             - 19335:19333
-        command: "-v=4 master -resumeState=false -ip=master2 -port=9333 -peers=master0:9333,master1:9333,master2:9333 -mdir=/tmp --metricsPort=1234"
+        command: >
+            -v=${MASTER_LOG_LEVEL:-3} master -resumeState=false
+            -ip=master2 -port=9333
+            -peers=master0:9333,master1:9333,master2:9333
+            -mdir=/tmp
+            --metricsPort=1234
         environment:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
@@ -58,12 +75,13 @@ services:
             - 8080:8080
             - 18080:18080
         command: >
-            -v=4 volume -dataCenter=gateway -rack=gtw1 \
-                -port=8080 -ip=volume1 -publicUrl=localhost:8080 -metricsPort=1234 \
-                -mserver="master0:9333,master1:9333,master2:9333" \
-                -preStopSeconds=1 \
-                --dir=/etc/seaweedfs
-        # --dir argument is to make sure it does not persist on restart
+            -v=3 volume -dataCenter=gateway -rack=gtw1
+            -dir=/data/seaweedfs -dir.events /etc/seaweedfs/events
+            -port=8080 -ip=volume1 -publicUrl=localhost:8080
+            -mserver="master0:9333,master1:9333,master2:9333"
+            -metricsPort=1234
+            -preStopSeconds=1
+        # --dir /etc does not persist on restart
 
     volume2:
         container_name: volume2
@@ -71,14 +89,25 @@ services:
         ports:
             - 8081:8080
             - 18081:18080
-        command: '-v=4 volume -dataCenter=gateway -rack=gtw2 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume2 -publicUrl=localhost:8081 -preStopSeconds=1 -metricsPort=1234'
+        command: >
+            -v=3
+            volume -dataCenter=gateway -rack=gtw2
+            -dir.events /data/seaweedfs/events
+            -mserver="master0:9333,master1:9333,master2:9333"
+            -port=8080 -ip=volume2 -publicUrl=localhost:8081
+            -preStopSeconds=1 -metricsPort=1234
     volume3:
         container_name: volume3
         <<: *defaults
         ports:
             - 8082:8080
             - 18082:18080
-        command: 'volume -dataCenter=lifi -rack=lifi1 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume3 -publicUrl=localhost:8082 -preStopSeconds=1 -metricsPort=1234'
+        command: >
+            -v=3
+            volume -dataCenter=lifi -rack=lifi1
+            -port=8080 -ip=volume3 -publicUrl=localhost:8082
+            -mserver="master0:9333,master1:9333,master2:9333"
+            -preStopSeconds=1 -metricsPort=1234
         depends_on:
             - master0
             - master1
@@ -89,7 +118,12 @@ services:
         ports:
             - 8083:8080
             - 18083:18080
-        command: '-v=4 volume -dataCenter=dimo -rack=dimo1 -mserver="master0:9333,master1:9333,master2:9333" -port=8080 -ip=volume4 -publicUrl=localhost:8083 -preStopSeconds=1 -metricsPort=1234'
+        command: >
+            -v=3
+            volume -dataCenter=dimo -rack=dimo1
+            -port=8080 -ip=volume4 -publicUrl=localhost:8083
+            -mserver="master0:9333,master1:9333,master2:9333"
+            -preStopSeconds=1 -metricsPort=1234
         depends_on:
             - master0
             - master1
@@ -104,10 +138,11 @@ services:
             - 18888:18888
             - 8111:8111
         command: >
-            filer -ip filer \
-                -master="master0:9333,master1:9333,master2:9333" \
-                -encryptVolumeData \
-                -ui.deleteDir
+            -v=3
+            filer -ip filer
+            -master="master0:9333,master1:9333,master2:9333"
+            -encryptVolumeData
+            -ui.deleteDir
         depends_on:
             - master0
             - master1

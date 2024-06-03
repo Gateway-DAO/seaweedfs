@@ -31,16 +31,17 @@ benchmark: install warp_install
 benchmark_with_pprof: debug = 1
 benchmark_with_pprof: benchmark
 
-.PHONY: network logs stop
+.PHONY: network stop logs
 network:
 	docker compose -f ./gtw/docker/docker-compose.local.yml up -d --build
 stop:
-	docker compose -f ./gtw/docker/docker-compose.local.yml down
-
+	docker compose -f ./gtw/docker/docker-compose.local.yml down -v
 logs:
 	docker compose -f ./gtw/docker/docker-compose.local.yml logs -f
 
+.PHONY: ec2-binaries
 ec2-binaries:
+	@test -d ./bin || mkdir ./bin
 	export SWCOMMIT=$(shell git rev-parse --short HEAD)
 	export SWLDFLAGS="-X github.com/seaweedfs/seaweedfs/weed/util.COMMIT=$(SWCOMMIT)"
 	cd ./weed && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build $(options) -tags "$(tags)" -ldflags "-s -w -extldflags -static $(SWLDFLAGS)" && mv weed ../bin/
@@ -49,8 +50,8 @@ ec2-binaries:
 	cd ./weed/mq/client/cmd/weed_sub_kv && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build && mv weed_sub_kv ../../../../../bin/
 	cd ./weed/mq/client/cmd/weed_sub_record && CGO_ENABLED=$(cgo) GOOS=linux GOARCH=amd64 go build && mv weed_sub_record ../../../../../bin/
 
-.PHONY: rebuild
-rebuild: ec2-binaries network
+.PHONY: dev
+dev: ec2-binaries network
 
 test:
 	cd weed; go test -tags "elastic gocdk sqlite ydb tikv rclone" -v ./...

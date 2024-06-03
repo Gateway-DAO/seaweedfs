@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/seaweedfs/seaweedfs/weed/event"
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/seaweedfs/seaweedfs/weed/operation"
 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
@@ -67,6 +68,16 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	ret.Mime = string(reqNeedle.Mime)
 	setEtag(w, ret.ETag)
 	w.Header().Set("Content-MD5", contentMd5)
+
+	// TODO: emit FileUpload event
+	glog.V(3).Infof(`
+	Creating new FileUpload event:\n
+	\t- Uploaded hash: %v
+	`, contentMd5)
+
+	eventsDir := vs.eventsDir
+	event.RegisterEvent(eventsDir)
+
 	writeJsonQuiet(w, r, httpStatus, ret)
 }
 

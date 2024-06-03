@@ -70,6 +70,7 @@ type VolumeServerOptions struct {
 	hasSlowRead               *bool
 	readBufferSizeMB          *int
 	ldbTimeout                *int64
+	eventsDir                 string
 }
 
 func init() {
@@ -115,6 +116,7 @@ var cmdVolume = &Command{
 
 var (
 	volumeFolders         = cmdVolume.Flag.String("dir", os.TempDir(), "directories to store data files. dir[,dir]...")
+	eventsDir             = cmdVolume.Flag.String("dir.events", os.TempDir(), "directory to store event artifacts")
 	maxVolumeCounts       = cmdVolume.Flag.String("max", "8", "maximum numbers of volumes, count[,count]... If set to zero, the limit will be auto configured as free disk space divided by volume size.")
 	volumeWhiteListOption = cmdVolume.Flag.String("whiteList", "", "comma separated Ip addresses having write permission. No limit if empty.")
 	minFreeSpacePercent   = cmdVolume.Flag.String("minFreeSpacePercent", "1", "minimum free disk space (default to 1%). Low disk space will mark all volumes as ReadOnly (deprecated, use minFreeSpace instead).")
@@ -135,12 +137,12 @@ func runVolume(cmd *Command, args []string) bool {
 
 	minFreeSpaces := util.MustParseMinFreeSpace(*minFreeSpace, *minFreeSpacePercent)
 	v.masters = pb.ServerAddresses(*v.mastersString).ToAddresses()
-	v.startVolumeServer(*volumeFolders, *maxVolumeCounts, *volumeWhiteListOption, minFreeSpaces)
+	v.startVolumeServer(*volumeFolders, *maxVolumeCounts, *volumeWhiteListOption, minFreeSpaces, *eventsDir)
 
 	return true
 }
 
-func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, volumeWhiteListOption string, minFreeSpaces []util.MinFreeSpace) {
+func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, volumeWhiteListOption string, minFreeSpaces []util.MinFreeSpace, eventsDir string) {
 
 	// Set multiple folders and each folder's max volume count limit'
 	v.folders = strings.Split(volumeFolders, ",")
@@ -149,6 +151,9 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 			glog.Fatalf("Check Data Folder(-dir) Writable %s : %s", folder, err)
 		}
 	}
+
+	// set events directory for all event artifacts
+	v.eventsDir = eventsDir
 
 	// set max
 	maxCountStrings := strings.Split(maxVolumeCounts, ",")
@@ -253,6 +258,7 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 		*v.hasSlowRead,
 		*v.readBufferSizeMB,
 		*v.ldbTimeout,
+		v.eventsDir,
 	)
 	// starting grpc server
 	grpcS := v.startGrpcService(volumeServer)

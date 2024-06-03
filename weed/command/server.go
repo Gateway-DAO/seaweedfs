@@ -305,7 +305,7 @@ func runServer(cmd *Command, args []string) bool {
 	// start volume server
 	if *isStartingVolumeServer {
 		minFreeSpaces := util.MustParseMinFreeSpace(*volumeMinFreeSpace, *volumeMinFreeSpacePercent)
-		go serverOptions.v.startVolumeServer(*volumeDataFolders, *volumeMaxDataVolumeCounts, *serverWhiteListOption, minFreeSpaces)
+		go serverOptions.v.startVolumeServer(*volumeDataFolders, *volumeMaxDataVolumeCounts, *serverWhiteListOption, minFreeSpaces, *eventsDir)
 	}
 
 	if *isStartingMasterServer {
