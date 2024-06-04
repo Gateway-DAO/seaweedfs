@@ -39,6 +39,11 @@ stop:
 logs:
 	docker compose -f ./gtw/docker/docker-compose.local.yml logs -f
 
+# Log events on locally mounted event store
+.PHONY: events
+events:
+	leveldbutil dump ./data/volume1/events/*.ldb; leveldbutil dump ./data/volume1/events/*.log
+
 .PHONY: ec2-binaries
 ec2-binaries:
 	@test -d ./bin || mkdir ./bin
