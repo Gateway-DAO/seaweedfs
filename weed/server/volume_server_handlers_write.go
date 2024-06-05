@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/seaweedfs/seaweedfs/weed/event"
-	"github.com/seaweedfs/seaweedfs/weed/event/event_types"
+	event_types "github.com/seaweedfs/seaweedfs/weed/event/types"
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/seaweedfs/seaweedfs/weed/operation"
 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"

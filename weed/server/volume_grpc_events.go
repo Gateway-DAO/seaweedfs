@@ -4,8 +4,9 @@ import (
 	"time"
 
 	"github.com/seaweedfs/seaweedfs/weed/event"
-	"github.com/seaweedfs/seaweedfs/weed/event/event_types"
+	event_types "github.com/seaweedfs/seaweedfs/weed/event/types"
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -22,36 +23,37 @@ func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEve
 			return ctxErr
 		}
 
+		if req.VolumeId != nil && event.Needle.VolumeId != needle.VolumeId(*req.VolumeId) {
+			continue
+		}
+
 		parsedEvent := prepareVolumeServerEventResponse(event)
 		if streamErr := stream.Send(parsedEvent); streamErr != nil {
 			return streamErr
 		}
-
-		// DEBUG: Simulate delay
-		time.Sleep(1 * time.Second)
 	}
 
 	return nil
 }
 
-func prepareVolumeServerEventResponse(event *event_types.NeedleEvent) *volume_server_pb.VolumeServerEventResponse {
+func prepareVolumeServerEventResponse(ne *event_types.NeedleEvent) *volume_server_pb.VolumeServerEventResponse {
 	resp := &volume_server_pb.VolumeServerEventResponse{
-		Type: event.Type,
-		Hash: event.Hash,
+		Type: ne.Type,
+		Hash: ne.Hash,
 		Needle: &volume_server_pb.VolumeServerEventResponse_Needle{
-			Id:       event.Needle.Id,
-			Checksum: event.Needle.Checksum,
-			VolumeId: uint32(event.Needle.VolumeId),
+			Id:       ne.Needle.Id,
+			Checksum: ne.Needle.Checksum,
+			VolumeId: uint32(ne.Needle.VolumeId),
 		},
 		VolumeServer: &volume_server_pb.VolumeServerEventResponse_VolumeServer{
-			Url:        event.VolumeServer.Url,
-			Rack:       event.VolumeServer.Rack,
-			DataCenter: event.VolumeServer.DataCenter,
+			Url:        ne.VolumeServer.Url,
+			Rack:       ne.VolumeServer.Rack,
+			DataCenter: ne.VolumeServer.DataCenter,
 		},
 
-		CreatedAt:   timestamppb.New(time.Unix(0, int64(event.CreatedAt))),
-		LastUpdated: timestamppb.New(time.Unix(0, int64(event.LastUpdated))),
-		LastTouched: timestamppb.New(time.Unix(0, int64(event.LastTouched))),
+		CreatedAt:   timestamppb.New(time.Unix(0, int64(ne.CreatedAt))),
+		LastUpdated: timestamppb.New(time.Unix(0, int64(ne.LastUpdated))),
+		LastTouched: timestamppb.New(time.Unix(0, int64(ne.LastTouched))),
 	}
 
 	return resp

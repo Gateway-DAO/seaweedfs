@@ -258,6 +258,7 @@ message VolumeStatusResponse {
 }
 
 message VolumeServerEventsRequest {
+    optional uint32 volume_id = 1;
 }
 message VolumeServerEventResponse {
     string type = 1;
