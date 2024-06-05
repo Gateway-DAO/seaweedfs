@@ -13,6 +13,15 @@ import (
 func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEventsRequest, stream volume_server_pb.VolumeServer_VolumeServerEventsServer) error {
 	eventDir := vs.eventsDir
 
+	var vol *storage.Volume
+	if req.VolumeId != nil {
+		vol = vs.store.GetVolume(needle.VolumeId(*req.VolumeId))
+
+		if vol == nil {
+			return status.Errorf(codes.NotFound, "volume server does not have volume %d", *req.VolumeId)
+		}
+	}
+
 	needleEvents, err := event.ListEvents(eventDir)
 	if err != nil {
 		return err
@@ -23,7 +32,7 @@ func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEve
 			return ctxErr
 		}
 
-		if req.VolumeId != nil && event.Needle.VolumeId != needle.VolumeId(*req.VolumeId) {
+		if vol != nil && event.Needle.VolumeId != vol.Id {
 			continue
 		}
 
