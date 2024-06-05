@@ -56,6 +56,7 @@ const (
 	VolumeServer_VolumeTierMoveDatToRemote_FullMethodName   = "/volume_server_pb.VolumeServer/VolumeTierMoveDatToRemote"
 	VolumeServer_VolumeTierMoveDatFromRemote_FullMethodName = "/volume_server_pb.VolumeServer/VolumeTierMoveDatFromRemote"
 	VolumeServer_VolumeServerStatus_FullMethodName          = "/volume_server_pb.VolumeServer/VolumeServerStatus"
+	VolumeServer_VolumeServerEvents_FullMethodName          = "/volume_server_pb.VolumeServer/VolumeServerEvents"
 	VolumeServer_VolumeServerLeave_FullMethodName           = "/volume_server_pb.VolumeServer/VolumeServerLeave"
 	VolumeServer_FetchAndWriteNeedle_FullMethodName         = "/volume_server_pb.VolumeServer/FetchAndWriteNeedle"
 	VolumeServer_Query_FullMethodName                       = "/volume_server_pb.VolumeServer/Query"
@@ -108,6 +109,7 @@ type VolumeServerClient interface {
 	VolumeTierMoveDatToRemote(ctx context.Context, in *VolumeTierMoveDatToRemoteRequest, opts ...grpc.CallOption) (VolumeServer_VolumeTierMoveDatToRemoteClient, error)
 	VolumeTierMoveDatFromRemote(ctx context.Context, in *VolumeTierMoveDatFromRemoteRequest, opts ...grpc.CallOption) (VolumeServer_VolumeTierMoveDatFromRemoteClient, error)
 	VolumeServerStatus(ctx context.Context, in *VolumeServerStatusRequest, opts ...grpc.CallOption) (*VolumeServerStatusResponse, error)
+	VolumeServerEvents(ctx context.Context, in *VolumeServerEventsRequest, opts ...grpc.CallOption) (VolumeServer_VolumeServerEventsClient, error)
 	VolumeServerLeave(ctx context.Context, in *VolumeServerLeaveRequest, opts ...grpc.CallOption) (*VolumeServerLeaveResponse, error)
 	// remote storage
 	FetchAndWriteNeedle(ctx context.Context, in *FetchAndWriteNeedleRequest, opts ...grpc.CallOption) (*FetchAndWriteNeedleResponse, error)
@@ -665,6 +667,38 @@ func (c *volumeServerClient) VolumeServerStatus(ctx context.Context, in *VolumeS
 	return out, nil
 }
 
+func (c *volumeServerClient) VolumeServerEvents(ctx context.Context, in *VolumeServerEventsRequest, opts ...grpc.CallOption) (VolumeServer_VolumeServerEventsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &VolumeServer_ServiceDesc.Streams[9], VolumeServer_VolumeServerEvents_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &volumeServerVolumeServerEventsClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type VolumeServer_VolumeServerEventsClient interface {
+	Recv() (*VolumeServerEventResponse, error)
+	grpc.ClientStream
+}
+
+type volumeServerVolumeServerEventsClient struct {
+	grpc.ClientStream
+}
+
+func (x *volumeServerVolumeServerEventsClient) Recv() (*VolumeServerEventResponse, error) {
+	m := new(VolumeServerEventResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *volumeServerClient) VolumeServerLeave(ctx context.Context, in *VolumeServerLeaveRequest, opts ...grpc.CallOption) (*VolumeServerLeaveResponse, error) {
 	out := new(VolumeServerLeaveResponse)
 	err := c.cc.Invoke(ctx, VolumeServer_VolumeServerLeave_FullMethodName, in, out, opts...)
@@ -684,7 +718,7 @@ func (c *volumeServerClient) FetchAndWriteNeedle(ctx context.Context, in *FetchA
 }
 
 func (c *volumeServerClient) Query(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (VolumeServer_QueryClient, error) {
-	stream, err := c.cc.NewStream(ctx, &VolumeServer_ServiceDesc.Streams[9], VolumeServer_Query_FullMethodName, opts...)
+	stream, err := c.cc.NewStream(ctx, &VolumeServer_ServiceDesc.Streams[10], VolumeServer_Query_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -778,6 +812,7 @@ type VolumeServerServer interface {
 	VolumeTierMoveDatToRemote(*VolumeTierMoveDatToRemoteRequest, VolumeServer_VolumeTierMoveDatToRemoteServer) error
 	VolumeTierMoveDatFromRemote(*VolumeTierMoveDatFromRemoteRequest, VolumeServer_VolumeTierMoveDatFromRemoteServer) error
 	VolumeServerStatus(context.Context, *VolumeServerStatusRequest) (*VolumeServerStatusResponse, error)
+	VolumeServerEvents(*VolumeServerEventsRequest, VolumeServer_VolumeServerEventsServer) error
 	VolumeServerLeave(context.Context, *VolumeServerLeaveRequest) (*VolumeServerLeaveResponse, error)
 	// remote storage
 	FetchAndWriteNeedle(context.Context, *FetchAndWriteNeedleRequest) (*FetchAndWriteNeedleResponse, error)
@@ -902,6 +937,9 @@ func (UnimplementedVolumeServerServer) VolumeTierMoveDatFromRemote(*VolumeTierMo
 }
 func (UnimplementedVolumeServerServer) VolumeServerStatus(context.Context, *VolumeServerStatusRequest) (*VolumeServerStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VolumeServerStatus not implemented")
+}
+func (UnimplementedVolumeServerServer) VolumeServerEvents(*VolumeServerEventsRequest, VolumeServer_VolumeServerEventsServer) error {
+	return status.Errorf(codes.Unimplemented, "method VolumeServerEvents not implemented")
 }
 func (UnimplementedVolumeServerServer) VolumeServerLeave(context.Context, *VolumeServerLeaveRequest) (*VolumeServerLeaveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method VolumeServerLeave not implemented")
@@ -1624,6 +1662,27 @@ func _VolumeServer_VolumeServerStatus_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _VolumeServer_VolumeServerEvents_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(VolumeServerEventsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(VolumeServerServer).VolumeServerEvents(m, &volumeServerVolumeServerEventsServer{stream})
+}
+
+type VolumeServer_VolumeServerEventsServer interface {
+	Send(*VolumeServerEventResponse) error
+	grpc.ServerStream
+}
+
+type volumeServerVolumeServerEventsServer struct {
+	grpc.ServerStream
+}
+
+func (x *volumeServerVolumeServerEventsServer) Send(m *VolumeServerEventResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _VolumeServer_VolumeServerLeave_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(VolumeServerLeaveRequest)
 	if err := dec(in); err != nil {
@@ -1897,6 +1956,11 @@ var VolumeServer_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "VolumeTierMoveDatFromRemote",
 			Handler:       _VolumeServer_VolumeTierMoveDatFromRemote_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "VolumeServerEvents",
+			Handler:       _VolumeServer_VolumeServerEvents_Handler,
 			ServerStreams: true,
 		},
 		{

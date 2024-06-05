@@ -4,6 +4,8 @@ package volume_server_pb;
 option go_package = "github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb";
 
 import "remote.proto";
+import "google/protobuf/timestamp.proto";
+
 
 //////////////////////////////////////////////////
 
@@ -96,6 +98,7 @@ service VolumeServer {
 
     rpc VolumeServerStatus (VolumeServerStatusRequest) returns (VolumeServerStatusResponse) {
     }
+    rpc VolumeServerEvents(VolumeServerEventsRequest) returns (stream VolumeServerEventResponse) {}
     rpc VolumeServerLeave (VolumeServerLeaveRequest) returns (VolumeServerLeaveResponse) {
     }
 
@@ -252,6 +255,31 @@ message VolumeStatusResponse {
     uint64 volume_size = 2;
     uint64 file_count = 3;
     uint64 file_deleted_count = 4;
+}
+
+message VolumeServerEventsRequest {
+}
+message VolumeServerEventResponse {
+    string type = 1;
+    string hash = 2;
+
+    message Needle {
+        string id = 1;
+        string checksum = 2;
+        uint32 volume_id = 3;
+    }
+
+    message VolumeServer {
+        string url = 1;
+        string data_center = 2;
+        string rack = 3;
+    }
+
+    Needle needle = 3;
+    VolumeServer volume_server = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp last_updated = 6;
+    google.protobuf.Timestamp last_touched = 7;
 }
 
 message VolumeCopyRequest {
