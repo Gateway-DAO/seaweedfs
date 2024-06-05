@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/event/event_types"
+	event_types "github.com/seaweedfs/seaweedfs/weed/event/types"
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/syndtr/goleveldb/leveldb"
 )
