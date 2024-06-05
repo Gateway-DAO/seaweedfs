@@ -37,7 +37,7 @@ const (
 // 	last_touched Timestamp
 // }
 
-type NeedleEvent struct {
+type VolumeNeedleEvent struct {
 	Type string `json:"type"`
 	Hash string `json:"hash,omitempty"`
 
@@ -58,8 +58,8 @@ type NeedleEvent struct {
 	LastTouched NanoTimestamp `json:"last_touched"`
 }
 
-func NewNeedleEvent(volumeId needle.VolumeId, vsUrl, vsDataCenter, vsRack string, n *needle.Needle, hash *string, eventType NeedleEventType) (ne *NeedleEvent, err error) {
-	ne = new(NeedleEvent)
+func NewNeedleEvent(volumeId needle.VolumeId, vsUrl, vsDataCenter, vsRack string, n *needle.Needle, hash *string, eventType NeedleEventType) (ne *VolumeNeedleEvent, err error) {
+	ne = new(VolumeNeedleEvent)
 
 	switch eventType {
 	case WRITE:
@@ -102,10 +102,10 @@ func NewNeedleEvent(volumeId needle.VolumeId, vsUrl, vsDataCenter, vsRack string
 
 	return
 }
-func (e *NeedleEvent) Value() ([]byte, error) {
+func (e *VolumeNeedleEvent) Value() ([]byte, error) {
 	return json.Marshal(e)
 }
 
-func (e *NeedleEvent) Timestamps() (created_at, last_updated, last_touched NanoTimestamp) {
+func (e *VolumeNeedleEvent) Timestamps() (created_at, last_updated, last_touched NanoTimestamp) {
 	return e.CreatedAt, e.LastUpdated, e.LastTouched
 }

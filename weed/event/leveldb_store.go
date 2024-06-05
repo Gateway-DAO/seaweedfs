@@ -26,7 +26,7 @@ func withEventStoreConnection(dir string, handler func(db *leveldb.DB)) error {
 	}
 }
 
-func RegisterEvent(dbDir string, ne *event_types.NeedleEvent) error {
+func RegisterEvent(dbDir string, ne *event_types.VolumeNeedleEvent) error {
 	glog.V(3).Infof("Writing to database %s", dbDir)
 
 	db, err := connectToEventStore(dbDir)
@@ -49,7 +49,7 @@ func RegisterEvent(dbDir string, ne *event_types.NeedleEvent) error {
 	return nil
 }
 
-func ListEvents(dbDir string) (map[string]*event_types.NeedleEvent, error) {
+func ListEvents(dbDir string) (map[string]*event_types.VolumeNeedleEvent, error) {
 	glog.V(3).Infof("Reading database %s", dbDir)
 
 	db, err := connectToEventStore(dbDir)
@@ -61,12 +61,12 @@ func ListEvents(dbDir string) (map[string]*event_types.NeedleEvent, error) {
 	iter := db.NewIterator(nil, nil)
 	defer iter.Release()
 
-	results := make(map[string]*event_types.NeedleEvent)
+	results := make(map[string]*event_types.VolumeNeedleEvent)
 
 	for iter.Next() {
 		key, val := iter.Key(), iter.Value()
 
-		valPtr := new(event_types.NeedleEvent)
+		valPtr := new(event_types.VolumeNeedleEvent)
 		if err := json.Unmarshal(val, valPtr); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal the value for key %s: %v", key, val)
 		}

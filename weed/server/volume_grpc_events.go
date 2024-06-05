@@ -36,7 +36,7 @@ func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEve
 	return nil
 }
 
-func prepareVolumeServerEventResponse(ne *event_types.NeedleEvent) *volume_server_pb.VolumeServerEventResponse {
+func prepareVolumeServerEventResponse(ne *event_types.VolumeNeedleEvent) *volume_server_pb.VolumeServerEventResponse {
 	resp := &volume_server_pb.VolumeServerEventResponse{
 		Type: ne.Type,
 		Hash: ne.Hash,
