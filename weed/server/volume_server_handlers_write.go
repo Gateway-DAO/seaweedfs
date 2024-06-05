@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/seaweedfs/seaweedfs/weed/event"
-	event_types "github.com/seaweedfs/seaweedfs/weed/event/types"
+	"github.com/seaweedfs/seaweedfs/weed/event/event_types"
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/seaweedfs/seaweedfs/weed/operation"
 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
@@ -73,14 +73,7 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	setEtag(w, ret.ETag)
 	w.Header().Set("Content-MD5", contentMd5)
 
-	// TODO: emit FileUpload event
-	glog.V(3).Infof(`
-	Creating new FileUpload event:\n
-	\t- Uploaded hash: %v
-	`, contentMd5)
-
-	write_event := event_types.NewNeedleEvent(reqNeedle.Id, reqNeedle.Checksum, contentMd5, event_types.WRITE)
-	if event.RegisterEvent(vs.eventsDir, write_event) != nil {
+	if emitEvent(volumeId, reqNeedle, vs, &contentMd5, event_types.WRITE) != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -153,6 +146,8 @@ func (vs *VolumeServer) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	writeDeleteResult(err, count, w, r)
 
+	emitEvent(volumeId, n, vs, nil, event_types.DELETE)
+
 }
 
 func writeDeleteResult(err error, count int64, w http.ResponseWriter, r *http.Request) {
@@ -181,4 +176,20 @@ func getEtag(resp *http.Response) (etag string) {
 		return etag[1 : len(etag)-1]
 	}
 	return
+}
+
+func emitEvent(volumeId needle.VolumeId, needle *needle.Needle, vs *VolumeServer, hash *string, et event_types.NeedleEventType) error {
+
+	switch et {
+	case event_types.WRITE:
+		glog.V(3).Infof("Emitting WRITE event for %s", vs.store.Ip)
+	case event_types.DELETE:
+		glog.V(3).Infof("Emitting DELETE event for %s", vs.store.Ip)
+	}
+
+	write_event, err := event_types.NewNeedleEvent(volumeId, vs.store.PublicUrl, vs.store.GetDataCenter(), vs.store.GetRack(), needle, hash, et)
+	if err != nil {
+		return err
+	}
+	return event.RegisterEvent(vs.eventsDir, write_event)
 }

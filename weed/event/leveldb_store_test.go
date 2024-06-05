@@ -1,46 +1,81 @@
 package event
 
 import (
-	"encoding/json"
+	"fmt"
 	"testing"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/syndtr/goleveldb/leveldb"
+	"github.com/seaweedfs/seaweedfs/weed/event/event_types"
+	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+	"github.com/seaweedfs/seaweedfs/weed/storage/types"
 )
 
 var (
-	eventStore = GetLevelDBEventStore("/Users/srv/Developer/GTW/DFS/seaweedfs/data/events")
-	testEvent  = FileEvent{
-		// Id: fmt.Sprintf("%d", rand.Int31()),
-		Fid:    "leveldb_store_test:3,063de3afa9",
-		Status: UPLOADED,
-		Hash:   "asdf",
-	}
+	eventDir = "./test_data/events"
 )
 
-func Test_RegisterEvent(t *testing.T) {
-	if eventStore.RegisterEvent(testEvent) != nil {
-		t.Fail()
+func newMockNeedle(id *uint32, checksum *[]byte) (n *needle.Needle) {
+	n = new(needle.Needle)
+
+	if id != nil {
+		n.Id = types.NeedleId(*id)
+	} else {
+		n.Id = types.NeedleId(0)
 	}
+
+	if checksum != nil {
+		n.Checksum = needle.NewCRC(*checksum)
+	} else {
+		n.Checksum = needle.NewCRC([]byte("test-checksum"))
+	}
+
+	return
 }
 
-func Test_RegisteredEvent(t *testing.T) {
-	event, get_err := eventStore.GetValue(testEvent.Fid)
-	if get_err != nil {
-		glog.Errorf("Error getting value: %s", get_err)
-		t.Fail()
+func Test_RegisterWriteEvent(t *testing.T) {
+	hash := "stubbed-hash"
+
+	event, err := event_types.NewNeedleEvent(
+		needle.VolumeId(1),
+		"stubbed-ip",
+		"stubbed-data_center",
+		"stubbed-rack",
+		newMockNeedle(nil, nil),
+		&hash,
+		event_types.WRITE,
+	)
+
+	if err != nil {
+		t.Errorf("unable to construct event: %s", err)
 	}
 
-	if (*event).Metadata() != testEvent.Metadata() {
-		glog.Errorf("Queried FileEvent does not match")
-		t.Fail()
-	}
+	RegisterEvent(eventDir, event)
 }
 
-func Test_Cleanup(_ *testing.T) {
-	db, _ := leveldb.OpenFile(eventStore.dir, nil)
-	defer db.Close()
+func Test_RegisterDeleteEvent(t *testing.T) {
+	event, err := event_types.NewNeedleEvent(
+		needle.VolumeId(1),
+		"stubbed-ip",
+		"stubbed-data_center",
+		"stubbed-rack",
+		newMockNeedle(nil, nil),
+		nil,
+		event_types.WRITE,
+	)
 
-	mKey, _ := json.Marshal(testEvent.Fid)
-	db.Delete(mKey, nil)
+	if err != nil {
+		t.Errorf("unable to construct event: %s", err)
+	}
+
+	RegisterEvent(eventDir, event)
+}
+
+func Test_GetEvents(t *testing.T) {
+	events, err := ListEvents(eventDir)
+	if err != nil {
+		t.Errorf("unable to delineate events dir: %s", err)
+	}
+
+	for k, v := range events {
+		fmt.Printf("Key: %s, Value: %+v\n", k, v)
+	}
 }
