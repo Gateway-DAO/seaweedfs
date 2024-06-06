@@ -266,7 +266,7 @@ message VolumeServerEventResponse {
 
     message Needle {
         string id = 1;
-        string checksum = 2;
+        uint32 checksum = 2;
         uint32 volume_id = 3;
     }
 

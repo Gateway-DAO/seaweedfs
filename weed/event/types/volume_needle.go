@@ -3,7 +3,6 @@ package event_types
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
@@ -43,7 +42,7 @@ type VolumeNeedleEvent struct {
 
 	Needle struct {
 		Id       string          `json:"id"`
-		Checksum string          `json:"checksum"`
+		Checksum uint32          `json:"checksum"`
 		VolumeId needle.VolumeId `json:"volume_id"`
 	} `json:"needle"`
 
@@ -77,11 +76,11 @@ func NewNeedleEvent(volumeId needle.VolumeId, vsUrl, vsDataCenter, vsRack string
 	}
 	ne.Needle = struct {
 		Id       string          `json:"id"`
-		Checksum string          `json:"checksum"`
+		Checksum uint32          `json:"checksum"`
 		VolumeId needle.VolumeId `json:"volume_id"`
 	}{
 		Id:       n.Id.String(),
-		Checksum: strconv.FormatUint(uint64(n.Checksum), 16),
+		Checksum: n.Checksum.Value(),
 		VolumeId: volumeId,
 	}
 

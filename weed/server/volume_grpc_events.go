@@ -6,7 +6,10 @@ import (
 	"github.com/seaweedfs/seaweedfs/weed/event"
 	event_types "github.com/seaweedfs/seaweedfs/weed/event/types"
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/seaweedfs/seaweedfs/weed/storage"
 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -25,6 +28,10 @@ func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEve
 	needleEvents, err := event.ListEvents(eventDir)
 	if err != nil {
 		return err
+	}
+
+	if len(needleEvents) == 0 {
+		return nil
 	}
 
 	for _, event := range needleEvents {
