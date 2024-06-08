@@ -1,6 +1,16 @@
 networks:
     seaweedfs:
-        name: seaweedfs
+        name: gatewayfs
+
+volumes:
+    volume1-data:
+        name: gtw-volume1
+    volume2-data:
+        name: gtw-volume2
+    volume3-data:
+        name: gtw-volume3
+    volume4-data:
+        name: gtw-volume4
 
 x-default-network: &default-networks
     networks:
@@ -76,15 +86,14 @@ services:
             - 18080:18080
         command: >
             -v=3 volume -dataCenter=gateway -rack=gtw1
-            -dir=/data
-            -dir.events /data/events
+            -dir /data -dir.events /data/events
             -port=8080 -ip=volume1 -publicUrl=localhost:8080
             -mserver="master0:9333,master1:9333,master2:9333"
             -metricsPort=1234
             -preStopSeconds=1
-        # --dir /etc does not persist on restart
         volumes:
-            - ../../data/volume1/events:/data/events
+            - volume1-data:/data
+        # --dir /etc does not persist on restart
 
     volume2:
         container_name: volume2
@@ -95,10 +104,12 @@ services:
         command: >
             -v=3
             volume -dataCenter=gateway -rack=gtw2
-            -dir.events /data/seaweedfs/events
-            -mserver="master0:9333,master1:9333,master2:9333"
+            -dir /data -dir.events /data/events
             -port=8080 -ip=volume2 -publicUrl=localhost:8081
+            -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
+        volumes:
+            - volume2-data:/data
     volume3:
         container_name: volume3
         <<: *defaults
@@ -108,6 +119,7 @@ services:
         command: >
             -v=3
             volume -dataCenter=lifi -rack=lifi1
+            -dir /data -dir.events /data/events
             -port=8080 -ip=volume3 -publicUrl=localhost:8082
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
@@ -115,6 +127,8 @@ services:
             - master0
             - master1
             - master2
+        volumes:
+            - volume3-data:/data
     volume4:
         container_name: volume4
         <<: *defaults
@@ -124,6 +138,7 @@ services:
         command: >
             -v=3
             volume -dataCenter=dimo -rack=dimo1
+            -dir /data -dir.events /data/events
             -port=8080 -ip=volume4 -publicUrl=localhost:8083
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
@@ -131,6 +146,8 @@ services:
             - master0
             - master1
             - master2
+        volumes:
+            - volume4-data:/data
 
     # MARK: Filer
     filer:
