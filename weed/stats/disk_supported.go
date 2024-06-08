@@ -35,7 +35,7 @@ func fillInDiskStatus(disk *volume_server_pb.DiskStatus) {
 func computeDiskChecksum(disk *volume_server_pb.DiskStatus) ([]byte, error) {
 	timeStart := time.Now()
 
-	hash, err := hashDirectory(disk.Dir)
+	hash, err := hashFilteredDirectory(disk.Dir, `\.dat$`)
 	if err != nil {
 		return nil, err
 	}

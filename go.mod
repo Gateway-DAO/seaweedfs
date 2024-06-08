@@ -158,6 +158,8 @@ require (
 	google.golang.org/grpc/security/advancedtls v0.0.0-20220622233350-5cdb09fa29c1
 )
 
+require github.com/google/go-cmp v0.6.0 // indirect
+
 require (
 	cloud.google.com/go/auth v0.3.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
@@ -336,6 +338,7 @@ require (
 	gopkg.in/validator.v2 v2.0.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gotest.tools v2.2.0+incompatible
 	modernc.org/gc/v3 v3.0.0-20240107210532-573471604cb6 // indirect
 	storj.io/common v0.0.0-20240111121419-ecae1362576c // indirect
 	storj.io/drpc v0.0.33 // indirect
