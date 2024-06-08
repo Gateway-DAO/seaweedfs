@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/seaweedfs/seaweedfs/weed/event"
 	"github.com/seaweedfs/seaweedfs/weed/pb"
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
 	"github.com/seaweedfs/seaweedfs/weed/storage/types"
@@ -37,7 +38,7 @@ type VolumeServer struct {
 	dataCenter      string
 	rack            string
 	store           *storage.Store
-	eventsDir       string
+	eventStore      event.EventStore
 	guard           *security.Guard
 	grpcDialOption  grpc.DialOption
 
@@ -71,7 +72,7 @@ func NewVolumeServer(adminMux, publicMux *http.ServeMux, ip string,
 	hasSlowRead bool,
 	readBufferSizeMB int,
 	ldbTimeout int64,
-	eventsDir string,
+	eventStore event.EventStore,
 ) *VolumeServer {
 
 	v := util.GetViper()
@@ -88,7 +89,7 @@ func NewVolumeServer(adminMux, publicMux *http.ServeMux, ip string,
 		pulseSeconds:                  pulseSeconds,
 		dataCenter:                    dataCenter,
 		rack:                          rack,
-		eventsDir:                     eventsDir,
+		eventStore:                    eventStore,
 		needleMapKind:                 needleMapKind,
 		FixJpgOrientation:             fixJpgOrientation,
 		ReadMode:                      readMode,

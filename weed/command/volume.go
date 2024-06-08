@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/seaweedfs/seaweedfs/weed/event"
 	"github.com/seaweedfs/seaweedfs/weed/storage/types"
 
 	"github.com/spf13/viper"
@@ -242,6 +243,11 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 		volumeNeedleMapKind = storage.NeedleMapLevelDbLarge
 	}
 
+	eventStore, es_err := event.NewLevelDbEventStore(eventsDir)
+	if es_err != nil {
+		glog.Fatalf("Unable to establish connection to EventStore (LevelDB): %s", es_err)
+	}
+
 	volumeServer := weed_server.NewVolumeServer(volumeMux, publicVolumeMux,
 		*v.ip, *v.port, *v.portGrpc, *v.publicUrl,
 		v.folders, v.folderMaxLimits, minFreeSpaces, diskTypes,
@@ -258,7 +264,7 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 		*v.hasSlowRead,
 		*v.readBufferSizeMB,
 		*v.ldbTimeout,
-		v.eventsDir,
+		eventStore,
 	)
 	// starting grpc server
 	grpcS := v.startGrpcService(volumeServer)
