@@ -189,6 +189,7 @@ services:
 
     # MARK: Metrics
     metrics-fe:
+        container_name: metrics-fe
         <<: *default-networks
         image: grafana/grafana:8.1.2 # Match the Grafana version with your requirements
         depends_on:
