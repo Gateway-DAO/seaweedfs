@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/seaweedfs/seaweedfs/weed/event"
 	"github.com/seaweedfs/seaweedfs/weed/stats"
 
 	"runtime"
@@ -81,14 +82,22 @@ func (vs *VolumeServer) VacuumVolumeCommit(ctx context.Context, req *volume_serv
 		stats.VolumeServerVacuumingHistogram.WithLabelValues("commit").Observe(time.Since(start).Seconds())
 	}(start)
 
+	volumeId := needle.VolumeId(req.VolumeId)
 	resp := &volume_server_pb.VacuumVolumeCommitResponse{}
 
-	readOnly, volumeSize, err := vs.store.CommitCompactVolume(needle.VolumeId(req.VolumeId))
+	readOnly, volumeSize, err := vs.store.CommitCompactVolume(volumeId)
 
 	if err != nil {
 		glog.Errorf("failed commit volume %d: %v", req.VolumeId, err)
 	} else {
 		glog.V(1).Infof("commit volume %d", req.VolumeId)
+
+		vs.registerEvent(
+			event.VACUUM,
+			volumeId,
+			nil,
+			nil,
+		)
 	}
 	stats.VolumeServerVacuumingCommitCounter.WithLabelValues(strconv.FormatBool(err == nil)).Inc()
 	resp.IsReadOnly = readOnly

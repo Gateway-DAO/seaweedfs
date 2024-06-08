@@ -3,75 +3,83 @@ package event
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 	"time"
 
-	event_types "github.com/seaweedfs/seaweedfs/weed/event/types"
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
-func connectToEventStore(dir string) (*leveldb.DB, error) {
-	glog.Infof("Connecting to leveldb dir: %v", dir)
-	return leveldb.OpenFile(dir, nil)
+type LevelDbEventStore struct {
+	sync.RWMutex
+
+	Dir  string
+	size uint64
 }
 
-func withEventStoreConnection(dir string, handler func(db *leveldb.DB)) error {
-	if db, err := connectToEventStore(dir); err == nil {
-		handler(db)
-		db.Close()
-
-		return nil
-	} else {
-		return err
-	}
+func NewLevelDbEventStore(eventDir string) (*LevelDbEventStore, error) {
+	return &LevelDbEventStore{
+		Dir:  eventDir,
+		size: 0,
+	}, nil
 }
 
-func RegisterEvent(dbDir string, ne *event_types.VolumeNeedleEvent) error {
-	glog.V(3).Infof("Writing to database %s", dbDir)
+func (es *LevelDbEventStore) RegisterEvent(e *VolumeServerEvent) error {
+	es.Lock()
+	defer es.Unlock()
 
-	db, err := connectToEventStore(dbDir)
+	dbDir := es.Dir
+
+	glog.V(4).Infof("Writing to database %s", dbDir)
+
+	db, err := leveldb.OpenFile(es.Dir, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to connect to event store: %s", err)
 	}
 	defer db.Close()
 
-	val, ve := ne.Value()
+	val, ve := e.Value()
 	if ve != nil {
 		return ve
 	}
 
 	db.Put(
-		[]byte(fmt.Sprintf("%d", time.Now().UnixNano())),
+		timestampToBytes(time.Now().UnixNano()),
 		val,
 		nil,
 	)
+	es.size++
 
 	return nil
 }
 
-func ListEvents(dbDir string) (map[string]*event_types.VolumeNeedleEvent, error) {
-	glog.V(3).Infof("Reading database %s", dbDir)
+func (es *LevelDbEventStore) ListAllEvents() ([]*VolumeServerEvent, error) {
+	es.RLock()
+	defer es.RUnlock()
 
-	db, err := connectToEventStore(dbDir)
+	dbDir := es.Dir
+	glog.V(4).Infof("Reading database %s", dbDir)
+
+	db, err := leveldb.OpenFile(es.Dir, nil)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to connect to event store: %s", err)
 	}
 	defer db.Close()
 
 	iter := db.NewIterator(nil, nil)
 	defer iter.Release()
 
-	results := make(map[string]*event_types.VolumeNeedleEvent)
+	results := make([]*VolumeServerEvent, es.size)
 
 	for iter.Next() {
 		key, val := iter.Key(), iter.Value()
 
-		valPtr := new(event_types.VolumeNeedleEvent)
+		valPtr := new(VolumeServerEvent)
 		if err := json.Unmarshal(val, valPtr); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal the value for key %s: %v", key, val)
+			return nil, fmt.Errorf("failed to unmarshal the value for key %s: %v", string(key), val)
 		}
 
-		results[string(key)] = valPtr
+		results = append(results, valPtr)
 	}
 
 	// Check for errors encountered during iteration
