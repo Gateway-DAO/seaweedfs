@@ -262,25 +262,35 @@ message VolumeServerEventsRequest {
 }
 message VolumeServerEventResponse {
     string type = 1;
-    string hash = 2;
 
     message Needle {
-        string id = 1;
+        uint64 id = 1;
         uint32 checksum = 2;
-        uint32 volume_id = 3;
+        optional string hash = 3;
     }
 
-    message VolumeServer {
-        string url = 1;
-        string data_center = 2;
-        string rack = 3;
+    message Volume {
+        string id = 1;
+        uint64 idx_size = 2;
+        uint64 file_count = 3;
+        uint64 dat_size = 4;
+        uint64 deleted_count = 5;
+        uint64 deleted_size = 6;
+        int64 last_modified = 7;
+        string replication = 8;
+
+        message Server {
+            string checksum = 1;
+            string public_url = 2;
+            string rack = 3;
+            string data_center = 4;
+        }
+        Server server = 9;
     }
 
-    Needle needle = 3;
-    VolumeServer volume_server = 4;
-    google.protobuf.Timestamp created_at = 5;
-    google.protobuf.Timestamp last_updated = 6;
-    google.protobuf.Timestamp last_touched = 7;
+    optional Needle needle = 2;
+    Volume volume = 3;
+    google.protobuf.Timestamp created_at = 4;
 }
 
 message VolumeCopyRequest {

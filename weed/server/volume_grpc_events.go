@@ -4,18 +4,15 @@ import (
 	"time"
 
 	"github.com/seaweedfs/seaweedfs/weed/event"
-	event_types "github.com/seaweedfs/seaweedfs/weed/event/types"
+	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
 	"github.com/seaweedfs/seaweedfs/weed/storage"
 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEventsRequest, stream volume_server_pb.VolumeServer_VolumeServerEventsServer) error {
-	eventDir := vs.eventsDir
-
 	var vol *storage.Volume
 	if req.VolumeId != nil {
 		vol = vs.store.GetVolume(needle.VolumeId(*req.VolumeId))
@@ -25,51 +22,41 @@ func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEve
 		}
 	}
 
-	needleEvents, err := event.ListEvents(eventDir)
+	events, err := vs.eventStore.ListAllEvents()
 	if err != nil {
-		return err
+		return status.Errorf(codes.Aborted, "error listing vs %s events: %s", vs.store.PublicUrl, err)
 	}
 
-	if len(needleEvents) == 0 {
-		return nil
-	}
-
-	for _, event := range needleEvents {
+	for _, event := range events {
+		if event == nil {
+			continue
+		}
+		glog.V(3).Infof("%s iterating through events", vs.store.PublicUrl)
 		if ctxErr := stream.Context().Err(); ctxErr != nil {
 			return ctxErr
 		}
 
-		if vol != nil && event.Needle.VolumeId != vol.Id {
+		if vol != nil && event.Volume.Id != vol.Id.String() {
 			continue
 		}
 
 		parsedEvent := prepareVolumeServerEventResponse(event)
-		if streamErr := stream.Send(parsedEvent); streamErr != nil {
+		if streamErr := stream.SendMsg(parsedEvent); streamErr != nil {
 			return streamErr
 		}
+
+		time.Sleep(500 * time.Millisecond)
 	}
 
 	return nil
 }
 
-func prepareVolumeServerEventResponse(ne *event_types.VolumeNeedleEvent) *volume_server_pb.VolumeServerEventResponse {
+func prepareVolumeServerEventResponse(ne *event.VolumeServerEvent) *volume_server_pb.VolumeServerEventResponse {
 	resp := &volume_server_pb.VolumeServerEventResponse{
-		Type: ne.Type,
-		Hash: ne.Hash,
-		Needle: &volume_server_pb.VolumeServerEventResponse_Needle{
-			Id:       ne.Needle.Id,
-			Checksum: ne.Needle.Checksum,
-			VolumeId: uint32(ne.Needle.VolumeId),
-		},
-		VolumeServer: &volume_server_pb.VolumeServerEventResponse_VolumeServer{
-			Url:        ne.VolumeServer.Url,
-			Rack:       ne.VolumeServer.Rack,
-			DataCenter: ne.VolumeServer.DataCenter,
-		},
-
-		CreatedAt:   timestamppb.New(time.Unix(0, int64(ne.CreatedAt))),
-		LastUpdated: timestamppb.New(time.Unix(0, int64(ne.LastUpdated))),
-		LastTouched: timestamppb.New(time.Unix(0, int64(ne.LastTouched))),
+		Type:      ne.GetType(),
+		Needle:    ne.GetNeedle(),
+		Volume:    ne.GetVolume(),
+		CreatedAt: ne.GetCreatedAt(),
 	}
 
 	return resp
