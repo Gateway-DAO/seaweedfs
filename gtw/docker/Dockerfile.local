@@ -1,6 +1,8 @@
 FROM alpine AS final
 LABEL author="Gateway"
 
+RUN apk add --no-cache file libc6-compat
+
 # Copy swfs binaries
 COPY  ./bin/weed /usr/bin/
 COPY  ./bin/weed_pub* /usr/bin/
@@ -11,8 +13,8 @@ RUN mkdir -p /etc/seaweedfs
 COPY gtw/docker/config/filer.toml /etc/seaweedfs/filer.toml
 
 COPY gtw/docker/config/entrypoint.sh /entrypoint.sh
-RUN apk add fuse # for weed mount
-RUN apk add curl # for health checks
+RUN apk add --no-cache fuse # for weed mount
+RUN apk add --no-cache curl # for health checks
 
 # volume server grpc port
 EXPOSE 18080
@@ -36,6 +38,7 @@ RUN mkdir -p /data/filerldb2
 VOLUME /data
 WORKDIR /data
 
+RUN chmod +x /usr/bin/weed /usr/bin/weed_pub* /usr/bin/weed_sub*
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/usr/bin/weed"]

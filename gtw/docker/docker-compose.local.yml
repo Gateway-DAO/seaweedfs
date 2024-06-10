@@ -20,6 +20,7 @@ x-default-build: &default-build
     build:
         context: ../..
         dockerfile: gtw/docker/Dockerfile.local
+    image: gateway/dfs
 
 x-default: &defaults
     <<: [*default-build, *default-networks]

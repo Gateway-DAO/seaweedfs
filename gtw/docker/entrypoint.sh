@@ -1,5 +1,10 @@
 #!/bin/sh
 
+echo "Starting entrypoint.sh"
+echo "PATH: $PATH"
+echo "Contents of /usr/bin:"
+ls -la /usr/bin
+
 isArgPassed() {
   arg="$1"
   argWithEqualSign="$1="
