@@ -276,7 +276,7 @@ message VolumeServerEventResponse {
         uint64 dat_size = 4;
         uint64 deleted_count = 5;
         uint64 deleted_size = 6;
-        int64 last_modified = 7;
+        google.protobuf.Timestamp last_modified = 7;
         string replication = 8;
 
         message Server {

@@ -8,6 +8,7 @@ import (
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId needle.VolumeId, needle *needle.Needle, hash *string) error {
@@ -23,7 +24,7 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 	}
 
 	vol := vs.store.GetVolume(volumeId)
-	datSize, idxSize, modTime := vol.FileStat()
+	datSize, idxSize, lastModTime := vol.FileStat()
 	vol.DeletedSize()
 
 	var vse_needle *volume_server_pb.VolumeServerEventResponse_Needle
@@ -50,7 +51,7 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 			DatSize:      datSize,
 			DeletedCount: vol.DeletedCount(),
 			DeletedSize:  vol.DeletedSize(),
-			LastModified: modTime.UnixNano(),
+			LastModified: timestamppb.New(lastModTime),
 			Replication:  vol.ReplicaPlacement.String(),
 
 			Server: &volume_server_pb.VolumeServerEventResponse_Volume_Server{
