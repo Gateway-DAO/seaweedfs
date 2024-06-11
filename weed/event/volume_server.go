@@ -3,8 +3,10 @@ package event
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type VolumeServerEvent struct {
@@ -28,6 +30,8 @@ func NewVolumeServerEvent(eventType NeedleEventType, needleMetadata *volume_serv
 	ne.Needle = needleMetadata
 
 	ne.Volume = volumeMetadata
+
+	ne.CreatedAt = timestamppb.New(time.Now())
 
 	return
 }
