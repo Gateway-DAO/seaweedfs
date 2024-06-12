@@ -145,7 +145,13 @@ func (ms *MasterServer) VolumeList(ctx context.Context, req *master_pb.VolumeLis
 		return nil, raft.NotLeaderError
 	}
 
+	var volumeServerList []string
+	for _, volLoc := range ms.Topo.ToVolumeLocations() {
+		volumeServerList = append(volumeServerList, volLoc.PublicUrl)
+	}
+
 	resp := &master_pb.VolumeListResponse{
+		VolumeServerList:  volumeServerList,
 		TopologyInfo:      ms.Topo.ToTopologyInfo(),
 		VolumeSizeLimitMb: uint64(ms.option.VolumeSizeLimitMB),
 	}

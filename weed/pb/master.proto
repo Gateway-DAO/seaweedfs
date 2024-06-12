@@ -286,8 +286,9 @@ message TopologyInfo {
 message VolumeListRequest {
 }
 message VolumeListResponse {
-  TopologyInfo topology_info = 1;
-  uint64 volume_size_limit_mb = 2;
+  repeated string volume_server_list = 1;
+  TopologyInfo topology_info = 2;
+  uint64 volume_size_limit_mb = 3;
 }
 
 message LookupEcVolumeRequest {
