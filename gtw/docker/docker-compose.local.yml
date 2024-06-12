@@ -150,27 +150,27 @@ services:
         volumes:
             - volume4-data:/data
 
-    # MARK: Filer
-    filer:
-        container_name: filer
-        <<: *defaults
-        ports:
-            - 8888:8888
-            - 18888:18888
-            - 8111:8111
-        command: >
-            -v=3
-            filer -ip filer
-            -master="master0:9333,master1:9333,master2:9333"
-            -encryptVolumeData
-            -ui.deleteDir
-        depends_on:
-            - master0
-            - master1
-            - master2
-            - volume1
-            - volume2
-            - volume3
+    # # MARK: Filer
+    # filer:
+    #     container_name: filer
+    #     <<: *defaults
+    #     ports:
+    #         - 8888:8888
+    #         - 18888:18888
+    #         - 8111:8111
+    #     command: >
+    #         -v=3
+    #         filer -ip filer
+    #         -master="master0:9333,master1:9333,master2:9333"
+    #         -encryptVolumeData
+    #         -ui.deleteDir
+    #     depends_on:
+    #         - master0
+    #         - master1
+    #         - master2
+    #         - volume1
+    #         - volume2
+    #         - volume3
 
     # # MARK: S3
     # s3:
@@ -219,4 +219,3 @@ services:
             - volume1
             - volume2
             - volume3
-            - filer
