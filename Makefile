@@ -31,13 +31,20 @@ benchmark: install warp_install
 benchmark_with_pprof: debug = 1
 benchmark_with_pprof: benchmark
 
+.PHONY: images
+images:
+	make -C gtw/docker images
+
+COMPOSE_FILES := -f ./gtw/docker/docker-compose.local.yml -f ./gtw/docker/docker-compose.kafka.yml
+COMPOSE_CMD := docker compose $(COMPOSE_FILES)
+
 .PHONY: network stop logs
-network:
-	docker compose -f ./gtw/docker/docker-compose.local.yml up -d --build
+network: images
+	$(COMPOSE_CMD) up -d --build
 stop:
-	docker compose -f ./gtw/docker/docker-compose.local.yml down -v
+	$(COMPOSE_CMD) down -v
 logs:
-	docker compose -f ./gtw/docker/docker-compose.local.yml logs -f
+	$(COMPOSE_CMD) logs -f
 
 # Log events on locally mounted event store
 .PHONY: events

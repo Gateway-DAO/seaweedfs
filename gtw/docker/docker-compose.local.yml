@@ -1,35 +1,33 @@
 networks:
-    seaweedfs:
-        name: gatewayfs
-
-volumes:
-    volume1-data:
-        name: gtw-volume1
-    volume2-data:
-        name: gtw-volume2
-    volume3-data:
-        name: gtw-volume3
-    volume4-data:
-        name: gtw-volume4
+    dfs:
+        name: gtw-dfs
+    kafka:
+        external: true
+        name: gtw-kafka
 
 x-default-network: &default-networks
     networks:
-        - seaweedfs
+        - dfs
 
-x-default-build: &default-build
-    build:
-        context: ../..
-        dockerfile: gtw/docker/master.Dockerfile
-    image: gateway/dfs
+x-master-build: &master-build
+    image: gateway/master
 
-x-default: &defaults
-    <<: [*default-build, *default-networks]
+x-edv-build: &edv-build
+    image: gateway/edv
+
+x-default-master: &master-defaults
+    <<: [*master-build, *default-networks]
+
+x-default-edv: &edv-defaults
+    <<: [*edv-build, *default-networks]
+    networks:
+        - kafka
 
 services:
     # MARK: Master Servers
     master0:
         container_name: master0
-        <<: *defaults
+        <<: *master-defaults
         ports:
             - 9333:9333
             - 19333:19333
@@ -46,7 +44,7 @@ services:
             WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
     master1:
         container_name: master1
-        <<: *defaults
+        <<: *master-defaults
         ports:
             - 9334:9333
             - 19334:19333
@@ -63,7 +61,7 @@ services:
             WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
     master2:
         container_name: master2
-        <<: *defaults
+        <<: *master-defaults
         ports:
             - 9335:9333
             - 19335:19333
@@ -80,8 +78,8 @@ services:
 
     # MARK: Volume Servers
     volume1:
+        <<: *edv-defaults
         container_name: volume1
-        <<: *defaults
         ports:
             - 8080:8080
             - 18080:18080
@@ -97,8 +95,8 @@ services:
         # --dir /etc does not persist on restart
 
     volume2:
+        <<: *edv-defaults
         container_name: volume2
-        <<: *defaults
         ports:
             - 8081:8080
             - 18081:18080
@@ -112,8 +110,8 @@ services:
         volumes:
             - volume2-data:/data
     volume3:
+        <<: *edv-defaults
         container_name: volume3
-        <<: *defaults
         ports:
             - 8082:8080
             - 18082:18080
@@ -131,8 +129,8 @@ services:
         volumes:
             - volume3-data:/data
     volume4:
+        <<: *edv-defaults
         container_name: volume4
-        <<: *defaults
         ports:
             - 8083:8080
             - 18083:18080
@@ -219,3 +217,13 @@ services:
             - volume1
             - volume2
             - volume3
+
+volumes:
+    volume1-data:
+        name: gtw-volume1
+    volume2-data:
+        name: gtw-volume2
+    volume3-data:
+        name: gtw-volume3
+    volume4-data:
+        name: gtw-volume4
