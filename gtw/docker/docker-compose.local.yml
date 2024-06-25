@@ -19,7 +19,7 @@ x-default-network: &default-networks
 x-default-build: &default-build
     build:
         context: ../..
-        dockerfile: gtw/docker/Dockerfile.local
+        dockerfile: gtw/docker/master.Dockerfile
     image: gateway/dfs
 
 x-default: &defaults
