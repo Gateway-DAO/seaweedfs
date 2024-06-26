@@ -1,0 +1,10 @@
+kafka:
+    clusters:
+        - name: gtw-kafka-cluster
+          bootstrapServers: gtw-event-broker:9092
+          zookeeper: gtw-event-zookeeper:2181
+          # metrics:
+          #   port: 9997
+          # schemaRegistry: http://schema-registry:8081
+auth:
+    type: disabled
