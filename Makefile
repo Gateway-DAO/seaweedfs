@@ -41,6 +41,8 @@ COMPOSE_CMD := docker compose $(COMPOSE_FILES)
 .PHONY: network stop logs
 network: images
 	$(COMPOSE_CMD) up -d --build
+restart:
+	$(COMPOSE_CMD) restart
 stop:
 	$(COMPOSE_CMD) down -v
 logs:
