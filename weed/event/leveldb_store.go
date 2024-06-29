@@ -18,30 +18,32 @@ type LevelDbEventStore struct {
 	size uint64
 
 	kafkaProducer    sarama.SyncProducer
-	kafkaTopixPrefix string
+	kafkaTopixPrefix *string
 }
 
-func NewLevelDbEventStore(eventDir string, kafkaBrokers []string, kafkaTopicPrefix string) (*LevelDbEventStore, error) {
+func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPrefix *string) (*LevelDbEventStore, error) {
 	es := &LevelDbEventStore{
 		Dir:  eventDir,
 		size: 0,
 	}
 
-	for {
-		config := sarama.NewConfig()
-		config.Producer.Return.Successes = true
-		producer, err := sarama.NewSyncProducer(kafkaBrokers, config)
+	if kafkaBrokers != nil && kafkaTopicPrefix != nil {
+		for {
+			config := sarama.NewConfig()
+			config.Producer.Return.Successes = true
+			producer, err := sarama.NewSyncProducer(*kafkaBrokers, config)
 
-		if err != nil {
-			glog.Errorf("Unable to connect to brokers: %v", err)
-			time.Sleep(1790 * time.Millisecond)
-			continue
+			if err != nil {
+				glog.Errorf("Unable to connect to brokers: %v", err)
+				time.Sleep(1790 * time.Millisecond)
+				continue
+			}
+
+			es.kafkaProducer = producer
+			es.kafkaTopixPrefix = kafkaTopicPrefix
+			glog.V(3).Infof("connected to brokers: %s", kafkaBrokers)
+			break
 		}
-
-		es.kafkaProducer = producer
-		es.kafkaTopixPrefix = kafkaTopicPrefix
-		glog.V(3).Infof("connected to brokers: %s", kafkaBrokers)
-		break
 	}
 
 	return es, nil
@@ -77,12 +79,14 @@ func (es *LevelDbEventStore) RegisterEvent(e *VolumeServerEvent) error {
 		return ve
 	}
 
-	glog.V(3).Infof("write to kafka stream: volume%s", e.Volume.Id)
-	go es.sendKafkaMessage(
-		"volume_server",
-		fmt.Sprintf("volume%s", e.Volume.Id),
-		val,
-	)
+	if es.kafkaProducer != nil {
+		glog.V(3).Infof("write to kafka stream: volume%s", e.Volume.Id)
+		go es.sendKafkaMessage(
+			"volume_server",
+			fmt.Sprintf("volume%s", e.Volume.Id),
+			val,
+		)
+	}
 
 	dbDir := es.Dir
 	glog.V(4).Infof("Writing to database %s", dbDir)

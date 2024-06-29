@@ -247,11 +247,17 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 
 	var topicPrefix string = "volume"
 	glog.V(3).Infof("configured event kafka topic: %s", topicPrefix)
-	var kafkaBrokers []string
-	if v.eventBrokers != nil {
-		kafkaBrokers = append(kafkaBrokers, strings.Split(*v.eventBrokers, ",")...)
+
+	var eventStore event.EventStore
+	var es_err error
+	if v.eventBrokers != nil && *v.eventBrokers != "" {
+		var kafkaBrokers = strings.Split(*v.eventBrokers, ",")
+
+		eventStore, es_err = event.NewLevelDbEventStore(eventsDir, &kafkaBrokers, &topicPrefix)
+	} else {
+		glog.V(3).Infof("events.brokers not specified, skipping kafka configuration for events")
+		eventStore, es_err = event.NewLevelDbEventStore(eventsDir, nil, nil)
 	}
-	eventStore, es_err := event.NewLevelDbEventStore(eventsDir, kafkaBrokers, topicPrefix)
 	if es_err != nil {
 		glog.Fatalf("Unable to establish connection to EventStore (LevelDB): %s", es_err)
 	}
