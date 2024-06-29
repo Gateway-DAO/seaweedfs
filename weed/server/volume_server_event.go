@@ -18,7 +18,7 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 	case event.DELETE:
 		glog.V(3).Infof("Emitting DELETE event for %s", vs.store.Ip)
 	case event.VACUUM:
-		glog.V(3).Infof("Emitting DELETE event for %s", vs.store.Ip)
+		glog.V(3).Infof("Emitting VACUUM event for %s", vs.store.Ip)
 	default:
 		return fmt.Errorf("eventType undefined")
 	}
@@ -66,5 +66,10 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 		return vse_err
 	}
 
-	return vs.eventStore.RegisterEvent(vse)
+	if err := vs.eventStore.RegisterEvent(vse); err != nil {
+		// Terminate the server if the event is unable to be logged
+		glog.Fatalf("unable to register EDV event: %s", err)
+	}
+
+	return nil
 }

@@ -72,10 +72,7 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	setEtag(w, ret.ETag)
 	w.Header().Set("Content-MD5", contentMd5)
 
-	if vs.registerEvent(event.WRITE, volumeId, reqNeedle, &contentMd5) != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+	go vs.registerEvent(event.WRITE, volumeId, reqNeedle, &contentMd5)
 
 	writeJsonQuiet(w, r, httpStatus, ret)
 }
@@ -146,7 +143,7 @@ func (vs *VolumeServer) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	writeDeleteResult(err, count, w, r)
 
 	if err == nil {
-		vs.registerEvent(event.DELETE, volumeId, n, nil)
+		go vs.registerEvent(event.DELETE, volumeId, n, nil)
 	}
 
 }
