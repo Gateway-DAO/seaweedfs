@@ -13,3 +13,6 @@ kafka-logs: docker-compose.kafka.yml
 
 kafka-stop:
 	docker compose $(KAFKA_COMPOSE_FILES) down -v
+
+benchmark:
+	docker compose -f docker-compose.benchmark.yml up -d --build benchmark
