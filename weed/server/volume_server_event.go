@@ -25,7 +25,6 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 
 	vol := vs.store.GetVolume(volumeId)
 	datSize, idxSize, lastModTime := vol.FileStat()
-	vol.DeletedSize()
 
 	var vse_needle *volume_server_pb.VolumeServerEventResponse_Needle
 	if needle != nil {
@@ -39,6 +38,16 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 	vsStatus, vsStatus_err := vs.VolumeServerStatus(context.Background(), nil)
 	if vsStatus_err != nil {
 		return fmt.Errorf("unable to load volume server stats, %s", vsStatus_err)
+	}
+
+	vsEventChecksum := &volume_server_pb.VolumeServerEventChecksum{
+		Digest: vsStatus.GetChecksum(),
+		Tree:   map[string]string{},
+	}
+	for _, diskStatus := range vsStatus.GetDiskStatuses() {
+		for key, value := range diskStatus.Checksum {
+			vsEventChecksum.Tree[key] = value
+		}
 	}
 
 	vse, vse_err := event.NewVolumeServerEvent(
@@ -55,7 +64,7 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 			Replication:  vol.ReplicaPlacement.String(),
 
 			Server: &volume_server_pb.VolumeServerEventResponse_Volume_Server{
-				Checksum:   vsStatus.GetChecksum(),
+				Checksum:   vsEventChecksum,
 				PublicUrl:  vs.store.PublicUrl,
 				Rack:       vsStatus.GetRack(),
 				DataCenter: vsStatus.GetDataCenter(),

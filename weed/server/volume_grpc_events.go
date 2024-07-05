@@ -1,8 +1,6 @@
 package weed_server
 
 import (
-	"time"
-
 	"github.com/seaweedfs/seaweedfs/weed/event"
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
@@ -44,8 +42,6 @@ func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEve
 		if streamErr := stream.SendMsg(parsedEvent); streamErr != nil {
 			return streamErr
 		}
-
-		time.Sleep(500 * time.Millisecond)
 	}
 
 	return nil

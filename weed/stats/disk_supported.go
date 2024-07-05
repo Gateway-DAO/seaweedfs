@@ -24,24 +24,41 @@ func fillInDiskStatus(disk *volume_server_pb.DiskStatus) {
 	disk.PercentUsed = float32((float64(disk.Used) / float64(disk.All)) * 100)
 
 	checksum, err := computeDiskChecksum(disk)
-	if err != nil {
-		checksum = []byte(err.Error())
+	if err == nil {
+		disk.Checksum = checksum
 	}
-	disk.Checksum = hex.EncodeToString(checksum)
-
+	// else err != nil {
+	// 	checksum = map[string]string{"error": err.Error()}
+	// }
 	return
 }
 
-func computeDiskChecksum(disk *volume_server_pb.DiskStatus) ([]byte, error) {
+type DiskChecksum map[string]string
+
+func computeDiskChecksum(disk *volume_server_pb.DiskStatus) (DiskChecksum, error) {
 	timeStart := time.Now()
 
-	hash, err := hashFilteredDirectory(disk.Dir, `\.dat$`)
+	hashes, err := hashFilteredDirectory(disk.Dir, `\.dat$`)
 	if err != nil {
 		return nil, err
+	}
+
+	formattedHashes := make(DiskChecksum, len(hashes))
+
+	for k, v := range hashes {
+		formattedHashes[k] = hex.EncodeToString(v)
 	}
 
 	timeDuration := float64(time.Since(timeStart).Milliseconds())
 	VolumeServerChecksumDuration.Set(timeDuration)
 
-	return hash, nil
+	return formattedHashes, nil
+}
+
+func (d DiskChecksum) convertToString() (result string) {
+	for _, v := range d {
+		result += v
+	}
+
+	return
 }
