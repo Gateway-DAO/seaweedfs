@@ -32,23 +32,19 @@ func hashFile(path string) ([]byte, error) {
 	return hasher.Sum(nil), nil
 }
 
-func hashDirectory(directoryPath string) ([]byte, error) {
+func hashDirectory(directoryPath string) (map[string][]byte, error) {
 	return hashFilteredDirectory(directoryPath, "*")
 }
 
-func hashFilteredDirectory(dirPath, filter string) ([]byte, error) {
-	// Create a new BLAKE2b hasher, here 256 bit for compatibility
-	dirHasher, err := Blake2b()
-	if err != nil {
-		return nil, err
-	}
+func hashFilteredDirectory(dirPath, filter string) (map[string][]byte, error) {
+	var dirHashes map[string][]byte = map[string][]byte{}
 
 	rPOSIX, r_err := regexp.CompilePOSIX(filter)
 	if r_err != nil {
 		return nil, fmt.Errorf("filter %s is an invalid regex pattern", filter)
 	}
 
-	err = filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(dirPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -59,7 +55,13 @@ func hashFilteredDirectory(dirPath, filter string) ([]byte, error) {
 				if err != nil {
 					return err
 				}
-				dirHasher.Write(fileHash)
+
+				dirHash, hash_err := Blake2b()
+				if hash_err != nil {
+					return fmt.Errorf("error constructing hasher for dirHash @ path %s: %s", path, hash_err)
+				}
+				dirHash.Write(fileHash)
+				dirHashes[path] = []byte(dirHash.Sum(nil))
 			}
 		}
 		return nil
@@ -69,5 +71,5 @@ func hashFilteredDirectory(dirPath, filter string) ([]byte, error) {
 		return nil, err
 	}
 
-	return dirHasher.Sum(nil), nil
+	return dirHashes, nil
 }

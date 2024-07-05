@@ -5,6 +5,7 @@ option go_package = "github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb";
 
 import "remote.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/any.proto";
 
 
 //////////////////////////////////////////////////
@@ -280,7 +281,7 @@ message VolumeServerEventResponse {
         string replication = 8;
 
         message Server {
-            string checksum = 1;
+            VolumeServerEventChecksum checksum = 1;
             string public_url = 2;
             string rack = 3;
             string data_center = 4;
@@ -291,6 +292,10 @@ message VolumeServerEventResponse {
     optional Needle needle = 2;
     Volume volume = 3;
     google.protobuf.Timestamp created_at = 4;
+}
+message VolumeServerEventChecksum {
+    string digest = 1;
+    map<string, string> tree = 2;
 }
 
 message VolumeCopyRequest {
@@ -490,7 +495,7 @@ message DiskStatus {
     float percent_free = 5;
     float percent_used = 6;
     string disk_type = 7;
-    string checksum = 8;
+    map<string, string> checksum = 8;
 }
 
 message MemStatus {

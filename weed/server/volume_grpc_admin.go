@@ -267,10 +267,12 @@ func (vs *VolumeServer) VolumeServerStatus(ctx context.Context, req *volume_serv
 			diskStats := stats.NewDiskStatus(dir)
 			resp.DiskStatuses = append(resp.DiskStatuses, diskStats)
 
-			if checksumAsBytes, err := hex.DecodeString(diskStats.Checksum); err == nil {
-				vsChecksumWriter.Write(checksumAsBytes)
-			} else {
-				glog.Error(err)
+			for _, v := range diskStats.Checksum {
+				if hex, h_err := hex.DecodeString(v); h_err == nil {
+					vsChecksumWriter.Write(hex)
+				} else {
+					glog.Errorf("unable to decode distStats.Checksum")
+				}
 			}
 		}
 	}

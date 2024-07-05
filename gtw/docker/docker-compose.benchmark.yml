@@ -1,0 +1,13 @@
+networks:
+    dfs:
+        external: true
+        name: gtw-dfs
+
+services:
+    benchmark:
+        image: gateway/master
+        container_name: benchmark
+        command: >
+            benchmark -master master0:9333
+        networks:
+            - dfs
