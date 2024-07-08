@@ -1,0 +1,102 @@
+networks:
+    kafka:
+        name: gtw-kafka
+
+x-default-network: &default-networks
+    networks:
+        - kafka
+
+services:
+    zookeeper:
+        <<: *default-networks
+        image: confluentinc/cp-zookeeper:latest
+        container_name: gtw-event-zookeeper
+        ports:
+            - 2181:2181
+        environment:
+            ZOOKEEPER_CLIENT_PORT: 2181
+            ZOOKEEPER_TICK_TIME: 2000
+
+    broker:
+        <<: *default-networks
+        image: confluentinc/cp-kafka:latest
+        container_name: gtw-event-broker
+        depends_on:
+            - zookeeper
+        ports:
+            - "9092:29092"
+        environment:
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL://gtw-event-broker:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+            KAFKA_ZOOKEEPER_CONNECT: gtw-event-zookeeper:2181
+            KAFKA_BROKER_ID: 1
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+            KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+            KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+            KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+
+    broker1:
+        <<: *default-networks
+        image: confluentinc/cp-kafka:latest
+        container_name: gtw-event-broker1
+        depends_on:
+            - zookeeper
+        ports:
+            - "9093:9092"
+        environment:
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL://gtw-event-broker1:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+            KAFKA_ZOOKEEPER_CONNECT: gtw-event-zookeeper:2181
+            KAFKA_BROKER_ID: 2
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+            KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+            KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+
+    broker2:
+        <<: *default-networks
+        image: confluentinc/cp-kafka:latest
+        container_name: gtw-event-broker2
+        depends_on:
+            - zookeeper
+        ports:
+            - "9094:9092"
+        environment:
+            KAFKA_ADVERTISED_LISTENERS: INTERNAL://gtw-event-broker2:9092
+            KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT
+            KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+            KAFKA_ZOOKEEPER_CONNECT: gtw-event-zookeeper:2181
+            KAFKA_BROKER_ID: 3
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+            KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+            KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+
+    kafka-topics-generator:
+        image: confluentinc/cp-kafka:latest
+        container_name: generate-topic-volume_server
+        depends_on:
+            - broker
+            - broker1
+            - broker2
+        command: >
+            bash -c
+                "sleep 5s &&
+                kafka-topics --create --topic volume_server --if-not-exists --bootstrap-server gtw-event-broker:9092"
+        <<: *default-networks
+
+    ui:
+        image: provectuslabs/kafka-ui
+        container_name: kafka-ui
+        ports:
+            - 28080:8080
+        environment:
+            SPRING_CONFIG_ADDITIONAL-LOCATION: /config.yml
+        depends_on:
+            - zookeeper
+            - broker
+            - broker1
+            - broker2
+        <<: *default-networks
+        volumes:
+            - ./config/kafka.yml:/config.yml:ro

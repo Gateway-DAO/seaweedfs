@@ -1,35 +1,37 @@
 networks:
-    seaweedfs:
-        name: gatewayfs
-
-volumes:
-    volume1-data:
-        name: gtw-volume1
-    volume2-data:
-        name: gtw-volume2
-    volume3-data:
-        name: gtw-volume3
-    volume4-data:
-        name: gtw-volume4
+    dfs:
+        name: gtw-dfs
+    kafka:
+        name: gtw-kafka
 
 x-default-network: &default-networks
     networks:
-        - seaweedfs
+        - dfs
 
-x-default-build: &default-build
-    build:
-        context: ../..
-        dockerfile: gtw/docker/Dockerfile.local
-    image: gateway/dfs
+x-master-build: &master-build
+    image: gateway/master
 
-x-default: &defaults
-    <<: [*default-build, *default-networks]
+x-edv-build: &edv-build
+    image: gateway/edv
+
+x-default-master: &master-defaults
+    <<: [*master-build, *default-networks]
+
+x-default-edv: &edv-defaults
+    <<: [*edv-build, *default-networks]
+    depends_on:
+        - master0
+        - master1
+        - master2
+    networks:
+        - dfs
+        - kafka
 
 services:
     # MARK: Master Servers
     master0:
         container_name: master0
-        <<: *defaults
+        <<: *master-defaults
         ports:
             - 9333:9333
             - 19333:19333
@@ -46,7 +48,7 @@ services:
             WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
     master1:
         container_name: master1
-        <<: *defaults
+        <<: *master-defaults
         ports:
             - 9334:9333
             - 19334:19333
@@ -63,7 +65,7 @@ services:
             WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
     master2:
         container_name: master2
-        <<: *defaults
+        <<: *master-defaults
         ports:
             - 9335:9333
             - 19335:19333
@@ -80,14 +82,16 @@ services:
 
     # MARK: Volume Servers
     volume1:
+        <<: *edv-defaults
         container_name: volume1
-        <<: *defaults
         ports:
             - 8080:8080
             - 18080:18080
         command: >
             -v=3 volume -dataCenter=gateway -rack=gtw1
-            -dir /data -dir.events /data/events
+            -dir /data
+            -events.dir /data/events
+            -events.brokers gtw-event-broker:9092,gtw-event-broker1:9092,gtw-event-broker2:9092
             -port=8080 -ip=volume1 -publicUrl=localhost:8080
             -mserver="master0:9333,master1:9333,master2:9333"
             -metricsPort=1234
@@ -97,56 +101,57 @@ services:
         # --dir /etc does not persist on restart
 
     volume2:
+        <<: *edv-defaults
         container_name: volume2
-        <<: *defaults
         ports:
             - 8081:8080
             - 18081:18080
         command: >
             -v=3
             volume -dataCenter=gateway -rack=gtw2
-            -dir /data -dir.events /data/events
+            -dir /data
+            -dir /data
+            -events.dir /data/events
+            -events.brokers gtw-event-broker:9092,gtw-event-broker1:9092,gtw-event-broker2:9092
             -port=8080 -ip=volume2 -publicUrl=localhost:8081
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
             - volume2-data:/data
+
     volume3:
+        <<: *edv-defaults
         container_name: volume3
-        <<: *defaults
         ports:
             - 8082:8080
             - 18082:18080
         command: >
             -v=3
             volume -dataCenter=lifi -rack=lifi1
-            -dir /data -dir.events /data/events
+            -dir /data
+            -events.dir /data/events
             -port=8080 -ip=volume3 -publicUrl=localhost:8082
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
-        depends_on:
-            - master0
-            - master1
-            - master2
+        # -events.brokers gtw-event-broker:9092,gtw-event-broker1:9092,gtw-event-broker2:9092
         volumes:
             - volume3-data:/data
+
     volume4:
+        <<: *edv-defaults
         container_name: volume4
-        <<: *defaults
         ports:
             - 8083:8080
             - 18083:18080
         command: >
             -v=3
             volume -dataCenter=dimo -rack=dimo1
-            -dir /data -dir.events /data/events
+            -dir /data
+            -events.dir /data/events
+            -events.brokers gtw-event-broker:9092,gtw-event-broker1:9092,gtw-event-broker2:9092
             -port=8080 -ip=volume4 -publicUrl=localhost:8083
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
-        depends_on:
-            - master0
-            - master1
-            - master2
         volumes:
             - volume4-data:/data
 
@@ -219,3 +224,13 @@ services:
             - volume1
             - volume2
             - volume3
+
+volumes:
+    volume1-data:
+        name: gtw-volume1
+    volume2-data:
+        name: gtw-volume2
+    volume3-data:
+        name: gtw-volume3
+    volume4-data:
+        name: gtw-volume4
