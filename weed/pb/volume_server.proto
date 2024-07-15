@@ -263,12 +263,20 @@ message VolumeServerEventsRequest {
 }
 message VolumeServerEventResponse {
     string type = 1;
+    google.protobuf.Timestamp timestamp = 2;
 
-    message Needle {
-        uint64 id = 1;
-        uint32 checksum = 2;
-        optional string hash = 3;
+    message Server {
+        string public_url = 1;
+        string rack = 2;
+        string data_center = 3;
+
+        message VolumeServerEventChecksum {
+            string digest = 1;
+            map<string, string> tree = 2;
+        }
+        VolumeServerEventChecksum checksum = 4;
     }
+    Server server = 4;
 
     message Volume {
         string id = 1;
@@ -280,22 +288,21 @@ message VolumeServerEventResponse {
         google.protobuf.Timestamp last_modified = 7;
         string replication = 8;
 
-        message Server {
-            VolumeServerEventChecksum checksum = 1;
-            string public_url = 2;
-            string rack = 3;
-            string data_center = 4;
+        message Needle {
+            uint64 id = 1;
+            uint32 checksum = 2;
+            optional string hash = 3;
         }
-        Server server = 9;
+        optional Needle needle = 9;
     }
+    Volume volume = 5;
 
-    optional Needle needle = 2;
-    Volume volume = 3;
-    google.protobuf.Timestamp created_at = 4;
-}
-message VolumeServerEventChecksum {
-    string digest = 1;
-    map<string, string> tree = 2;
+    message ProofOfHistory {
+        string previous_hash = 1;
+        string hash = 2;
+        string signature = 3;
+    }
+    ProofOfHistory proof_of_history = 6;
 }
 
 message VolumeCopyRequest {

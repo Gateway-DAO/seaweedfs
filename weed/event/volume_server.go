@@ -13,7 +13,12 @@ type VolumeServerEvent struct {
 	volume_server_pb.VolumeServerEventResponse
 }
 
-func NewVolumeServerEvent(eventType NeedleEventType, needleMetadata *volume_server_pb.VolumeServerEventResponse_Needle, volumeMetadata *volume_server_pb.VolumeServerEventResponse_Volume) (ne *VolumeServerEvent, err error) {
+func NewVolumeServerEvent(
+	eventType NeedleEventType,
+	serverMetadata *volume_server_pb.VolumeServerEventResponse_Server,
+	volumeMetadata *volume_server_pb.VolumeServerEventResponse_Volume,
+	needleMetadata *volume_server_pb.VolumeServerEventResponse_Volume_Needle,
+) (ne *VolumeServerEvent, err error) {
 	ne = new(VolumeServerEvent)
 
 	switch eventType {
@@ -27,17 +32,15 @@ func NewVolumeServerEvent(eventType NeedleEventType, needleMetadata *volume_serv
 		return nil, fmt.Errorf("unable to parse event type %d", eventType)
 	}
 
-	ne.Needle = needleMetadata
-
 	ne.Volume = volumeMetadata
+	ne.Server = serverMetadata
+	if needleMetadata != nil {
+		ne.Volume.Needle = needleMetadata
+	}
 
-	ne.CreatedAt = timestamppb.New(time.Now())
+	ne.Timestamp = timestamppb.New(time.Now())
 
 	return
-}
-
-func (e *VolumeServerEvent) Key() []byte {
-	return []byte(fmt.Sprintf("%s:%d:%s", e.GetVolume().GetId(), e.GetNeedle().GetId(), e.GetCreatedAt()))
 }
 
 func (e *VolumeServerEvent) Value() ([]byte, error) {
