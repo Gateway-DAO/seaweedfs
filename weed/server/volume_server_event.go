@@ -7,7 +7,10 @@ import (
 	"github.com/seaweedfs/seaweedfs/weed/event"
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/seaweedfs/seaweedfs/weed/storage"
 	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -26,9 +29,9 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 	vol := vs.store.GetVolume(volumeId)
 	datSize, idxSize, lastModTime := vol.FileStat()
 
-	var vse_needle *volume_server_pb.VolumeServerEventResponse_Needle
+	var vse_needle *volume_server_pb.VolumeServerEventResponse_Volume_Needle
 	if needle != nil {
-		vse_needle = &volume_server_pb.VolumeServerEventResponse_Needle{
+		vse_needle = &volume_server_pb.VolumeServerEventResponse_Volume_Needle{
 			Id:       uint64(needle.Id),
 			Checksum: needle.Checksum.Value(),
 			Hash:     hash,
@@ -40,7 +43,7 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 		return fmt.Errorf("unable to load volume server stats, %s", vsStatus_err)
 	}
 
-	vsEventChecksum := &volume_server_pb.VolumeServerEventChecksum{
+	vsEventChecksum := &volume_server_pb.VolumeServerEventResponse_Server_VolumeServerEventChecksum{
 		Digest: vsStatus.GetChecksum(),
 		Tree:   map[string]string{},
 	}
@@ -52,7 +55,12 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 
 	vse, vse_err := event.NewVolumeServerEvent(
 		eventType,
-		vse_needle,
+		&volume_server_pb.VolumeServerEventResponse_Server{
+			Checksum:   vsEventChecksum,
+			PublicUrl:  vs.store.PublicUrl,
+			Rack:       vsStatus.GetRack(),
+			DataCenter: vsStatus.GetDataCenter(),
+		},
 		&volume_server_pb.VolumeServerEventResponse_Volume{
 			Id:           volumeId.String(),
 			IdxSize:      idxSize,
@@ -62,14 +70,8 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 			DeletedSize:  vol.DeletedSize(),
 			LastModified: timestamppb.New(lastModTime),
 			Replication:  vol.ReplicaPlacement.String(),
-
-			Server: &volume_server_pb.VolumeServerEventResponse_Volume_Server{
-				Checksum:   vsEventChecksum,
-				PublicUrl:  vs.store.PublicUrl,
-				Rack:       vsStatus.GetRack(),
-				DataCenter: vsStatus.GetDataCenter(),
-			},
 		},
+		vse_needle,
 	)
 	if vse_err != nil {
 		return vse_err
@@ -78,6 +80,42 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 	if err := vs.eventStore.RegisterEvent(vse); err != nil {
 		// Terminate the server if the event is unable to be logged
 		glog.Fatalf("unable to register EDV event: %s", err)
+	}
+
+	return nil
+}
+
+func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEventsRequest, stream volume_server_pb.VolumeServer_VolumeServerEventsServer) error {
+	var vol *storage.Volume
+	if req.VolumeId != nil {
+		vol = vs.store.GetVolume(needle.VolumeId(*req.VolumeId))
+
+		if vol == nil {
+			return status.Errorf(codes.NotFound, "volume server does not have volume %d", *req.VolumeId)
+		}
+	}
+
+	events, err := vs.eventStore.ListAllEvents()
+	if err != nil {
+		return status.Errorf(codes.Aborted, "error listing vs %s events: %s", vs.store.PublicUrl, err)
+	}
+
+	for _, event := range events {
+		if event == nil {
+			continue
+		}
+		glog.V(3).Infof("%s iterating through events", vs.store.PublicUrl)
+		if ctxErr := stream.Context().Err(); ctxErr != nil {
+			return ctxErr
+		}
+
+		if vol != nil && event.Volume.Id != vol.Id.String() {
+			continue
+		}
+
+		if streamErr := stream.SendMsg(event); streamErr != nil {
+			return streamErr
+		}
 	}
 
 	return nil
