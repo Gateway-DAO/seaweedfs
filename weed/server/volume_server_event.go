@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId needle.VolumeId, fid *string, needle *needle.Needle, hash *string) error {
+func (vs *VolumeServer) registerEvent(eventType event.VolumeServerEventType, volumeId needle.VolumeId, fid *string, needle *needle.Needle, hash *string) error {
 	switch eventType {
 	case event.WRITE:
 		glog.V(3).Infof("Emitting WRITE event for %s", vs.store.Ip)
@@ -44,19 +44,24 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 		return fmt.Errorf("unable to load volume server stats, %s", vsStatus_err)
 	}
 
-	vsEventChecksum := &volume_server_pb.VolumeServerEventChecksum{
+	vsMerkleTree := &volume_server_pb.VolumeServerMerkleTree{
 		Digest: vsStatus.GetChecksum(),
 		Tree:   map[string]string{},
 	}
 	for _, diskStatus := range vsStatus.GetDiskStatuses() {
 		for key, value := range diskStatus.Checksum {
-			vsEventChecksum.Tree[key] = value
+			vsMerkleTree.Tree[key] = value
 		}
 	}
 
 	vse, vse_err := event.NewVolumeServerEvent(
 		eventType,
-		vse_needle,
+		&volume_server_pb.VolumeServerEventResponse_Server{
+			Tree:       vsMerkleTree,
+			PublicUrl:  vs.store.PublicUrl,
+			Rack:       vsStatus.GetRack(),
+			DataCenter: vsStatus.GetDataCenter(),
+		},
 		&volume_server_pb.VolumeServerEventResponse_Volume{
 			Id:           volumeId.String(),
 			IdxSize:      idxSize,
@@ -66,14 +71,8 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 			DeletedSize:  vol.DeletedSize(),
 			LastModified: timestamppb.New(lastModTime),
 			Replication:  vol.ReplicaPlacement.String(),
-
-			Server: &volume_server_pb.VolumeServerEventResponse_Volume_Server{
-				Checksum:   vsEventChecksum,
-				PublicUrl:  vs.store.PublicUrl,
-				Rack:       vsStatus.GetRack(),
-				DataCenter: vsStatus.GetDataCenter(),
-			},
 		},
+		vse_needle,
 	)
 	if vse_err != nil {
 		return vse_err

@@ -248,7 +248,7 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 	var topicPrefix string = "volume"
 	glog.V(3).Infof("configured event kafka topic: %s", topicPrefix)
 
-	var eventStore event.EventStore
+	var eventStore event.VolumeServerEventStore
 	var es_err error
 	if v.eventBrokers != nil && *v.eventBrokers != "" {
 		var kafkaBrokers = strings.Split(*v.eventBrokers, ",")

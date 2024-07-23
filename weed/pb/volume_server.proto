@@ -5,7 +5,6 @@ option go_package = "github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb";
 
 import "remote.proto";
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/any.proto";
 
 
 //////////////////////////////////////////////////
@@ -263,6 +262,7 @@ message VolumeServerEventsRequest {
 }
 message VolumeServerEventResponse {
     string type = 1;
+    google.protobuf.Timestamp timestamp = 2;
 
     message Needle {
         uint64 id = 1;
@@ -270,7 +270,7 @@ message VolumeServerEventResponse {
         uint32 checksum = 3;
         optional string hash = 4;
     }
-    optional Needle needle = 2;
+    optional Needle needle = 3;
 
     message Volume {
         string id = 1;
@@ -281,19 +281,18 @@ message VolumeServerEventResponse {
         uint64 deleted_size = 6;
         google.protobuf.Timestamp last_modified = 7;
         string replication = 8;
-
-        message Server {
-            VolumeServerEventChecksum checksum = 1;
-            string public_url = 2;
-            string rack = 3;
-            string data_center = 4;
-        }
-        Server server = 9;
     }
-    Volume volume = 3;
-    google.protobuf.Timestamp created_at = 4;
+    Volume volume = 4;
+
+    message Server {
+        VolumeServerMerkleTree tree = 1;
+        string publicUrl = 2;
+        string rack = 3;
+        string dataCenter = 4;
+    }
+    optional Server server = 5;
 }
-message VolumeServerEventChecksum {
+message VolumeServerMerkleTree {
     string digest = 1;
     map<string, string> tree = 2;
 }

@@ -4,15 +4,16 @@ import "encoding/binary"
 
 type NanoTimestamp int64
 
-type NeedleEventType uint32
+type VolumeServerEventType uint32
 
 const (
-	WRITE NeedleEventType = iota
+	ALIVE VolumeServerEventType = iota
+	WRITE
 	DELETE
 	VACUUM
 )
 
-type EventStore interface {
+type VolumeServerEventStore interface {
 	RegisterEvent(*VolumeServerEvent) error
 	ListAllEvents() ([]*VolumeServerEvent, error)
 }

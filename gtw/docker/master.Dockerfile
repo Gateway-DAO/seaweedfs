@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine as build
+FROM golang:1.22-alpine AS build
 LABEL author="Gateway"
 
 RUN apk add --no-cache file libc6-compat
