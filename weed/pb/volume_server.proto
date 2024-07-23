@@ -99,7 +99,7 @@ service VolumeServer {
 
     rpc VolumeServerStatus (VolumeServerStatusRequest) returns (VolumeServerStatusResponse) {
     }
-    rpc VolumeServerEvents(VolumeServerEventsRequest) returns (stream VolumeServerEvent) {}
+    rpc VolumeServerEvents(VolumeServerEventsRequest) returns (stream VolumeServerEventResponse) {}
     rpc VolumeServerLeave (VolumeServerLeaveRequest) returns (VolumeServerLeaveResponse) {
     }
 
@@ -261,7 +261,7 @@ message VolumeStatusResponse {
 message VolumeServerEventsRequest {
     optional uint32 volume_id = 1;
 }
-message VolumeServerEvent {
+message VolumeServerEventResponse {
     string type = 1;
 
     message Needle {

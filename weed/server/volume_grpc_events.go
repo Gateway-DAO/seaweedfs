@@ -47,8 +47,8 @@ func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEve
 	return nil
 }
 
-func prepareVolumeServerEventResponse(ne *event.VolumeServerEvent) *volume_server_pb.VolumeServerEvent {
-	resp := &volume_server_pb.VolumeServerEvent{
+func prepareVolumeServerEventResponse(ne *event.VolumeServerEvent) *volume_server_pb.VolumeServerEventResponse {
+	resp := &volume_server_pb.VolumeServerEventResponse{
 		Type:      ne.GetType(),
 		Needle:    ne.GetNeedle(),
 		Volume:    ne.GetVolume(),

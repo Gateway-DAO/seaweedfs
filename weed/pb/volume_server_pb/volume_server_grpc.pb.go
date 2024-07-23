@@ -721,7 +721,7 @@ func (c *volumeServerClient) VolumeServerEvents(ctx context.Context, in *VolumeS
 }
 
 type VolumeServer_VolumeServerEventsClient interface {
-	Recv() (*VolumeServerEvent, error)
+	Recv() (*VolumeServerEventResponse, error)
 	grpc.ClientStream
 }
 
@@ -729,8 +729,8 @@ type volumeServerVolumeServerEventsClient struct {
 	grpc.ClientStream
 }
 
-func (x *volumeServerVolumeServerEventsClient) Recv() (*VolumeServerEvent, error) {
-	m := new(VolumeServerEvent)
+func (x *volumeServerVolumeServerEventsClient) Recv() (*VolumeServerEventResponse, error) {
+	m := new(VolumeServerEventResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -1714,7 +1714,7 @@ func _VolumeServer_VolumeServerEvents_Handler(srv interface{}, stream grpc.Serve
 }
 
 type VolumeServer_VolumeServerEventsServer interface {
-	Send(*VolumeServerEvent) error
+	Send(*VolumeServerEventResponse) error
 	grpc.ServerStream
 }
 
@@ -1722,7 +1722,7 @@ type volumeServerVolumeServerEventsServer struct {
 	grpc.ServerStream
 }
 
-func (x *volumeServerVolumeServerEventsServer) Send(m *VolumeServerEvent) error {
+func (x *volumeServerVolumeServerEventsServer) Send(m *VolumeServerEventResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 

@@ -26,9 +26,9 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 	vol := vs.store.GetVolume(volumeId)
 	datSize, idxSize, lastModTime := vol.FileStat()
 
-	var vse_needle *volume_server_pb.VolumeServerEvent_Needle
+	var vse_needle *volume_server_pb.VolumeServerEventResponse_Needle
 	if needle != nil {
-		vse_needle = &volume_server_pb.VolumeServerEvent_Needle{
+		vse_needle = &volume_server_pb.VolumeServerEventResponse_Needle{
 			Id:       uint64(needle.Id),
 			Checksum: needle.Checksum.Value(),
 			Hash:     hash,
@@ -53,7 +53,7 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 	vse, vse_err := event.NewVolumeServerEvent(
 		eventType,
 		vse_needle,
-		&volume_server_pb.VolumeServerEvent_Volume{
+		&volume_server_pb.VolumeServerEventResponse_Volume{
 			Id:           volumeId.String(),
 			IdxSize:      idxSize,
 			FileCount:    vol.FileCount(),
@@ -63,7 +63,7 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 			LastModified: timestamppb.New(lastModTime),
 			Replication:  vol.ReplicaPlacement.String(),
 
-			Server: &volume_server_pb.VolumeServerEvent_Volume_Server{
+			Server: &volume_server_pb.VolumeServerEventResponse_Volume_Server{
 				Checksum:   vsEventChecksum,
 				PublicUrl:  vs.store.PublicUrl,
 				Rack:       vsStatus.GetRack(),
