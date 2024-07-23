@@ -2,7 +2,7 @@ package sub_coordinator
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/mq/pub_balancer"
+	"github.com/gateway-dao/seaweedfs/weed/mq/pub_balancer"
 	"time"
 )
 

@@ -2,9 +2,9 @@ package filer
 
 import (
 	"context"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/remote_pb"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 func (entry *Entry) IsInRemoteOnly() bool {

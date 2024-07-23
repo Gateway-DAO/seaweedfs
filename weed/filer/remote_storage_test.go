@@ -1,7 +1,7 @@
 package filer
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/remote_pb"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

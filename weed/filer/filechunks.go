@@ -3,11 +3,11 @@ package filer
 import (
 	"bytes"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/wdclient"
+	"github.com/gateway-dao/seaweedfs/weed/wdclient"
 	"math"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 func TotalSize(chunks []*filer_pb.FileChunk) (size uint64) {

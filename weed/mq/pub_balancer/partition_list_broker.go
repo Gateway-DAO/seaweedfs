@@ -1,8 +1,8 @@
 package pub_balancer
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
 )
 
 type PartitionSlotToBroker struct {

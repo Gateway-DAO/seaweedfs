@@ -1,7 +1,7 @@
 package page_writer
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"testing"
 )
 

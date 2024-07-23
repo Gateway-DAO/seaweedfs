@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	_ "github.com/lib/pq"
-	"github.com/seaweedfs/seaweedfs/weed/filer/abstract_sql"
+	"github.com/gateway-dao/seaweedfs/weed/filer/abstract_sql"
 )
 
 type SqlGenPostgres struct {

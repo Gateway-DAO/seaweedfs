@@ -3,7 +3,7 @@ package lock_manager
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 	"sync"
 	"time"
 )

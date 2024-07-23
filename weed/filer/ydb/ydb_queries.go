@@ -3,7 +3,7 @@
 
 package ydb
 
-import asql "github.com/seaweedfs/seaweedfs/weed/filer/abstract_sql"
+import asql "github.com/gateway-dao/seaweedfs/weed/filer/abstract_sql"
 
 const (
 	upsertQuery = `
@@ -24,16 +24,16 @@ const (
 		DECLARE $dir_hash AS int64;
 		DECLARE $name AS Utf8;
 
-		DELETE FROM ` + asql.DEFAULT_TABLE + ` 
+		DELETE FROM ` + asql.DEFAULT_TABLE + `
 		WHERE dir_hash = $dir_hash AND name = $name;`
 
 	findQuery = `
 		PRAGMA TablePathPrefix("%v");
 		DECLARE $dir_hash AS int64;
 		DECLARE $name AS Utf8;
-		
+
 		SELECT meta
-		FROM ` + asql.DEFAULT_TABLE + ` 
+		FROM ` + asql.DEFAULT_TABLE + `
 		WHERE dir_hash = $dir_hash AND name = $name;`
 
 	deleteFolderChildrenQuery = `
@@ -41,7 +41,7 @@ const (
 		DECLARE $dir_hash AS int64;
 		DECLARE $directory AS Utf8;
 
-		DELETE FROM ` + asql.DEFAULT_TABLE + ` 
+		DELETE FROM ` + asql.DEFAULT_TABLE + `
 		WHERE dir_hash = $dir_hash AND directory = $directory;`
 
 	listDirectoryQuery = `
@@ -51,7 +51,7 @@ const (
 		DECLARE $start_name AS Utf8;
 		DECLARE $prefix AS Utf8;
 		DECLARE $limit AS Uint64;
-		
+
 		SELECT name, meta
 		FROM ` + asql.DEFAULT_TABLE + `
 		WHERE dir_hash = $dir_hash AND directory = $directory and name > $start_name and name LIKE $prefix
@@ -64,7 +64,7 @@ const (
 		DECLARE $start_name AS Utf8;
 		DECLARE $prefix AS Utf8;
 		DECLARE $limit AS Uint64;
-		
+
 		SELECT name, meta
 		FROM ` + asql.DEFAULT_TABLE + `
 		WHERE dir_hash = $dir_hash AND directory = $directory and name >= $start_name and name LIKE $prefix

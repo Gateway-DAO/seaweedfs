@@ -2,8 +2,8 @@ package needle_map
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/sequence"
-	. "github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/sequence"
+	. "github.com/gateway-dao/seaweedfs/weed/storage/types"
 	"log"
 	"os"
 	"testing"

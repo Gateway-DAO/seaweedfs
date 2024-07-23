@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 	parquet "github.com/parquet-go/parquet-go"
-	"github.com/seaweedfs/seaweedfs/weed/pb/schema_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/schema_pb"
 )
 
 func ToParquetSchema(topicName string, recordType *schema_pb.RecordType) (*parquet.Schema, error) {

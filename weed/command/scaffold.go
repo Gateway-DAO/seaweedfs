@@ -2,10 +2,10 @@ package command
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"path/filepath"
 
-	"github.com/seaweedfs/seaweedfs/weed/command/scaffold"
+	"github.com/gateway-dao/seaweedfs/weed/command/scaffold"
 )
 
 func init() {

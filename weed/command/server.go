@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	stats_collect "github.com/seaweedfs/seaweedfs/weed/stats"
+	stats_collect "github.com/gateway-dao/seaweedfs/weed/stats"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/util"
-	"github.com/seaweedfs/seaweedfs/weed/util/grace"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util/grace"
 )
 
 type ServerOptions struct {

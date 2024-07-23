@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/arangodb/go-driver"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 // convert a string into arango-key safe hex bytes hash

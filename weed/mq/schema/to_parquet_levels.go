@@ -2,7 +2,7 @@ package schema
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/pb/schema_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/schema_pb"
 )
 
 type ParquetLevels struct {

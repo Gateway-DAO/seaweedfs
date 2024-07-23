@@ -10,7 +10,7 @@ import (
 
 	"github.com/cognusion/imaging"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 )
 
 func Cropped(ext string, read io.ReadSeeker, x1, y1, x2, y2 int) (cropped io.ReadSeeker, err error) {

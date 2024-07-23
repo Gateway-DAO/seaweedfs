@@ -5,9 +5,9 @@ import (
 	"os"
 	"sync"
 
-	"github.com/seaweedfs/seaweedfs/weed/storage/idx"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle_map"
-	. "github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/idx"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle_map"
+	. "github.com/gateway-dao/seaweedfs/weed/storage/types"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 )
 

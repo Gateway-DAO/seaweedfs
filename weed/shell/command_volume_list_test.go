@@ -2,8 +2,8 @@ package shell
 
 import (
 	_ "embed"
-	"github.com/seaweedfs/seaweedfs/weed/storage/erasure_coding"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/erasure_coding"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 	"github.com/stretchr/testify/assert"
 	//"google.golang.org/protobuf/proto"
 	"github.com/golang/protobuf/proto"
@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/master_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/master_pb"
 )
 
 func TestParsing(t *testing.T) {

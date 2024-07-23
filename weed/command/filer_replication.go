@@ -4,11 +4,11 @@ import (
 	"context"
 	"strings"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/replication"
-	"github.com/seaweedfs/seaweedfs/weed/replication/sink"
-	"github.com/seaweedfs/seaweedfs/weed/replication/sub"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/replication"
+	"github.com/gateway-dao/seaweedfs/weed/replication/sink"
+	"github.com/gateway-dao/seaweedfs/weed/replication/sub"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 func init() {

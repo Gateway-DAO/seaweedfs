@@ -1,11 +1,11 @@
 package weed_server
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/event"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/event"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -47,8 +47,8 @@ func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEve
 	return nil
 }
 
-func prepareVolumeServerEventResponse(ne *event.VolumeServerEvent) *volume_server_pb.VolumeServerEventResponse {
-	resp := &volume_server_pb.VolumeServerEventResponse{
+func prepareVolumeServerEventResponse(ne *event.VolumeServerEvent) *volume_server_pb.VolumeServerEvent {
+	resp := &volume_server_pb.VolumeServerEvent{
 		Type:      ne.GetType(),
 		Needle:    ne.GetNeedle(),
 		Volume:    ne.GetVolume(),

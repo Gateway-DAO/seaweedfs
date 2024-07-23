@@ -6,11 +6,11 @@ import (
 
 	jsonpb "google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	_ "github.com/seaweedfs/seaweedfs/weed/storage/backend/rclone_backend"
-	_ "github.com/seaweedfs/seaweedfs/weed/storage/backend/s3_backend"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	_ "github.com/gateway-dao/seaweedfs/weed/storage/backend/rclone_backend"
+	_ "github.com/gateway-dao/seaweedfs/weed/storage/backend/s3_backend"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 // MaybeLoadVolumeInfo load the file data as *volume_server_pb.VolumeInfo, the returned volumeInfo will not be nil

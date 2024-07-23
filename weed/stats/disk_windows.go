@@ -1,7 +1,7 @@
 package stats
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 	"golang.org/x/sys/windows"
 	"syscall"
 	"unsafe"

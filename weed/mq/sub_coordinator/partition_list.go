@@ -1,6 +1,6 @@
 package sub_coordinator
 
-import "github.com/seaweedfs/seaweedfs/weed/mq/topic"
+import "github.com/gateway-dao/seaweedfs/weed/mq/topic"
 
 type PartitionSlotToConsumerInstance struct {
 	RangeStart         int32

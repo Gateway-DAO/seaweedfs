@@ -4,8 +4,8 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
 )
 
 var ErrorOutOfBounds = errors.New("attempt to read out of bounds")

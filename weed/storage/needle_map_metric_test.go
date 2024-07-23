@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	. "github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	. "github.com/gateway-dao/seaweedfs/weed/storage/types"
 )
 
 func TestFastLoadingNeedleMapMetrics(t *testing.T) {

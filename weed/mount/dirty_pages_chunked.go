@@ -5,9 +5,9 @@ import (
 	"io"
 	"sync"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/mount/page_writer"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/mount/page_writer"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
 )
 
 type ChunkedDirtyPages struct {

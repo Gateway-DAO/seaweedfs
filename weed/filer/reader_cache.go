@@ -2,14 +2,14 @@ package filer
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/util/chunk_cache"
-	"github.com/seaweedfs/seaweedfs/weed/util/mem"
-	"github.com/seaweedfs/seaweedfs/weed/wdclient"
+	"github.com/gateway-dao/seaweedfs/weed/util/chunk_cache"
+	"github.com/gateway-dao/seaweedfs/weed/util/mem"
+	"github.com/gateway-dao/seaweedfs/weed/wdclient"
 )
 
 type ReaderCache struct {

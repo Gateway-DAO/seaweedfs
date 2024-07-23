@@ -3,7 +3,7 @@ package operation
 import (
 	"context"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"google.golang.org/grpc"
 	"testing"
 	"time"

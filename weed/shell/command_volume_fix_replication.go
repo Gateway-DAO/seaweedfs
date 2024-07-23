@@ -9,17 +9,17 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle_map"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle_map"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 	"golang.org/x/exp/slices"
 	"google.golang.org/grpc"
 
-	"github.com/seaweedfs/seaweedfs/weed/operation"
-	"github.com/seaweedfs/seaweedfs/weed/pb/master_pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/super_block"
+	"github.com/gateway-dao/seaweedfs/weed/operation"
+	"github.com/gateway-dao/seaweedfs/weed/pb/master_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/super_block"
 )
 
 func init() {
@@ -49,7 +49,7 @@ func (c *commandVolumeFixReplication) Help() string {
 	Note:
 		* each time this will only add back one replica for each volume id that is under replicated.
 		  If there are multiple replicas are missing, e.g. replica count is > 2, you may need to run this multiple times.
-		* do not run this too quickly within seconds, since the new volume replica may take a few seconds 
+		* do not run this too quickly within seconds, since the new volume replica may take a few seconds
 		  to register itself to the master.
 
 `

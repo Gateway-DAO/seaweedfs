@@ -2,8 +2,8 @@ package mount
 
 import (
 	"github.com/hanwen/go-fuse/v2/fuse"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"sync"
 	"time"
 )
@@ -150,7 +150,7 @@ func (i *InodeToPath) MarkChildrenCached(fullpath util.FullPath) {
 	defer i.Unlock()
 	inode, found := i.path2inode[fullpath]
 	if !found {
-		// https://github.com/seaweedfs/seaweedfs/issues/4968
+		// https://github.com/gateway-dao/seaweedfs/issues/4968
 		// glog.Fatalf("MarkChildrenCached not found inode %v", fullpath)
 		glog.Warningf("MarkChildrenCached not found inode %v", fullpath)
 		return

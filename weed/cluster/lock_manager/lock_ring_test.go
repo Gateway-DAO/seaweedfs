@@ -1,7 +1,7 @@
 package lock_manager
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

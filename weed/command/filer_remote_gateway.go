@@ -3,13 +3,13 @@ package command
 import (
 	"context"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
-	"github.com/seaweedfs/seaweedfs/weed/replication/source"
-	"github.com/seaweedfs/seaweedfs/weed/security"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/remote_pb"
+	"github.com/gateway-dao/seaweedfs/weed/replication/source"
+	"github.com/gateway-dao/seaweedfs/weed/security"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"google.golang.org/grpc"
 	"os"
 	"time"
@@ -68,7 +68,7 @@ var cmdFilerRemoteGateway = &Command{
 	Short:     "resumable continuously write back bucket creation, deletion, and other local updates to remote object store",
 	Long: `resumable continuously write back bucket creation, deletion, and other local updates to remote object store
 
-	filer.remote.gateway listens on filer local buckets update events. 
+	filer.remote.gateway listens on filer local buckets update events.
 	If any bucket is created, deleted, or updated, it will mirror the changes to remote object store.
 
 		weed filer.remote.sync -createBucketAt=cloud1

@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	ui "github.com/seaweedfs/seaweedfs/weed/server/filer_ui"
-	"github.com/seaweedfs/seaweedfs/weed/stats"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	ui "github.com/gateway-dao/seaweedfs/weed/server/filer_ui"
+	"github.com/gateway-dao/seaweedfs/weed/stats"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 // listDirectoryHandler lists directories and folders under a directory

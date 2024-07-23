@@ -1,7 +1,7 @@
 package s3api
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3err"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"

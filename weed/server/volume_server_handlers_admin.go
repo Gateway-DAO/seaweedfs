@@ -1,13 +1,13 @@
 package weed_server
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/topology"
+	"github.com/gateway-dao/seaweedfs/weed/topology"
 	"net/http"
 	"path/filepath"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/stats"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/stats"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 func (vs *VolumeServer) healthzHandler(w http.ResponseWriter, r *http.Request) {

@@ -2,12 +2,12 @@ package broker
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/mq/topic"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
-	"github.com/seaweedfs/seaweedfs/weed/util/buffered_queue"
-	"github.com/seaweedfs/seaweedfs/weed/util/log_buffer"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/mq/topic"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/util/buffered_queue"
+	"github.com/gateway-dao/seaweedfs/weed/util/log_buffer"
 	"io"
 	"time"
 )

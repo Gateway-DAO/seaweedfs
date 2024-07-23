@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/seaweedfs/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

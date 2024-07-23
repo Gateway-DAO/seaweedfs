@@ -2,7 +2,7 @@ package hbase
 
 import (
 	"context"
-	"github.com/seaweedfs/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
 	"github.com/tsuna/gohbase/hrpc"
 	"time"
 )

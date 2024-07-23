@@ -3,7 +3,7 @@ package command
 import (
 	"bufio"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 	"io"
 	"os"
 	"strings"

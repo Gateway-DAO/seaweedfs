@@ -3,7 +3,7 @@ package volume_server_ui
 import (
 	_ "embed"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"html/template"
 	"strconv"
 	"strings"

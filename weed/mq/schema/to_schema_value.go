@@ -3,7 +3,7 @@ package schema
 import (
 	"fmt"
 	"github.com/parquet-go/parquet-go"
-	"github.com/seaweedfs/seaweedfs/weed/pb/schema_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/schema_pb"
 )
 
 // ToRecordValue converts a parquet.Row to a schema_pb.RecordValue

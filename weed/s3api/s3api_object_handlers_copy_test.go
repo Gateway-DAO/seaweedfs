@@ -2,7 +2,7 @@ package s3api
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3_constants"
 	"net/http"
 	"reflect"
 	"sort"

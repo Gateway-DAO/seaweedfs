@@ -6,7 +6,7 @@ package stats
 import (
 	"golang.org/x/sys/unix"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 )
 
 func fillInDiskStatus(disk *volume_server_pb.DiskStatus) {

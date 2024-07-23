@@ -1,14 +1,14 @@
 package storage
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/backend"
-	_ "github.com/seaweedfs/seaweedfs/weed/storage/backend/rclone_backend"
-	_ "github.com/seaweedfs/seaweedfs/weed/storage/backend/s3_backend"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
-	"github.com/seaweedfs/seaweedfs/weed/storage/volume_info"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/backend"
+	_ "github.com/gateway-dao/seaweedfs/weed/storage/backend/rclone_backend"
+	_ "github.com/gateway-dao/seaweedfs/weed/storage/backend/s3_backend"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/volume_info"
 )
 
 func (v *Volume) GetVolumeInfo() *volume_server_pb.VolumeInfo {

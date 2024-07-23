@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/seaweedfs/seaweedfs/weed/event"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/event"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -26,9 +26,9 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 	vol := vs.store.GetVolume(volumeId)
 	datSize, idxSize, lastModTime := vol.FileStat()
 
-	var vse_needle *volume_server_pb.VolumeServerEventResponse_Needle
+	var vse_needle *volume_server_pb.VolumeServerEvent_Needle
 	if needle != nil {
-		vse_needle = &volume_server_pb.VolumeServerEventResponse_Needle{
+		vse_needle = &volume_server_pb.VolumeServerEvent_Needle{
 			Id:       uint64(needle.Id),
 			Checksum: needle.Checksum.Value(),
 			Hash:     hash,
@@ -53,7 +53,7 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 	vse, vse_err := event.NewVolumeServerEvent(
 		eventType,
 		vse_needle,
-		&volume_server_pb.VolumeServerEventResponse_Volume{
+		&volume_server_pb.VolumeServerEvent_Volume{
 			Id:           volumeId.String(),
 			IdxSize:      idxSize,
 			FileCount:    vol.FileCount(),
@@ -63,7 +63,7 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 			LastModified: timestamppb.New(lastModTime),
 			Replication:  vol.ReplicaPlacement.String(),
 
-			Server: &volume_server_pb.VolumeServerEventResponse_Volume_Server{
+			Server: &volume_server_pb.VolumeServerEvent_Volume_Server{
 				Checksum:   vsEventChecksum,
 				PublicUrl:  vs.store.PublicUrl,
 				Rack:       vsStatus.GetRack(),

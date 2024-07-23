@@ -5,8 +5,8 @@ import (
 	"os"
 	"sync/atomic"
 
-	"github.com/seaweedfs/seaweedfs/weed/storage/idx"
-	. "github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/idx"
+	. "github.com/gateway-dao/seaweedfs/weed/storage/types"
 	boom "github.com/tylertreat/BoomFilters"
 )
 

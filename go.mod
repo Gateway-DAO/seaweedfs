@@ -1,4 +1,4 @@
-module github.com/seaweedfs/seaweedfs
+module github.com/gateway-dao/seaweedfs
 
 go 1.22.0
 

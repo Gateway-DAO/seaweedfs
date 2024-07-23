@@ -1,6 +1,6 @@
 package stats
 
-import "github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+import "github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 
 func calculateDiskRemaining(disk *volume_server_pb.DiskStatus) {
 	disk.Used = disk.All - disk.Free

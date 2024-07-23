@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"testing"
 
-	. "github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+	. "github.com/gateway-dao/seaweedfs/weed/s3api/s3_constants"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/iam_pb"
 
 	"github.com/stretchr/testify/assert"
 )

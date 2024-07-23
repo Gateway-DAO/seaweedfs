@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/posener/complete"
 	completeinstall "github.com/posener/complete/cmd/install"
-	flag "github.com/seaweedfs/seaweedfs/weed/util/fla9"
+	flag "github.com/gateway-dao/seaweedfs/weed/util/fla9"
 	"runtime"
 )
 

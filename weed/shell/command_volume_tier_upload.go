@@ -4,15 +4,15 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"io"
 	"time"
 
 	"google.golang.org/grpc"
 
-	"github.com/seaweedfs/seaweedfs/weed/operation"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/operation"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
 )
 
 func init() {
@@ -41,7 +41,7 @@ func (c *commandVolumeTierUpload) Help() string {
 
 	This command will move the dat file of a volume to a remote tier.
 
-	SeaweedFS enables scalable and fast local access to lots of files, 
+	SeaweedFS enables scalable and fast local access to lots of files,
 	and the cloud storage is slower by cost efficient. How to combine them together?
 
 	Usually the data follows 80/20 rule: only 20% of data is frequently accessed.

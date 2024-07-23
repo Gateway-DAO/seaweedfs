@@ -1,7 +1,7 @@
 package needle
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 	"testing"
 )
 

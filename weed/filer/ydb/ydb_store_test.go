@@ -4,7 +4,7 @@
 package ydb
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/filer/store_test"
+	"github.com/gateway-dao/seaweedfs/weed/filer/store_test"
 	"testing"
 )
 

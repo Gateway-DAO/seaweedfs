@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 func init() {
@@ -23,7 +23,7 @@ func (c *commandFsMv) Name() string {
 func (c *commandFsMv) Help() string {
 	return `move or rename a file or a folder
 
-	fs.mv  <source entry> <destination entry> 
+	fs.mv  <source entry> <destination entry>
 
 	fs.mv /dir/file_name /dir2/filename2
 	fs.mv /dir/file_name /dir2

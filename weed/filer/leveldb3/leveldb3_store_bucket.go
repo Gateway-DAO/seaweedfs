@@ -1,7 +1,7 @@
 package leveldb
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
 	"os"
 )
 

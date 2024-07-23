@@ -3,11 +3,11 @@ package shell
 import (
 	"context"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/cluster"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/master_pb"
-	"github.com/seaweedfs/seaweedfs/weed/util"
-	"github.com/seaweedfs/seaweedfs/weed/util/grace"
+	"github.com/gateway-dao/seaweedfs/weed/cluster"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/master_pb"
+	"github.com/gateway-dao/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util/grace"
 	"golang.org/x/exp/slices"
 	"io"
 	"math/rand"
@@ -132,7 +132,7 @@ func processEachCmd(reg *regexp.Regexp, cmd string, commandEnv *CommandEnv) bool
 
 func printGenericHelp() {
 	msg :=
-		`Type:	"help <command>" for help on <command>. Most commands support "<command> -h" also for options. 
+		`Type:	"help <command>" for help on <command>. Most commands support "<command> -h" also for options.
 `
 	fmt.Print(msg)
 

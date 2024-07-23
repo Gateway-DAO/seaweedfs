@@ -2,7 +2,7 @@ package pub_balancer
 
 import (
 	"errors"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
 )
 
 var (

@@ -4,10 +4,10 @@ import (
 	"reflect"
 	"testing"
 
-	. "github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+	. "github.com/gateway-dao/seaweedfs/weed/s3api/s3_constants"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/iam_pb"
 	jsonpb "google.golang.org/protobuf/encoding/protojson"
 )
 
