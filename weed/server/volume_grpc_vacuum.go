@@ -10,10 +10,10 @@ import (
 
 	"runtime"
 
-	"github.com/prometheus/procfs"
 	"github.com/gateway-dao/seaweedfs/weed/glog"
 	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/prometheus/procfs"
 )
 
 var numCPU = runtime.NumCPU()
@@ -95,6 +95,7 @@ func (vs *VolumeServer) VacuumVolumeCommit(ctx context.Context, req *volume_serv
 		go vs.registerEvent(
 			event.VACUUM,
 			volumeId,
+			nil,
 			nil,
 			nil,
 		)

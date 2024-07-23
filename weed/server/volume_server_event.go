@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId needle.VolumeId, needle *needle.Needle, hash *string) error {
+func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId needle.VolumeId, fid *string, needle *needle.Needle, hash *string) error {
 	switch eventType {
 	case event.WRITE:
 		glog.V(3).Infof("Emitting WRITE event for %s", vs.store.Ip)
@@ -28,8 +28,12 @@ func (vs *VolumeServer) registerEvent(eventType event.NeedleEventType, volumeId 
 
 	var vse_needle *volume_server_pb.VolumeServerEventResponse_Needle
 	if needle != nil {
+		if fid == nil {
+			return fmt.Errorf("fid not specified for needle event")
+		}
 		vse_needle = &volume_server_pb.VolumeServerEventResponse_Needle{
 			Id:       uint64(needle.Id),
+			Fid:      *fid,
 			Checksum: needle.Checksum.Value(),
 			Hash:     hash,
 		}

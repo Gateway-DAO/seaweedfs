@@ -266,9 +266,11 @@ message VolumeServerEventResponse {
 
     message Needle {
         uint64 id = 1;
-        uint32 checksum = 2;
-        optional string hash = 3;
+        string fid = 2;
+        uint32 checksum = 3;
+        optional string hash = 4;
     }
+    optional Needle needle = 2;
 
     message Volume {
         string id = 1;
@@ -288,8 +290,6 @@ message VolumeServerEventResponse {
         }
         Server server = 9;
     }
-
-    optional Needle needle = 2;
     Volume volume = 3;
     google.protobuf.Timestamp created_at = 4;
 }
