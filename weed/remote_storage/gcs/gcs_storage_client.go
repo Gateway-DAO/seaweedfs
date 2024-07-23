@@ -9,11 +9,11 @@ import (
 	"strings"
 
 	"cloud.google.com/go/storage"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
-	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/remote_pb"
+	"github.com/gateway-dao/seaweedfs/weed/remote_storage"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )

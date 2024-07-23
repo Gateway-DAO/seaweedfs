@@ -1,7 +1,7 @@
 package sub_coordinator
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/mq/pub_balancer"
+	"github.com/gateway-dao/seaweedfs/weed/mq/pub_balancer"
 	"reflect"
 	"testing"
 )

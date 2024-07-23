@@ -3,13 +3,13 @@ package log_buffer
 import (
 	"crypto/rand"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
 	"io"
 	"sync"
 	"testing"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
 )
 
 func TestNewLogBufferFirstBuffer(t *testing.T) {

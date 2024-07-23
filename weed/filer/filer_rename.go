@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 func (f *Filer) CanRename(source, target util.FullPath, oldName string) error {

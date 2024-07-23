@@ -7,11 +7,11 @@ import (
 	"path"
 	"strconv"
 
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/storage/idx"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/storage/idx"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 )
 
 var (

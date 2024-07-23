@@ -5,9 +5,9 @@ import (
 	"github.com/arangodb/go-driver"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 )
 
 var _ filer.BucketAware = (*ArangodbStore)(nil)

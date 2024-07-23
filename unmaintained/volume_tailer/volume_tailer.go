@@ -2,15 +2,15 @@ package main
 
 import (
 	"flag"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"log"
 	"time"
 	"context"
 
-	"github.com/seaweedfs/seaweedfs/weed/operation"
-	"github.com/seaweedfs/seaweedfs/weed/security"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	util2 "github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/operation"
+	"github.com/gateway-dao/seaweedfs/weed/security"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	util2 "github.com/gateway-dao/seaweedfs/weed/util"
 	"golang.org/x/tools/godoc/util"
 )
 

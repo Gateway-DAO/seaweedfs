@@ -2,7 +2,7 @@ package shell
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/storage/erasure_coding"
+	"github.com/gateway-dao/seaweedfs/weed/storage/erasure_coding"
 	"testing"
 )
 

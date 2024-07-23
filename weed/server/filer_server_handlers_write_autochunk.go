@@ -5,8 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	//"github.com/seaweedfs/seaweedfs/weed/s3api"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
+	//"github.com/gateway-dao/seaweedfs/weed/s3api"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3_constants"
 	"io"
 	"net/http"
 	"os"
@@ -15,12 +15,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/operation"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/operation"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 func (fs *FilerServer) autoChunk(ctx context.Context, w http.ResponseWriter, r *http.Request, contentLength int64, so *operation.StorageOption) {

@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/erasure_coding"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/erasure_coding"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 	"golang.org/x/exp/slices"
 )
 
@@ -67,7 +67,7 @@ func (c *commandEcBalance) Help() string {
 			doBalanceEcShardsWithinOneRack(volumeId, shards, rack)
 	}
 
-	// move ec shards 
+	// move ec shards
 	func doBalanceEcShardsWithinOneRack(volumeId, shards, rackId){
 		tracks volumeServer~volumeIdShardCount mapping
 		averageShardCount = len(shards) / numVolumeServers

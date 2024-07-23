@@ -18,17 +18,17 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc/reflection"
 
-	stats_collect "github.com/seaweedfs/seaweedfs/weed/stats"
+	stats_collect "github.com/gateway-dao/seaweedfs/weed/stats"
 
-	"github.com/seaweedfs/seaweedfs/weed/util/grace"
+	"github.com/gateway-dao/seaweedfs/weed/util/grace"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/master_pb"
-	"github.com/seaweedfs/seaweedfs/weed/security"
-	weed_server "github.com/seaweedfs/seaweedfs/weed/server"
-	"github.com/seaweedfs/seaweedfs/weed/storage/backend"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/master_pb"
+	"github.com/gateway-dao/seaweedfs/weed/security"
+	weed_server "github.com/gateway-dao/seaweedfs/weed/server"
+	"github.com/gateway-dao/seaweedfs/weed/storage/backend"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 var (
@@ -176,7 +176,7 @@ func startMaster(masterOption MasterOptions, masterWhiteList []string) {
 	} else {
 		raftServer, err = weed_server.NewRaftServer(raftServerOption)
 		if raftServer == nil {
-			glog.Fatalf("please verify %s is writable, see https://github.com/seaweedfs/seaweedfs/issues/717: %s", *masterOption.metaFolder, err)
+			glog.Fatalf("please verify %s is writable, see https://github.com/gateway-dao/seaweedfs/issues/717: %s", *masterOption.metaFolder, err)
 		}
 	}
 	ms.SetRaftServer(raftServer)

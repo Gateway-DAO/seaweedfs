@@ -29,8 +29,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3_constants"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3err"
 
 	"github.com/dustin/go-humanize"
 )

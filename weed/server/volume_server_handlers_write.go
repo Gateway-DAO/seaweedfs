@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/event"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/operation"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	"github.com/seaweedfs/seaweedfs/weed/topology"
-	"github.com/seaweedfs/seaweedfs/weed/util/buffer_pool"
+	"github.com/gateway-dao/seaweedfs/weed/event"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/operation"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/topology"
+	"github.com/gateway-dao/seaweedfs/weed/util/buffer_pool"
 )
 
 func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +72,7 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	SetEtag(w, ret.ETag)
 	w.Header().Set("Content-MD5", contentMd5)
 
-	go vs.registerEvent(event.WRITE, volumeId, reqNeedle, &contentMd5)
+	go vs.registerEvent(event.WRITE, volumeId, &fid, reqNeedle, &contentMd5)
 
 	writeJsonQuiet(w, r, httpStatus, ret)
 }
@@ -143,7 +143,7 @@ func (vs *VolumeServer) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	writeDeleteResult(err, count, w, r)
 
 	if err == nil {
-		go vs.registerEvent(event.DELETE, volumeId, n, nil)
+		go vs.registerEvent(event.DELETE, volumeId, &fid, n, nil)
 	}
 
 }

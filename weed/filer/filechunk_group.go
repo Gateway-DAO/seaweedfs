@@ -1,9 +1,9 @@
 package filer
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/util/chunk_cache"
-	"github.com/seaweedfs/seaweedfs/weed/wdclient"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/util/chunk_cache"
+	"github.com/gateway-dao/seaweedfs/weed/wdclient"
 	"sync"
 )
 

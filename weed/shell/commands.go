@@ -3,9 +3,9 @@ package shell
 import (
 	"context"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/operation"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle_map"
+	"github.com/gateway-dao/seaweedfs/weed/operation"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle_map"
 	"io"
 	"net/url"
 	"strconv"
@@ -13,11 +13,11 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/util"
-	"github.com/seaweedfs/seaweedfs/weed/wdclient"
-	"github.com/seaweedfs/seaweedfs/weed/wdclient/exclusive_locks"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/wdclient"
+	"github.com/gateway-dao/seaweedfs/weed/wdclient/exclusive_locks"
 )
 
 type ShellOptions struct {

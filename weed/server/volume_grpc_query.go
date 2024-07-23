@@ -1,11 +1,11 @@
 package weed_server
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/operation"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/query/json"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/operation"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/query/json"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
 	"github.com/tidwall/gjson"
 )
 

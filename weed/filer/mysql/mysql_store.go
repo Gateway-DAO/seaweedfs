@@ -7,11 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/seaweedfs/seaweedfs/weed/filer/abstract_sql"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/filer/abstract_sql"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 const (

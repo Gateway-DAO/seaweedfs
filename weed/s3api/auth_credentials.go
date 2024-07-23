@@ -7,13 +7,13 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/iam_pb"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/iam_pb"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3_constants"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3err"
 )
 
 type Action string

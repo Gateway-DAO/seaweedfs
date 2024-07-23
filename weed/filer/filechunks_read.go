@@ -2,7 +2,7 @@ package filer
 
 import (
 	"container/list"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
 	"golang.org/x/exp/slices"
 )
 

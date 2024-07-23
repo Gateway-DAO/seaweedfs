@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -14,14 +14,16 @@ type VolumeServerEvent struct {
 }
 
 func NewVolumeServerEvent(
-	eventType NeedleEventType,
+	eventType VolumeServerEventType,
 	serverMetadata *volume_server_pb.VolumeServerEventResponse_Server,
 	volumeMetadata *volume_server_pb.VolumeServerEventResponse_Volume,
-	needleMetadata *volume_server_pb.VolumeServerEventResponse_Volume_Needle,
+	needleMetadata *volume_server_pb.VolumeServerEventResponse_Needle,
 ) (ne *VolumeServerEvent, err error) {
 	ne = new(VolumeServerEvent)
 
 	switch eventType {
+	case ALIVE:
+		ne.Type = "ALIVE"
 	case WRITE:
 		ne.Type = "WRITE"
 	case DELETE:
@@ -35,7 +37,7 @@ func NewVolumeServerEvent(
 	ne.Volume = volumeMetadata
 	ne.Server = serverMetadata
 	if needleMetadata != nil {
-		ne.Volume.Needle = needleMetadata
+		ne.Needle = needleMetadata
 	}
 
 	ne.Timestamp = timestamppb.New(time.Now())

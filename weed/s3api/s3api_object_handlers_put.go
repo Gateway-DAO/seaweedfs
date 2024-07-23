@@ -10,13 +10,13 @@ import (
 	"time"
 
 	"github.com/pquerna/cachecontrol/cacheobject"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
-	"github.com/seaweedfs/seaweedfs/weed/security"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3_constants"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3err"
+	"github.com/gateway-dao/seaweedfs/weed/security"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	weed_server "github.com/seaweedfs/seaweedfs/weed/server"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	weed_server "github.com/gateway-dao/seaweedfs/weed/server"
 )
 
 func (s3a *S3ApiServer) PutObjectHandler(w http.ResponseWriter, r *http.Request) {

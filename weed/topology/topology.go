@@ -8,22 +8,22 @@ import (
 	"sync"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 
 	backoff "github.com/cenkalti/backoff/v4"
 
 	hashicorpRaft "github.com/hashicorp/raft"
 	"github.com/seaweedfs/raft"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/master_pb"
-	"github.com/seaweedfs/seaweedfs/weed/sequence"
-	"github.com/seaweedfs/seaweedfs/weed/stats"
-	"github.com/seaweedfs/seaweedfs/weed/storage"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	"github.com/seaweedfs/seaweedfs/weed/storage/super_block"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/master_pb"
+	"github.com/gateway-dao/seaweedfs/weed/sequence"
+	"github.com/gateway-dao/seaweedfs/weed/stats"
+	"github.com/gateway-dao/seaweedfs/weed/storage"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/storage/super_block"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 type Topology struct {

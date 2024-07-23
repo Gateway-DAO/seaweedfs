@@ -2,16 +2,16 @@ package log_buffer
 
 import (
 	"bytes"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"google.golang.org/protobuf/proto"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 const BufferSize = 4 * 1024 * 1024

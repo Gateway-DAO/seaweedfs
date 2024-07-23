@@ -36,7 +36,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3err"
 )
 
 func (iam *IdentityAccessManagement) reqSignatureV4Verify(r *http.Request) (*Identity, s3err.ErrorCode) {

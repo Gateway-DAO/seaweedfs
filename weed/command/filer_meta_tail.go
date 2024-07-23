@@ -2,16 +2,16 @@ package command
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/security"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/security"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 func init() {

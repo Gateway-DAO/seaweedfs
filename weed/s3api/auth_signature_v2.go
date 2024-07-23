@@ -23,7 +23,7 @@ import (
 	"crypto/subtle"
 	"encoding/base64"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3err"
 	"net"
 	"net/http"
 	"net/url"

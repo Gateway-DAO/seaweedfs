@@ -3,8 +3,8 @@ package store_test
 import (
 	"context"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"

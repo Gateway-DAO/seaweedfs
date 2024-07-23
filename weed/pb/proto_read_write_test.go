@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 	jsonpb "google.golang.org/protobuf/encoding/protojson"
 )
 

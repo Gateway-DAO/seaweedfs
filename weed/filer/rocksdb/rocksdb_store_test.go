@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 func TestCreateAndFind(t *testing.T) {

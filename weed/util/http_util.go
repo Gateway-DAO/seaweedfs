@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/util/mem"
+	"github.com/gateway-dao/seaweedfs/weed/util/mem"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 )
 
 var (
@@ -50,7 +50,7 @@ func Post(url string, values url.Values) ([]byte, error) {
 	return b, nil
 }
 
-// github.com/seaweedfs/seaweedfs/unmaintained/repeated_vacuum/repeated_vacuum.go
+// github.com/gateway-dao/seaweedfs/unmaintained/repeated_vacuum/repeated_vacuum.go
 // may need increasing http.Client.Timeout
 func Get(url string) ([]byte, bool, error) {
 	return GetAuthenticated(url, "")

@@ -2,7 +2,7 @@ package s3_backend
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"io"
 	"os"
 	"strings"
@@ -12,9 +12,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3iface"
 	"github.com/google/uuid"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/backend"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/backend"
 )
 
 func init() {

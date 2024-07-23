@@ -10,7 +10,7 @@ import (
 
 	"github.com/cognusion/imaging"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 
 	_ "golang.org/x/image/webp"
 )

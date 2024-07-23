@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	"github.com/seaweedfs/seaweedfs/weed/storage/super_block"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/storage/super_block"
 )
 
 type VolumeFileScanner4ReadAll struct {

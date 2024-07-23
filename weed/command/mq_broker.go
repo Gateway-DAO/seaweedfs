@@ -3,14 +3,14 @@ package command
 import (
 	"google.golang.org/grpc/reflection"
 
-	"github.com/seaweedfs/seaweedfs/weed/util/grace"
+	"github.com/gateway-dao/seaweedfs/weed/util/grace"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/mq/broker"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
-	"github.com/seaweedfs/seaweedfs/weed/security"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/mq/broker"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/security"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 var (

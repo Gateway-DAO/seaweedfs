@@ -2,12 +2,12 @@ package command
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/replication/source"
-	"github.com/seaweedfs/seaweedfs/weed/security"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/replication/source"
+	"github.com/gateway-dao/seaweedfs/weed/security"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"google.golang.org/grpc"
 	"time"
 )
@@ -57,7 +57,7 @@ var cmdFilerRemoteSynchronize = &Command{
 	Short:     "resumable continuously write back updates to remote storage",
 	Long: `resumable continuously write back updates to remote storage
 
-	filer.remote.sync listens on filer update events. 
+	filer.remote.sync listens on filer update events.
 	If any mounted remote file is updated, it will fetch the updated content,
 	and write to the remote storage.
 

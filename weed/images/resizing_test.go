@@ -2,7 +2,7 @@ package images
 
 import (
 	"bytes"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"os"
 	"testing"
 )

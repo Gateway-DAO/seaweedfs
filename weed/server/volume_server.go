@@ -5,19 +5,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/event"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/event"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 
 	"google.golang.org/grpc"
 
-	"github.com/seaweedfs/seaweedfs/weed/stats"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/stats"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/security"
-	"github.com/seaweedfs/seaweedfs/weed/storage"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/security"
+	"github.com/gateway-dao/seaweedfs/weed/storage"
 )
 
 type VolumeServer struct {
@@ -38,7 +38,7 @@ type VolumeServer struct {
 	dataCenter      string
 	rack            string
 	store           *storage.Store
-	eventStore      event.EventStore
+	eventStore      event.VolumeServerEventStore
 	guard           *security.Guard
 	grpcDialOption  grpc.DialOption
 
@@ -72,7 +72,7 @@ func NewVolumeServer(adminMux, publicMux *http.ServeMux, ip string,
 	hasSlowRead bool,
 	readBufferSizeMB int,
 	ldbTimeout int64,
-	eventStore event.EventStore,
+	eventStore event.VolumeServerEventStore,
 ) *VolumeServer {
 
 	v := util.GetViper()

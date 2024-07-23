@@ -1,7 +1,7 @@
 package erasure_coding
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 )
 
 type Interval struct {

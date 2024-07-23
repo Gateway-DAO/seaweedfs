@@ -2,7 +2,7 @@ package topic
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
 )
 
 type Topic struct {

@@ -13,13 +13,13 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	weed_server "github.com/seaweedfs/seaweedfs/weed/server"
-	"github.com/seaweedfs/seaweedfs/weed/util"
-	flag "github.com/seaweedfs/seaweedfs/weed/util/fla9"
+	weed_server "github.com/gateway-dao/seaweedfs/weed/server"
+	"github.com/gateway-dao/seaweedfs/weed/util"
+	flag "github.com/gateway-dao/seaweedfs/weed/util/fla9"
 
 	"github.com/getsentry/sentry-go"
-	"github.com/seaweedfs/seaweedfs/weed/command"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/command"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 )
 
 var IsDebug *bool

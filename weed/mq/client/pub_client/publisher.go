@@ -2,11 +2,11 @@ package pub_client
 
 import (
 	"github.com/rdleal/intervalst/interval"
-	"github.com/seaweedfs/seaweedfs/weed/mq/pub_balancer"
-	"github.com/seaweedfs/seaweedfs/weed/mq/topic"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/schema_pb"
-	"github.com/seaweedfs/seaweedfs/weed/util/buffered_queue"
+	"github.com/gateway-dao/seaweedfs/weed/mq/pub_balancer"
+	"github.com/gateway-dao/seaweedfs/weed/mq/topic"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/schema_pb"
+	"github.com/gateway-dao/seaweedfs/weed/util/buffered_queue"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"

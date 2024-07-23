@@ -11,14 +11,14 @@ import (
 	"github.com/syndtr/goleveldb/leveldb/errors"
 	"github.com/syndtr/goleveldb/leveldb/opt"
 
-	"github.com/seaweedfs/seaweedfs/weed/storage/idx"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/storage/idx"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 
 	"github.com/syndtr/goleveldb/leveldb"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle_map"
-	. "github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle_map"
+	. "github.com/gateway-dao/seaweedfs/weed/storage/types"
 )
 
 // mark it every watermarkBatchSize operations

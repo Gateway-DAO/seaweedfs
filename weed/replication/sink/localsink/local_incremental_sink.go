@@ -1,7 +1,7 @@
 package localsink
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/replication/sink"
+	"github.com/gateway-dao/seaweedfs/weed/replication/sink"
 )
 
 type LocalIncSink struct {

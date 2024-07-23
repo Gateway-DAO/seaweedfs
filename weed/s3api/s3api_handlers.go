@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3err"
 	"google.golang.org/grpc"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
 )
 
 var _ = filer_pb.FilerClient(&S3ApiServer{})

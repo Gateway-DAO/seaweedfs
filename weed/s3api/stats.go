@@ -1,8 +1,8 @@
 package s3api
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
-	stats_collect "github.com/seaweedfs/seaweedfs/weed/stats"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3_constants"
+	stats_collect "github.com/gateway-dao/seaweedfs/weed/stats"
 	"net/http"
 	"strconv"
 	"time"

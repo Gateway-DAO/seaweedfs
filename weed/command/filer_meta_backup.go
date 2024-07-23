@@ -3,17 +3,17 @@ package command
 import (
 	"context"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"reflect"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/security"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/security"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 var (
@@ -44,7 +44,7 @@ func init() {
 var cmdFilerMetaBackup = &Command{
 	UsageLine: "filer.meta.backup [-filer=localhost:8888] [-filerDir=/] [-restart] -config=/path/to/backup_filer.toml",
 	Short:     "continuously backup filer meta data changes to anther filer store specified in a backup_filer.toml",
-	Long: `continuously backup filer meta data changes. 
+	Long: `continuously backup filer meta data changes.
 The backup writes to another filer store specified in a backup_filer.toml.
 
 	weed filer.meta.backup -config=/path/to/backup_filer.toml -filer="localhost:8888"

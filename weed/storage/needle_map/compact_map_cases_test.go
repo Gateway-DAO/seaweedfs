@@ -5,7 +5,7 @@ package needle_map
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"os"

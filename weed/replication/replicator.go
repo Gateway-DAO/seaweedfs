@@ -3,16 +3,16 @@ package replication
 import (
 	"context"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"google.golang.org/grpc"
 	"strings"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/replication/sink"
-	"github.com/seaweedfs/seaweedfs/weed/replication/source"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/replication/sink"
+	"github.com/gateway-dao/seaweedfs/weed/replication/source"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 type Replicator struct {

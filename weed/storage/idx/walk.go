@@ -3,8 +3,8 @@ package idx
 import (
 	"io"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 )
 
 // walks through the index file, calls fn function with each key, offset, size

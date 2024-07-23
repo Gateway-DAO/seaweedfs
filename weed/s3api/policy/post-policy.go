@@ -20,7 +20,7 @@ package policy
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3err"
 	"net/http"
 	"strings"
 	"time"

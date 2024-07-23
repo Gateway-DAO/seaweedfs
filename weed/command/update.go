@@ -18,8 +18,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"golang.org/x/net/context/ctxhttp"
 )
 
@@ -75,8 +75,8 @@ func init() {
 
 var cmdUpdate = &Command{
 	UsageLine: "update [-dir=/path/to/dir] [-name=name] [-version=x.xx]",
-	Short:     "get latest or specific version from https://github.com/seaweedfs/seaweedfs",
-	Long:      `get latest or specific version from https://github.com/seaweedfs/seaweedfs`,
+	Short:     "get latest or specific version from https://github.com/gateway-dao/seaweedfs",
+	Long:      `get latest or specific version from https://github.com/gateway-dao/seaweedfs`,
 }
 
 func runUpdate(cmd *Command, args []string) bool {

@@ -8,10 +8,10 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/filer/abstract_sql"
-	"github.com/seaweedfs/seaweedfs/weed/filer/postgres"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/filer/abstract_sql"
+	"github.com/gateway-dao/seaweedfs/weed/filer/postgres"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 )
 
 var _ filer.BucketAware = (*PostgresStore2)(nil)

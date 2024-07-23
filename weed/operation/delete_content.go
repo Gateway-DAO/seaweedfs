@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"google.golang.org/grpc"
 	"net/http"
 	"strings"
 	"sync"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 )
 
 type DeleteResult struct {

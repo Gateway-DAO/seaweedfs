@@ -1,6 +1,6 @@
 package topic
 
-import "github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
+import "github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
 
 const PartitionCount = 4096
 

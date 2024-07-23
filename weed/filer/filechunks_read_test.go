@@ -2,7 +2,7 @@ package filer
 
 import (
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
 	"math"
 	"math/rand"
 	"testing"

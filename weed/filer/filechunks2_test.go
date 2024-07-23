@@ -6,12 +6,12 @@ import (
 	"log"
 	"testing"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
 )
 
 func TestDoMinusChunks(t *testing.T) {
-	// https://github.com/seaweedfs/seaweedfs/issues/3328
+	// https://github.com/gateway-dao/seaweedfs/issues/3328
 
 	// clusterA and clusterB using filer.sync to sync file: hello.txt
 	// clusterA append a new line and then clusterB also append a new line

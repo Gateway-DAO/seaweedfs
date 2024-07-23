@@ -2,7 +2,7 @@ package topic
 
 import (
 	cmap "github.com/orcaman/concurrent-map/v2"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"time"
 )

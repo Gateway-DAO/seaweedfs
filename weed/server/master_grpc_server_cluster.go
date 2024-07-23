@@ -2,9 +2,9 @@ package weed_server
 
 import (
 	"context"
-	"github.com/seaweedfs/seaweedfs/weed/cluster"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/master_pb"
+	"github.com/gateway-dao/seaweedfs/weed/cluster"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/master_pb"
 	"math/rand"
 )
 

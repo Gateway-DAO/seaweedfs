@@ -3,7 +3,7 @@ package s3_backend
 import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/request"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"sync"
 
 	"github.com/aws/aws-sdk-go/aws"

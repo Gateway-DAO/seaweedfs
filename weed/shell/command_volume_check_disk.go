@@ -5,12 +5,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/operation"
-	"github.com/seaweedfs/seaweedfs/weed/pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/master_pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
-	"github.com/seaweedfs/seaweedfs/weed/server/constants"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle_map"
+	"github.com/gateway-dao/seaweedfs/weed/operation"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/master_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/gateway-dao/seaweedfs/weed/server/constants"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle_map"
 	"golang.org/x/exp/slices"
 	"google.golang.org/grpc"
 	"io"
@@ -37,7 +37,7 @@ func (c *commandVolumeCheckDisk) Help() string {
 	return `check all replicated volumes to find and fix inconsistencies. It is optional and resource intensive.
 
 	How it works:
-	
+
 	find all volumes that are replicated
 	  for each volume id, if there are more than 2 replicas, find one pair with the largest 2 in file count.
       for the pair volume A and B

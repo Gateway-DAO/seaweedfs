@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/mq/client/pub_client"
-	"github.com/seaweedfs/seaweedfs/weed/mq/topic"
+	"github.com/gateway-dao/seaweedfs/weed/mq/client/pub_client"
+	"github.com/gateway-dao/seaweedfs/weed/mq/topic"
 	"log"
 	"strings"
 	"sync"

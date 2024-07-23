@@ -3,11 +3,11 @@ package s3api
 import (
 	"encoding/json"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3_constants"
-	"github.com/seaweedfs/seaweedfs/weed/s3api/s3err"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3_constants"
+	"github.com/gateway-dao/seaweedfs/weed/s3api/s3err"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"math"
 	"sync"
 )

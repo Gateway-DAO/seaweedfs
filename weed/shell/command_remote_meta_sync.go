@@ -4,11 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/pb/filer_pb"
-	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
-	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/remote_pb"
+	"github.com/gateway-dao/seaweedfs/weed/remote_storage"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"io"
 )
 
@@ -31,7 +31,7 @@ func (c *commandRemoteMetaSync) Help() string {
 	# mount and pull one bucket
 	remote.mount -dir=/xxx -remote=cloud1/bucket
 
-	After mount, if the remote file can be changed, 
+	After mount, if the remote file can be changed,
 	run this command to synchronize the metadata of the mounted folder or any sub folder
 
 		remote.meta.sync -dir=/xxx

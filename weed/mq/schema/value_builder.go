@@ -1,6 +1,6 @@
 package schema
 
-import "github.com/seaweedfs/seaweedfs/weed/pb/schema_pb"
+import "github.com/gateway-dao/seaweedfs/weed/pb/schema_pb"
 
 // RecordValueBuilder helps in constructing RecordValue protobuf messages
 type RecordValueBuilder struct {

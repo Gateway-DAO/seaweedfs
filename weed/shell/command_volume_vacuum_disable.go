@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/seaweedfs/seaweedfs/weed/pb/master_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/master_pb"
 )
 
 func init() {

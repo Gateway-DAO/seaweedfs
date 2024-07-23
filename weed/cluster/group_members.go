@@ -1,7 +1,7 @@
 package cluster
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"time"
 )
 

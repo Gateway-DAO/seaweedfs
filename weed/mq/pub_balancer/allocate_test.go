@@ -3,7 +3,7 @@ package pub_balancer
 import (
 	"fmt"
 	cmap "github.com/orcaman/concurrent-map/v2"
-	"github.com/seaweedfs/seaweedfs/weed/pb/mq_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/mq_pb"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

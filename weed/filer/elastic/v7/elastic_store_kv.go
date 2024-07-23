@@ -7,11 +7,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/seaweedfs/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
 
 	jsoniter "github.com/json-iterator/go"
 	elastic "github.com/olivere/elastic/v7"
-	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 )
 
 func (store *ElasticStore) KvDelete(ctx context.Context, key []byte) (err error) {

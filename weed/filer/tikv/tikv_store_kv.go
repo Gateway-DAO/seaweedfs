@@ -6,7 +6,7 @@ package tikv
 import (
 	"context"
 
-	"github.com/seaweedfs/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
 	"github.com/tikv/client-go/v2/txnkv"
 )
 

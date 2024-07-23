@@ -1,11 +1,10 @@
 syntax = "proto3";
 
 package volume_server_pb;
-option go_package = "github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb";
+option go_package = "github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb";
 
 import "remote.proto";
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/any.proto";
 
 
 //////////////////////////////////////////////////
@@ -265,18 +264,13 @@ message VolumeServerEventResponse {
     string type = 1;
     google.protobuf.Timestamp timestamp = 2;
 
-    message Server {
-        string public_url = 1;
-        string rack = 2;
-        string data_center = 3;
-
-        message VolumeServerEventChecksum {
-            string digest = 1;
-            map<string, string> tree = 2;
-        }
-        VolumeServerEventChecksum checksum = 4;
+    message Needle {
+        uint64 id = 1;
+        string fid = 2;
+        uint32 checksum = 3;
+        optional string hash = 4;
     }
-    Server server = 4;
+    optional Needle needle = 3;
 
     message Volume {
         string id = 1;
@@ -287,22 +281,20 @@ message VolumeServerEventResponse {
         uint64 deleted_size = 6;
         google.protobuf.Timestamp last_modified = 7;
         string replication = 8;
-
-        message Needle {
-            uint64 id = 1;
-            uint32 checksum = 2;
-            optional string hash = 3;
-        }
-        optional Needle needle = 9;
     }
-    Volume volume = 5;
+    Volume volume = 4;
 
-    message ProofOfHistory {
-        string previous_hash = 1;
-        string hash = 2;
-        string signature = 3;
+    message Server {
+        VolumeServerMerkleTree tree = 1;
+        string publicUrl = 2;
+        string rack = 3;
+        string dataCenter = 4;
     }
-    ProofOfHistory proof_of_history = 6;
+    optional Server server = 5;
+}
+message VolumeServerMerkleTree {
+    string digest = 1;
+    map<string, string> tree = 2;
 }
 
 message VolumeCopyRequest {

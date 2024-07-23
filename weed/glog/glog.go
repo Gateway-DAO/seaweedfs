@@ -74,7 +74,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	flag "github.com/seaweedfs/seaweedfs/weed/util/fla9"
+	flag "github.com/gateway-dao/seaweedfs/weed/util/fla9"
 	"io"
 	stdLog "log"
 	"os"

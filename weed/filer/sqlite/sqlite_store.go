@@ -11,10 +11,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/seaweedfs/seaweedfs/weed/filer"
-	"github.com/seaweedfs/seaweedfs/weed/filer/abstract_sql"
-	"github.com/seaweedfs/seaweedfs/weed/filer/mysql"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/filer"
+	"github.com/gateway-dao/seaweedfs/weed/filer/abstract_sql"
+	"github.com/gateway-dao/seaweedfs/weed/filer/mysql"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	_ "modernc.org/sqlite"
 )
 

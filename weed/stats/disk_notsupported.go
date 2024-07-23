@@ -3,7 +3,7 @@
 
 package stats
 
-import "github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+import "github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 
 func fillInDiskStatus(status *volume_server_pb.DiskStatus) {
 	return

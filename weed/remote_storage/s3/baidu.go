@@ -6,9 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/seaweedfs/seaweedfs/weed/pb/remote_pb"
-	"github.com/seaweedfs/seaweedfs/weed/remote_storage"
-	"github.com/seaweedfs/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/pb/remote_pb"
+	"github.com/gateway-dao/seaweedfs/weed/remote_storage"
+	"github.com/gateway-dao/seaweedfs/weed/util"
 	"os"
 )
 

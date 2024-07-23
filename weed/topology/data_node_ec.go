@@ -1,9 +1,9 @@
 package topology
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/storage/erasure_coding"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/erasure_coding"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 )
 
 func (dn *DataNode) GetEcShards() (ret []*erasure_coding.EcVolumeInfo) {

@@ -3,18 +3,18 @@ package topology
 import (
 	"errors"
 	"fmt"
-	"github.com/seaweedfs/seaweedfs/weed/stats"
+	"github.com/gateway-dao/seaweedfs/weed/stats"
 	"math/rand"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/storage"
-	"github.com/seaweedfs/seaweedfs/weed/storage/needle"
-	"github.com/seaweedfs/seaweedfs/weed/storage/super_block"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/storage"
+	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
+	"github.com/gateway-dao/seaweedfs/weed/storage/super_block"
 )
 
 type copyState int

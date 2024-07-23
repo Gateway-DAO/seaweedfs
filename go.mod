@@ -1,6 +1,6 @@
-module github.com/seaweedfs/seaweedfs
+module github.com/gateway-dao/seaweedfs
 
-go 1.22.0
+go 1.22
 
 require (
 	cloud.google.com/go v0.115.0 // indirect

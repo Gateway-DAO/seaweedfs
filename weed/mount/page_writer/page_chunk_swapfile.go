@@ -1,9 +1,9 @@
 package page_writer
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/glog"
-	"github.com/seaweedfs/seaweedfs/weed/util"
-	"github.com/seaweedfs/seaweedfs/weed/util/mem"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/util"
+	"github.com/gateway-dao/seaweedfs/weed/util/mem"
 	"os"
 	"sync"
 )

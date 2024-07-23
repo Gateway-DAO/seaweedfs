@@ -1,7 +1,7 @@
 package idx
 
 import (
-	"github.com/seaweedfs/seaweedfs/weed/storage/types"
+	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 )
 
 // firstInvalidIndex find the first index the failed lessThanOrEqualToFn function's requirement.
