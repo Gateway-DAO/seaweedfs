@@ -21,6 +21,11 @@ type LevelDbEventStore struct {
 	kafkaTopixPrefix *string
 }
 
+type EventKafkaKey struct {
+	Volume string `json:"volume"`
+	Server string `json:"server"`
+}
+
 func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPrefix *string) (*LevelDbEventStore, error) {
 	es := &LevelDbEventStore{
 		Dir:  eventDir,
@@ -49,10 +54,15 @@ func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPre
 	return es, nil
 }
 
-func (es *LevelDbEventStore) sendKafkaMessage(topic, key string, data []byte) (int32, int64, error) {
+func (es *LevelDbEventStore) sendKafkaMessage(topic string, key EventKafkaKey, data []byte) (int32, int64, error) {
+	encodedKey, err := json.Marshal(key)
+	if err != nil {
+		return 0, 0, fmt.Errorf("error encoding kafka key %v", key)
+	}
+
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
-		Key:   sarama.StringEncoder(key),
+		Key:   sarama.ByteEncoder(encodedKey),
 		Value: sarama.ByteEncoder(data),
 	}
 
@@ -80,10 +90,14 @@ func (es *LevelDbEventStore) RegisterEvent(e *VolumeServerEvent) error {
 	}
 
 	if es.kafkaProducer != nil {
-		glog.V(3).Infof("write to kafka stream: volume%s", e.Volume.Id)
+		kafkaKey := EventKafkaKey{
+			Volume: e.Volume.Id,
+			Server: e.Server.PublicUrl,
+		}
+		glog.V(3).Infof("write to kafka stream with key %v", kafkaKey)
 		go es.sendKafkaMessage(
 			"volume_server",
-			fmt.Sprintf("volume%s", e.Volume.Id),
+			kafkaKey,
 			val,
 		)
 	}
