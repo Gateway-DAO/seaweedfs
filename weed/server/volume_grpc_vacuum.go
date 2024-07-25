@@ -92,11 +92,10 @@ func (vs *VolumeServer) VacuumVolumeCommit(ctx context.Context, req *volume_serv
 	} else {
 		glog.V(1).Infof("commit volume %d", req.VolumeId)
 
-		go vs.registerEvent(
+		go registerEvent(
 			event.VACUUM,
+			vs,
 			volumeId,
-			nil,
-			nil,
 			nil,
 		)
 	}
