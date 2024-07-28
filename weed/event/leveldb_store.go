@@ -3,16 +3,17 @@ package event
 import (
 	"encoding/json"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/IBM/sarama"
 	"github.com/seaweedfs/seaweedfs/weed/glog"
+	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
+	"github.com/seaweedfs/seaweedfs/weed/stats"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
 type LevelDbEventStore struct {
-	sync.RWMutex
+	EventStoreImpl
 
 	Dir  string
 	size uint64
@@ -49,37 +50,50 @@ func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPre
 	return es, nil
 }
 
-func (es *LevelDbEventStore) sendKafkaMessage(topic, key string, data []byte) (int32, int64, error) {
-	msg := &sarama.ProducerMessage{
-		Topic: topic,
-		Key:   sarama.StringEncoder(key),
-		Value: sarama.ByteEncoder(data),
-	}
-
-	partition, offset, err := es.kafkaProducer.SendMessage(msg)
-	if err != nil {
-		return 0, 0, fmt.Errorf("unable to send message to kafka producers: %s", err)
-	}
-
-	glog.V(3).Infof("kafka message successful: %d, %d", partition, offset)
-
-	return partition, offset, nil
-}
-
 func (es *LevelDbEventStore) RegisterEvent(e *VolumeServerEvent) error {
+	if e == nil {
+		return fmt.Errorf("server event is nil")
+	}
+
+	// Collect last event's hash
+	var lastHash *string
+	lastEvent, lastEventErr := es.GetLastEvent()
+	if lastEventErr != nil || lastEvent.ProofOfHistory == nil {
+		glog.V(3).Infof("unable to find previous event. emitting GENESIS event")
+		e.Type = "GENESIS"
+	} else {
+		lastHash = &lastEvent.ProofOfHistory.Hash
+	}
+
 	es.Lock()
 	defer es.Unlock()
 
-	if e == nil {
-		return fmt.Errorf("server event is nil")
+	hasher, hash_err := stats.Blake2b()
+	if hash_err != nil {
+		return hash_err
+	}
+	if e.Type != "GENESIS" {
+		hasher.Write([]byte(lastEvent.ProofOfHistory.Hash))
 	}
 
 	val, ve := e.Value()
 	if ve != nil {
 		return ve
 	}
+	checksumBytes, err := stats.HashFromString(e.GetServer().GetChecksum().GetDigest())
+	if err != nil {
+		glog.Errorf("error decoding server checksum digest")
+	}
+	hasher.Write(checksumBytes)
 
-	if es.kafkaProducer != nil {
+	// update with proof of history metadata
+	e.ProofOfHistory = &volume_server_pb.VolumeServerEventResponse_ProofOfHistory{
+		PreviousHash: lastHash,
+		Hash:         stats.Hash(hasher.Sum(nil)).ToString(),
+	}
+	val, ve = e.Value()
+
+	if e.Volume != nil && es.kafkaProducer != nil {
 		glog.V(3).Infof("write to kafka stream: volume%s", e.Volume.Id)
 		go es.sendKafkaMessage(
 			"volume_server",
@@ -107,9 +121,42 @@ func (es *LevelDbEventStore) RegisterEvent(e *VolumeServerEvent) error {
 	return nil
 }
 
-func (es *LevelDbEventStore) ListAllEvents() ([]*VolumeServerEvent, error) {
+func (es *LevelDbEventStore) GetLastEvent() (*VolumeServerEvent, error) {
 	es.RLock()
 	defer es.RUnlock()
+
+	dbDir := es.Dir
+	glog.V(4).Infof("Reading database %s", dbDir)
+
+	db, err := leveldb.OpenFile(es.Dir, nil)
+	if err != nil {
+		return nil, fmt.Errorf("unable to connect to event store: %s", err)
+	}
+	defer db.Close()
+
+	iter := db.NewIterator(nil, nil)
+	defer iter.Release()
+
+	if iter.Last() {
+		key, val := iter.Key(), iter.Value()
+
+		valPtr := new(VolumeServerEvent)
+		if err := json.Unmarshal(val, valPtr); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal the value for key %s: %v", string(key), val)
+		}
+		glog.V(3).Infof("%v", valPtr)
+
+		return valPtr, nil
+	}
+
+	return nil, fmt.Errorf("no events found")
+}
+
+func (es *LevelDbEventStore) ListAllEvents() ([]*VolumeServerEvent, error) {
+	es.RLock()
+	glog.V(3).Info("acquired read lock")
+	defer es.RUnlock()
+	defer glog.V(3).Infof("released read lock")
 
 	dbDir := es.Dir
 	glog.V(4).Infof("Reading database %s", dbDir)

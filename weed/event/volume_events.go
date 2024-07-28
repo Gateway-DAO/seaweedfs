@@ -2,7 +2,6 @@ package event
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/seaweedfs/seaweedfs/weed/pb/volume_server_pb"
@@ -14,24 +13,14 @@ type VolumeServerEvent struct {
 }
 
 func NewVolumeServerEvent(
-	eventType NeedleEventType,
+	eventType NeedleEvent,
 	serverMetadata *volume_server_pb.VolumeServerEventResponse_Server,
 	volumeMetadata *volume_server_pb.VolumeServerEventResponse_Volume,
 	needleMetadata *volume_server_pb.VolumeServerEventResponse_Volume_Needle,
 ) (ne *VolumeServerEvent, err error) {
 	ne = new(VolumeServerEvent)
 
-	switch eventType {
-	case WRITE:
-		ne.Type = "WRITE"
-	case DELETE:
-		ne.Type = "DELETE"
-	case VACUUM:
-		ne.Type = "VACUUM"
-	default:
-		return nil, fmt.Errorf("unable to parse event type %d", eventType)
-	}
-
+	ne.Type = needleEventTypes[eventType]
 	ne.Volume = volumeMetadata
 	ne.Server = serverMetadata
 	if needleMetadata != nil {
