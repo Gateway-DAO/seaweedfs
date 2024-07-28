@@ -2,8 +2,6 @@ package weed_server
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"path/filepath"
 	"time"
@@ -260,7 +258,7 @@ func (vs *VolumeServer) VolumeServerStatus(ctx context.Context, req *volume_serv
 		Rack:         vs.rack,
 	}
 
-	vsChecksumWriter := sha256.New()
+	vsChecksumWriter, _ := stats.Blake2b()
 
 	for _, loc := range vs.store.Locations {
 		if dir, e := filepath.Abs(loc.Directory); e == nil {
@@ -268,8 +266,8 @@ func (vs *VolumeServer) VolumeServerStatus(ctx context.Context, req *volume_serv
 			resp.DiskStatuses = append(resp.DiskStatuses, diskStats)
 
 			for _, v := range diskStats.Checksum {
-				if hex, h_err := hex.DecodeString(v); h_err == nil {
-					vsChecksumWriter.Write(hex)
+				if hash, h_err := stats.HashFromString(v); h_err == nil {
+					vsChecksumWriter.Write(hash)
 				} else {
 					glog.Errorf("unable to decode distStats.Checksum")
 				}
@@ -277,7 +275,7 @@ func (vs *VolumeServer) VolumeServerStatus(ctx context.Context, req *volume_serv
 		}
 	}
 
-	resp.Checksum = hex.EncodeToString(vsChecksumWriter.Sum(nil))
+	resp.Checksum = stats.Hash(vsChecksumWriter.Sum(nil)).ToString()
 
 	return resp, nil
 

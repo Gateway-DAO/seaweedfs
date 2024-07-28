@@ -2,6 +2,7 @@ BINARY = weed
 
 SOURCE_DIR = .
 debug ?= 0
+gco = 1
 
 all: install
 

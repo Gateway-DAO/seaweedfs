@@ -298,7 +298,7 @@ message VolumeServerEventResponse {
     Volume volume = 5;
 
     message ProofOfHistory {
-        string previous_hash = 1;
+        optional string previous_hash = 1;
         string hash = 2;
         string signature = 3;
     }

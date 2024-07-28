@@ -4,7 +4,6 @@
 package stats
 
 import (
-	"encoding/hex"
 	"syscall"
 	"time"
 
@@ -46,7 +45,7 @@ func computeDiskChecksum(disk *volume_server_pb.DiskStatus) (DiskChecksum, error
 	formattedHashes := make(DiskChecksum, len(hashes))
 
 	for k, v := range hashes {
-		formattedHashes[k] = hex.EncodeToString(v)
+		formattedHashes[k] = v.ToString()
 	}
 
 	timeDuration := float64(time.Since(timeStart).Milliseconds())

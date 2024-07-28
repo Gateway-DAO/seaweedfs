@@ -42,7 +42,7 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	// Create needle for new upload request
 	// - mechanism to parse upload chunks in a storage's context
 	// - storage replication enforced by configured topology
-	reqNeedle, originalSize, contentMd5, ne := needle.CreateNeedleFromRequest(r, vs.FixJpgOrientation, vs.fileSizeLimitBytes, bytesBuffer)
+	reqNeedle, originalSize, contentMd5, contentHash, ne := needle.CreateNeedleFromRequest(r, vs.FixJpgOrientation, vs.fileSizeLimitBytes, bytesBuffer)
 	if ne != nil {
 		writeJsonError(w, r, http.StatusBadRequest, ne)
 		return
@@ -71,8 +71,10 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	ret.Mime = string(reqNeedle.Mime)
 	SetEtag(w, ret.ETag)
 	w.Header().Set("Content-MD5", contentMd5)
+	glog.V(3).Infof("computed blake2b hash: %s", contentHash.ToString())
+	w.Header().Set("Content-Blake2b", contentHash.ToString())
 
-	go vs.registerEvent(event.WRITE, volumeId, reqNeedle, &contentMd5)
+	go vs.registerEvent(event.WRITE, &volumeId, reqNeedle, contentHash)
 
 	writeJsonQuiet(w, r, httpStatus, ret)
 }
@@ -143,7 +145,7 @@ func (vs *VolumeServer) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	writeDeleteResult(err, count, w, r)
 
 	if err == nil {
-		go vs.registerEvent(event.DELETE, volumeId, n, nil)
+		go vs.registerEvent(event.DELETE, &volumeId, n, nil)
 	}
 
 }

@@ -9,7 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/seaweedfs/seaweedfs/weed/glog"
 	"github.com/seaweedfs/seaweedfs/weed/images"
+	"github.com/seaweedfs/seaweedfs/weed/stats"
 	. "github.com/seaweedfs/seaweedfs/weed/storage/types"
 )
 
@@ -49,7 +51,7 @@ func (n *Needle) String() (str string) {
 	return
 }
 
-func CreateNeedleFromRequest(r *http.Request, fixJpgOrientation bool, sizeLimit int64, bytesBuffer *bytes.Buffer) (n *Needle, originalSize int, contentMd5 string, e error) {
+func CreateNeedleFromRequest(r *http.Request, fixJpgOrientation bool, sizeLimit int64, bytesBuffer *bytes.Buffer) (n *Needle, originalSize int, contentMd5 string, contentHash stats.Hash, e error) {
 	n = new(Needle)
 	pu, e := ParseUpload(r, sizeLimit, bytesBuffer)
 	if e != nil {
@@ -60,6 +62,13 @@ func CreateNeedleFromRequest(r *http.Request, fixJpgOrientation bool, sizeLimit 
 	n.LastModified = pu.ModifiedTime
 	n.Ttl = pu.Ttl
 	contentMd5 = pu.ContentMd5
+
+	hasher, err := stats.Blake2b()
+	if err != nil {
+		glog.Errorf("error constructing needle blake2b: %s", err)
+	}
+	hasher.Write(bytesBuffer.Bytes())
+	contentHash = stats.Hash(hasher.Sum(nil))
 
 	if len(pu.FileName) < 256 {
 		n.Name = []byte(pu.FileName)
