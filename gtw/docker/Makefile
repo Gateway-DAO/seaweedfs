@@ -1,7 +1,9 @@
 .PHONY: image
 images:
-	docker build -t gateway/edv:latest -f edv.Dockerfile ../..
-	docker build -t gateway/master:latest -f master.Dockerfile ../..
+	@./docker_build.sh -t local
+
+images-testnet:
+	@./docker_build.sh -t testnet
 
 .PHONY: kafka kafka-logs kafka-stop
 KAFKA_COMPOSE_FILES := -f docker-compose.kafka.yml

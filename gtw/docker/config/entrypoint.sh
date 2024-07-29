@@ -2,19 +2,11 @@
 
 isArgPassed() {
   arg="$1"
-  argWithEqualSign="$1="
   shift
-  while [ $# -gt 0 ]; do
-    passedArg="$1"
-    shift
-    case $passedArg in
-    $arg)
+  for passedArg in "$@"; do
+    if [ "$passedArg" = "$arg" ] || [[ "$passedArg" == "$arg="* ]]; then
       return 0
-      ;;
-    $argWithEqualSign*)
-      return 0
-      ;;
-    esac
+    fi
   done
   return 1
 }
