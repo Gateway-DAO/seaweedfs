@@ -8,15 +8,20 @@ import (
 )
 
 type KafkaStore struct {
-	brokers     []string
-	topicPrefix *string
-
+	brokers  []string
 	producer sarama.SyncProducer
 }
 
 type EventKafkaKey struct {
 	Volume string `json:"volume"`
 	Server string `json:"server"`
+}
+
+func NewKafkaStore(brokers []string, producer sarama.SyncProducer) *KafkaStore {
+	return &KafkaStore{
+		brokers:  brokers,
+		producer: producer,
+	}
 }
 
 func (ks *KafkaStore) sendKafkaMessage(topic string, key []byte, data []byte) (int32, int64, error) {

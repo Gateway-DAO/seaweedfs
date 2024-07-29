@@ -39,9 +39,10 @@ func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPre
 				continue
 			}
 
-			es.kafkaStore.brokers = *kafkaBrokers
-			es.kafkaStore.topicPrefix = kafkaTopicPrefix
-			es.kafkaStore.producer = producer
+			es.kafkaStore = NewKafkaStore(
+				*kafkaBrokers, producer,
+			)
+
 			glog.V(3).Infof("connected to brokers: %s", kafkaBrokers)
 			break
 		}
