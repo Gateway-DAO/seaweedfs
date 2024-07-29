@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gateway-dao/seaweedfs/weed/event"
 	"github.com/gateway-dao/seaweedfs/weed/operation"
 
 	"google.golang.org/grpc"
@@ -58,6 +59,8 @@ func (vs *VolumeServer) heartbeat() {
 	var err error
 	var newLeader pb.ServerAddress
 	for vs.isHeartbeating {
+		go registerEvent(event.ALIVE, vs, nil, nil)
+
 		for _, master := range vs.SeedMasterNodes {
 			if newLeader != "" {
 				// the new leader may actually is the same master

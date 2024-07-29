@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"encoding/base64"
 	"fmt"
 	"hash"
 	"io"
@@ -11,6 +12,16 @@ import (
 	"github.com/gateway-dao/seaweedfs/weed/glog"
 	"golang.org/x/crypto/blake2b"
 )
+
+type Hash []byte
+
+func (h Hash) ToString() string {
+	return base64.RawStdEncoding.EncodeToString(h)
+}
+
+func HashFromString(encodedHash string) (Hash, error) {
+	return base64.RawStdEncoding.DecodeString(encodedHash)
+}
 
 func Blake2b() (hash.Hash, error) { return blake2b.New256(nil) }
 
@@ -32,12 +43,12 @@ func hashFile(path string) ([]byte, error) {
 	return hasher.Sum(nil), nil
 }
 
-func hashDirectory(directoryPath string) (map[string][]byte, error) {
+func hashDirectory(directoryPath string) (map[string]Hash, error) {
 	return hashFilteredDirectory(directoryPath, "*")
 }
 
-func hashFilteredDirectory(dirPath, filter string) (map[string][]byte, error) {
-	var dirHashes map[string][]byte = map[string][]byte{}
+func hashFilteredDirectory(dirPath, filter string) (map[string]Hash, error) {
+	var dirHashes map[string]Hash = map[string]Hash{}
 
 	rPOSIX, r_err := regexp.CompilePOSIX(filter)
 	if r_err != nil {
@@ -61,7 +72,7 @@ func hashFilteredDirectory(dirPath, filter string) (map[string][]byte, error) {
 					return fmt.Errorf("error constructing hasher for dirHash @ path %s: %s", path, hash_err)
 				}
 				dirHash.Write(fileHash)
-				dirHashes[path] = []byte(dirHash.Sum(nil))
+				dirHashes[path] = dirHash.Sum(nil)
 			}
 		}
 		return nil

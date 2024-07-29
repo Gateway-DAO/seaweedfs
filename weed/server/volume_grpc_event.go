@@ -14,61 +14,10 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEventsRequest, stream volume_server_pb.VolumeServer_VolumeServerEventsServer) error {
-	var vol *storage.Volume
-	if req.VolumeId != nil {
-		vol = vs.store.GetVolume(needle.VolumeId(*req.VolumeId))
-
-		if vol == nil {
-			return status.Errorf(codes.NotFound, "volume server does not have volume %d", *req.VolumeId)
-		}
-	}
-
-	events, err := vs.eventStore.ListAllEvents()
-	if err != nil {
-		return status.Errorf(codes.Aborted, "error listing vs %s events: %s", vs.store.PublicUrl, err)
-	}
-
-	for _, event := range events {
-		if event == nil {
-			continue
-		}
-		glog.V(3).Infof("%s iterating through events", vs.store.PublicUrl)
-		if ctxErr := stream.Context().Err(); ctxErr != nil {
-			return ctxErr
-		}
-
-		if vol != nil && event.Volume.Id != vol.Id.String() {
-			continue
-		}
-
-		parsedEvent := prepareVolumeServerEventResponse(event)
-		if streamErr := stream.SendMsg(parsedEvent); streamErr != nil {
-			return streamErr
-		}
-	}
-
-	return nil
-}
-
-func prepareVolumeServerEventResponse(ne *event.VolumeServerEvent) *volume_server_pb.VolumeServerEventResponse {
-	resp := &volume_server_pb.VolumeServerEventResponse{
-		Type:      ne.GetType(),
-		Needle:    ne.GetNeedle(),
-		Volume:    ne.GetVolume(),
-		Timestamp: ne.GetTimestamp(),
-	}
-
-	return resp
-}
-
-func registerEvent(
-	eventType event.VolumeServerEventType,
-	vs *VolumeServer,
-	volumeId needle.VolumeId,
-	n *needle.Needle,
-) error {
+func registerEvent(eventType event.VolumeServerEventType, vs *VolumeServer, volumeId *needle.VolumeId, needle *needle.Needle) error {
 	switch eventType {
+	case event.ALIVE:
+		glog.V(3).Infof("Emitting ALIVE event for %s", vs.store.Ip)
 	case event.WRITE:
 		glog.V(3).Infof("Emitting WRITE event for %s", vs.store.Ip)
 	case event.DELETE:
@@ -79,8 +28,33 @@ func registerEvent(
 		return fmt.Errorf("eventType undefined")
 	}
 
-	vol := vs.store.GetVolume(volumeId)
-	datSize, idxSize, lastModTime := vol.FileStat()
+	var vse_vol *volume_server_pb.VolumeServerEventResponse_Volume
+	var vse_needle *volume_server_pb.VolumeServerEventResponse_Needle
+	if volumeId != nil {
+		vol := vs.store.GetVolume(*volumeId)
+		datSize, idxSize, lastModTime := vol.FileStat()
+
+		vse_vol = &volume_server_pb.VolumeServerEventResponse_Volume{
+			Id:           volumeId.String(),
+			FileCount:    vol.FileCount(),
+			IdxSize:      idxSize,
+			DatSize:      datSize,
+			DeletedCount: vol.DeletedCount(),
+			DeletedSize:  vol.DeletedSize(),
+			LastModified: timestamppb.New(lastModTime),
+			Replication:  vol.ReplicaPlacement.String(),
+		}
+
+		if needle != nil {
+			// needle_hash := hash.ToString()
+			vse_needle = &volume_server_pb.VolumeServerEventResponse_Needle{
+				Id:       uint64(needle.Id),
+				Checksum: needle.Checksum.Value(),
+				// Hash:     &needle_hash,
+				Fid: needle.Id.FileId(uint32(*volumeId)),
+			}
+		}
+	}
 
 	vsStatus, vsStatus_err := vs.VolumeServerStatus(context.Background(), nil)
 	if vsStatus_err != nil {
@@ -105,21 +79,8 @@ func registerEvent(
 			Rack:       vsStatus.GetRack(),
 			DataCenter: vsStatus.GetDataCenter(),
 		},
-		&volume_server_pb.VolumeServerEventResponse_Volume{
-			Id:           volumeId.String(),
-			IdxSize:      idxSize,
-			FileCount:    vol.FileCount(),
-			DatSize:      datSize,
-			DeletedCount: vol.DeletedCount(),
-			DeletedSize:  vol.DeletedSize(),
-			LastModified: timestamppb.New(lastModTime),
-			Replication:  vol.ReplicaPlacement.String(),
-		},
-		&volume_server_pb.VolumeServerEventResponse_Needle{
-			Id:       uint64(n.Id),
-			Fid:      needle.NewFileIdFromNeedle(volumeId, n).String(),
-			Checksum: uint32(n.Checksum),
-		},
+		vse_vol,
+		vse_needle,
 	)
 	if vse_err != nil {
 		return vse_err
@@ -128,6 +89,43 @@ func registerEvent(
 	if err := vs.eventStore.RegisterEvent(vse); err != nil {
 		// Terminate the server if the event is unable to be logged
 		glog.Fatalf("unable to register EDV event: %s", err)
+	}
+
+	return nil
+}
+
+func (vs *VolumeServer) VolumeServerEvents(req *volume_server_pb.VolumeServerEventsRequest, stream volume_server_pb.VolumeServer_VolumeServerEventsServer) error {
+	var vol *storage.Volume
+	if req.VolumeId != nil {
+		vol = vs.store.GetVolume(needle.VolumeId(*req.VolumeId))
+
+		if vol == nil {
+			return status.Errorf(codes.NotFound, "volume server does not have volume %d", *req.VolumeId)
+		}
+	}
+
+	events, err := vs.eventStore.ListAllEvents()
+	if err != nil {
+		return status.Errorf(codes.Aborted, "error listing vs %s events: %s", vs.store.PublicUrl, err)
+	}
+	glog.V(3).Infof("volume server has %d events", len(events))
+
+	for _, event := range events {
+		if event == nil {
+			continue
+		}
+		glog.V(3).Infof("%s iterating through events", vs.store.PublicUrl)
+		if ctxErr := stream.Context().Err(); ctxErr != nil {
+			return ctxErr
+		}
+
+		if vol != nil && event.Volume.Id != vol.Id.String() {
+			continue
+		}
+
+		if streamErr := stream.SendMsg(event); streamErr != nil {
+			return status.Error(codes.Aborted, streamErr.Error())
+		}
 	}
 
 	return nil

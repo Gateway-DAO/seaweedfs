@@ -282,7 +282,7 @@ message VolumeServerEventResponse {
         google.protobuf.Timestamp last_modified = 7;
         string replication = 8;
     }
-    Volume volume = 4;
+    optional Volume volume = 4;
 
     message Server {
         VolumeServerMerkleTree tree = 1;
@@ -290,7 +290,14 @@ message VolumeServerEventResponse {
         string rack = 3;
         string dataCenter = 4;
     }
-    optional Server server = 5;
+    Server server = 5;
+
+    message ProofOfHistory {
+        optional string previous_hash = 1;
+        string hash = 2;
+        string signature = 3;
+    }
+    ProofOfHistory proofOfHistory = 6;
 }
 message VolumeServerMerkleTree {
     string digest = 1;

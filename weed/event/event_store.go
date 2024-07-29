@@ -1,6 +1,9 @@
 package event
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"sync"
+)
 
 type NanoTimestamp int64
 
@@ -13,9 +16,21 @@ const (
 	VACUUM
 )
 
+var needleEventTypes = map[VolumeServerEventType]string{
+	ALIVE:  "ALIVE",
+	WRITE:  "WRITE",
+	DELETE: "DELETE",
+	VACUUM: "VACUUM",
+}
+
 type VolumeServerEventStore interface {
 	RegisterEvent(*VolumeServerEvent) error
+	GetLastEvent() (*VolumeServerEvent, error)
 	ListAllEvents() ([]*VolumeServerEvent, error)
+}
+
+type EventStoreImpl struct {
+	sync.RWMutex
 }
 
 func timestampToBytes(ts int64) []byte {
