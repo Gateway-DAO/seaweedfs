@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/IBM/sarama"
 	"github.com/gateway-dao/seaweedfs/weed/event"
 	"github.com/gateway-dao/seaweedfs/weed/storage/types"
 
@@ -252,11 +253,13 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 	var es_err error
 	if v.eventBrokers != nil && *v.eventBrokers != "" {
 		var kafkaBrokers = strings.Split(*v.eventBrokers, ",")
+		config := sarama.NewConfig()
+		config.Producer.Return.Successes = true
 
-		eventStore, es_err = event.NewLevelDbEventStore(eventsDir, &kafkaBrokers, &topicPrefix)
+		eventStore, es_err = event.NewLevelDbEventStore(eventsDir, &kafkaBrokers, &topicPrefix, config)
 	} else {
 		glog.V(3).Infof("events.brokers not specified, skipping kafka configuration for events")
-		eventStore, es_err = event.NewLevelDbEventStore(eventsDir, nil, nil)
+		eventStore, es_err = event.NewLevelDbEventStore(eventsDir, nil, nil, nil)
 	}
 	if es_err != nil {
 		glog.Fatalf("Unable to establish connection to EventStore (LevelDB): %s", es_err)
