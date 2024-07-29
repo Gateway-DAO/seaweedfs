@@ -1,7 +1,10 @@
+//go:build gtw && master
+
 package command
 
 import (
 	"fmt"
+
 	"github.com/gateway-dao/seaweedfs/weed/pb"
 
 	"github.com/gateway-dao/seaweedfs/weed/security"
@@ -16,6 +19,8 @@ var (
 )
 
 func init() {
+	Commands = append(Commands, cmdShell)
+
 	cmdShell.Run = runShell // break init cycle
 	shellOptions.Masters = cmdShell.Flag.String("master", "", "comma-separated master servers, e.g. localhost:9333")
 	shellOptions.FilerGroup = cmdShell.Flag.String("filerGroup", "", "filerGroup for the filers")

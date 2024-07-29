@@ -9,10 +9,10 @@ x-default-network: &default-networks
         - dfs
 
 x-master-build: &master-build
-    image: gateway/master
+    image: gateway/master:local
 
 x-edv-build: &edv-build
-    image: gateway/edv
+    image: gateway/edv:local
 
 x-default-master: &master-defaults
     <<: [*master-build, *default-networks]
