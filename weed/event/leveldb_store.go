@@ -21,7 +21,7 @@ type LevelDbEventStore struct {
 	kafkaStore *KafkaStore
 }
 
-func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPrefix *string) (*LevelDbEventStore, error) {
+func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPrefix *string, config *sarama.Config) (*LevelDbEventStore, error) {
 	es := &LevelDbEventStore{
 		Dir:  eventDir,
 		size: 0,
@@ -29,8 +29,6 @@ func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPre
 
 	if kafkaBrokers != nil {
 		for {
-			config := sarama.NewConfig()
-			config.Producer.Return.Successes = true
 			producer, err := sarama.NewSyncProducer(*kafkaBrokers, config)
 
 			if err != nil {
