@@ -21,7 +21,11 @@ type LevelDbEventStore struct {
 	kafkaStore *KafkaStore
 }
 
-func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPrefix *string, config *sarama.Config) (*LevelDbEventStore, error) {
+func NewLevelDbEventStore(
+	eventDir string,
+	kafkaBrokers *[]string,
+	config *sarama.Config,
+) (*LevelDbEventStore, error) {
 	es := &LevelDbEventStore{
 		Dir:  eventDir,
 		size: 0,
@@ -38,7 +42,7 @@ func NewLevelDbEventStore(eventDir string, kafkaBrokers *[]string, kafkaTopicPre
 			}
 
 			es.kafkaStore = NewKafkaStore(
-				*kafkaBrokers, producer,
+				*kafkaBrokers, config, producer,
 			)
 
 			glog.V(3).Infof("connected to brokers: %s", kafkaBrokers)
@@ -71,8 +75,8 @@ func (es *LevelDbEventStore) RegisterEvent(e *VolumeServerEvent) error {
 	if hash_err != nil {
 		return hash_err
 	}
-	if e.Type != "GENESIS" {
-		hasher.Write([]byte(lastEvent.ProofOfHistory.Hash))
+	if e.Type != "GENESIS" && lastHash != nil {
+		hasher.Write([]byte(*lastHash))
 	}
 
 	val, ve := e.Value()
@@ -91,24 +95,36 @@ func (es *LevelDbEventStore) RegisterEvent(e *VolumeServerEvent) error {
 		Hash:         stats.Hash(hasher.Sum(nil)).ToString(),
 	}
 	val, ve = e.Value()
+	if ve != nil {
+		return ve
+	}
 
-	if e.Volume != nil && es.kafkaStore != nil {
-		glog.V(3).Infof("write to kafka stream: volume%s", e.Volume.Id)
+	if es.kafkaStore != nil {
+		go func() {
+			glog.V(3).Infof("writing to kafka stream")
 
-		kafkaKey := EventKafkaKey{
-			Volume: e.GetVolume().Id,
-			Server: e.GetServer().PublicUrl,
-		}
-		kafkaEncodedKey, err := json.Marshal(kafkaKey)
-		if err != nil {
-			fmt.Errorf("unable to encode kafkaKey")
-		}
+			kafkaKey := EventKafkaKey{
+				Server: e.GetServer().PublicUrl,
+			}
+			if e.GetVolume() != nil {
+				kafkaKey.Volume = e.GetVolume().Id
+			}
+			kafkaEncodedKey, err := json.Marshal(kafkaKey)
+			if err != nil {
+				glog.Errorf("unable to encode kafkaKey")
+			}
 
-		go es.kafkaStore.sendKafkaMessage(
-			"volume_server",
-			kafkaEncodedKey,
-			val,
-		)
+			_, _, err = es.kafkaStore.Publish(
+				"volume-server",
+				kafkaEncodedKey,
+				val,
+			)
+			if err != nil {
+				glog.Errorf("unable to publish to kafka topic: %s", err)
+			} else {
+				glog.Infof("successfully published to topic")
+			}
+		}()
 	}
 
 	dbDir := es.Dir

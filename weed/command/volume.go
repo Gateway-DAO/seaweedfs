@@ -108,6 +108,7 @@ func init() {
 	v.inflightUploadDataTimeout = cmdVolume.Flag.Duration("inflightUploadDataTimeout", 60*time.Second, "inflight upload data wait timeout of volume servers")
 	v.hasSlowRead = cmdVolume.Flag.Bool("hasSlowRead", true, "<experimental> if true, this prevents slow reads from blocking other requests, but large file read P99 latency will increase.")
 	v.readBufferSizeMB = cmdVolume.Flag.Int("readBufferSizeMB", 4, "<experimental> larger values can optimize query performance but will increase some memory usage,Use with hasSlowRead normally.")
+	v.eventsDir = *eventsDir
 	v.eventBrokers = cmdVolume.Flag.String("events.brokers", "", "comma-separated list of Kafka broker addresses for events")
 	v.eventBrokerIsConfluent = cmdVolume.Flag.Bool("events.brokers.isConfluent", false, "Set this flag to 'true' if the event broker is Confluent Kafka. This enables specific configurations required for interacting with Confluent Kafka services.")
 
@@ -252,15 +253,37 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 	// set events directory for all event artifacts
 	var eventStore event.VolumeServerEventStore
 	var es_err error
-	if v.eventBrokers != nil && *v.eventBrokers != "" {
-		var kafkaBrokers = strings.Split(*v.eventBrokers, ",")
-		config := sarama.NewConfig()
-		config.Producer.Return.Successes = true
+	if util.LoadConfiguration("edv", false) {
+		kafkaBrokers := util.GetViper().GetStringSlice("kafka.brokers")
+		glog.V(3).Infof("Registering brokers %s", kafkaBrokers)
 
-		eventStore, es_err = event.NewLevelDbEventStore(v.eventsDir, &kafkaBrokers, &topicPrefix, config)
+		kafkaConfig := sarama.NewConfig()
+		kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
+		kafkaConfig.Producer.Return.Successes = true
+
+		if !util.LoadConfiguration("edv", true) {
+			glog.Fatalf("Required edv.toml file not found")
+		}
+
+		// SASL
+		kafkaConfig.Net.SASL.Enable = true
+		kafkaConfig.Net.SASL.Handshake = true
+
+		kafkaToml := util.GetViper().GetStringMapString("kafka.sasl")
+		kafkaConfig.Net.SASL.User = kafkaToml["username"]
+		kafkaConfig.Net.SASL.Password = kafkaToml["password"]
+		kafkaConfig.Net.SASL.Mechanism = sarama.SASLTypePlaintext
+
+		// TLS
+		kafkaConfig.Net.TLS.Enable = true
+
+		// Producer
+		kafkaConfig.Producer.Retry.Max = util.GetViper().GetInt("kafka.producer.retry_max")
+
+		eventStore, es_err = event.NewLevelDbEventStore(v.eventsDir, &kafkaBrokers, kafkaConfig)
 	} else {
 		glog.V(3).Infof("events.brokers not specified, skipping kafka configuration for events")
-		eventStore, es_err = event.NewLevelDbEventStore(v.eventsDir, nil, nil, nil)
+		eventStore, es_err = event.NewLevelDbEventStore(v.eventsDir, (*[]string)(nil), (*sarama.Config)(nil))
 	}
 	if es_err != nil {
 		glog.Fatalf("Unable to establish connection to EventStore (LevelDB): %s", es_err)

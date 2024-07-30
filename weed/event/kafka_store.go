@@ -8,7 +8,10 @@ import (
 )
 
 type KafkaStore struct {
-	brokers  []string
+	brokers []string
+
+	config *sarama.Config
+
 	producer sarama.SyncProducer
 }
 
@@ -17,14 +20,21 @@ type EventKafkaKey struct {
 	Server string `json:"server"`
 }
 
-func NewKafkaStore(brokers []string, producer sarama.SyncProducer) *KafkaStore {
+func NewKafkaStore(brokers []string, config *sarama.Config, producer sarama.SyncProducer) *KafkaStore {
+	glog.V(3).Infof("Initializing new kafka store with config: \n%+v", config)
+
 	return &KafkaStore{
 		brokers:  brokers,
+		config:   config,
 		producer: producer,
 	}
 }
 
-func (ks *KafkaStore) sendKafkaMessage(topic string, key []byte, data []byte) (int32, int64, error) {
+func (ks *KafkaStore) Publish(topic string, key []byte, data []byte) (int32, int64, error) {
+	defer ks.producer.Close()
+
+	glog.V(3).Infof("Publishing event to topic %s", topic)
+
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
 		Key:   sarama.ByteEncoder(key),
