@@ -2,8 +2,9 @@ package command
 
 import (
 	"fmt"
-	"github.com/gateway-dao/seaweedfs/weed/util"
 	"path/filepath"
+
+	"github.com/gateway-dao/seaweedfs/weed/util"
 
 	"github.com/gateway-dao/seaweedfs/weed/command/scaffold"
 )
@@ -49,6 +50,8 @@ func runScaffold(cmd *Command, args []string) bool {
 		content = scaffold.Master
 	case "shell":
 		content = scaffold.Shell
+	case "edv":
+		content = scaffold.Edv
 	}
 	if content == "" {
 		println("need a valid -config option")
