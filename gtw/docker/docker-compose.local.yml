@@ -91,12 +91,12 @@ services:
             -v=3 volume -dataCenter=gateway -rack=gtw1
             -dir /data
             -events.dir /data/events
-            -events.brokers gtw-event-broker:9092,gtw-event-broker1:9092,gtw-event-broker2:9092
             -port=8080 -ip=volume1 -publicUrl=localhost:8080
             -mserver="master0:9333,master1:9333,master2:9333"
             -metricsPort=1234
             -preStopSeconds=1
         volumes:
+            - ./config/edv.toml:/etc/seaweedfs/edv.toml
             - volume1-data:/data
         # --dir /etc does not persist on restart
 
@@ -112,11 +112,11 @@ services:
             -dir /data
             -dir /data
             -events.dir /data/events
-            -events.brokers gtw-event-broker:9092,gtw-event-broker1:9092,gtw-event-broker2:9092
             -port=8080 -ip=volume2 -publicUrl=localhost:8081
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
+            - ./config/edv.toml:/etc/seaweedfs/edv.toml
             - volume2-data:/data
 
     volume3:
@@ -133,8 +133,8 @@ services:
             -port=8080 -ip=volume3 -publicUrl=localhost:8082
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
-        # -events.brokers gtw-event-broker:9092,gtw-event-broker1:9092,gtw-event-broker2:9092
         volumes:
+            - ./config/edv.toml:/etc/seaweedfs/edv.toml
             - volume3-data:/data
 
     volume4:
@@ -148,11 +148,11 @@ services:
             volume -dataCenter=dimo -rack=dimo1
             -dir /data
             -events.dir /data/events
-            -events.brokers gtw-event-broker:9092,gtw-event-broker1:9092,gtw-event-broker2:9092
             -port=8080 -ip=volume4 -publicUrl=localhost:8083
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
+            - ./config/edv.toml:/etc/seaweedfs/edv.toml
             - volume4-data:/data
 
     # # MARK: Filer
