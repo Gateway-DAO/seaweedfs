@@ -1,0 +1,13 @@
+[kafka]
+brokers = []
+
+[kafka.sasl]
+enabled = true
+username = ""
+password = ""
+
+[kafka.tls]
+enabled = true
+
+[kafka.producer]
+retry_max = 5
