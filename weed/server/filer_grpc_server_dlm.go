@@ -3,13 +3,14 @@ package weed_server
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/gateway-dao/seaweedfs/weed/cluster/lock_manager"
 	"github.com/gateway-dao/seaweedfs/weed/glog"
 	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"github.com/gateway-dao/seaweedfs/weed/pb/filer_pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"time"
 )
 
 // DistributedLock is a grpc handler to handle FilerServer's LockRequest

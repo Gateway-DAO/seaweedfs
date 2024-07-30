@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"context"
 	"fmt"
-	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"io"
 	"math"
 	"math/rand"
@@ -14,6 +13,8 @@ import (
 	"sort"
 	"sync"
 	"time"
+
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 
 	"google.golang.org/grpc"
 
