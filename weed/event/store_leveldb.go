@@ -17,6 +17,7 @@ type LevelDbEventStore[T Event] struct {
 	mu sync.RWMutex
 
 	Dir  string
+	db   *leveldb.DB
 	size uint64
 
 	kafkaStore *KafkaStore
@@ -33,6 +34,15 @@ func NewLevelDbEventStore[T Event](
 		Dir:  eventDir,
 		size: 0,
 	}
+
+	dbDir := es.Dir
+	glog.V(4).Infof("Reading database %s", dbDir)
+
+	db, err := leveldb.OpenFile(es.Dir, nil)
+	if err != nil {
+		return nil, fmt.Errorf("unable to connect to event store: %s", err)
+	}
+	es.db = db
 
 	if kafkaBrokers != nil && kafkaTopic != nil {
 		for {
@@ -118,14 +128,11 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 		glog.V(3).Infof("skip publishing kafka event; either kafkaStore or kafkaTopic is nil.")
 	}
 
-	dbDir := es.Dir
-	glog.V(4).Infof("Writing to database %s", dbDir)
-
-	db, err := leveldb.OpenFile(es.Dir, nil)
+	db := es.db
+	glog.V(4).Infof("Writing to database %s", es.Dir)
 	if err != nil {
 		return fmt.Errorf("unable to connect to event store: %s", err)
 	}
-	defer db.Close()
 
 	key, err := e.GetKafkaKey()
 	if err != nil {
@@ -153,7 +160,6 @@ func (es *LevelDbEventStore[T]) GetLastEvent() (*T, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to connect to event store: %s", err)
 	}
-	defer db.Close()
 
 	iter := db.NewIterator(nil, nil)
 	defer iter.Release()
@@ -186,7 +192,6 @@ func (es *LevelDbEventStore[T]) ListAllEvents() ([]T, error) {
 	if err != nil {
 		return nil, fmt.Errorf("unable to connect to event store: %s", err)
 	}
-	defer db.Close()
 
 	iter := db.NewIterator(nil, nil)
 	defer iter.Release()
@@ -210,4 +215,8 @@ func (es *LevelDbEventStore[T]) ListAllEvents() ([]T, error) {
 	}
 
 	return results, nil
+}
+
+func (es *LevelDbEventStore[T]) Close() {
+	es.db.Close()
 }

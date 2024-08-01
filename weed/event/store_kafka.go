@@ -48,3 +48,7 @@ func (ks *KafkaStore) Publish(topic string, key []byte, data []byte) (int32, int
 
 	return partition, offset, nil
 }
+
+func (ks *KafkaStore) Close() {
+	ks.producer.Close()
+}

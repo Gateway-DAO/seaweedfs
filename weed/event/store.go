@@ -8,6 +8,8 @@ type EventStore[T Event] interface {
 	RegisterEvent(T) error
 	GetLastEvent() (T, error)
 	ListAllEvents() ([]T, error)
+
+	Close()
 }
 
 func timestampToBytes(ts int64) []byte {

@@ -419,4 +419,5 @@ func (ms *MasterServer) Shutdown() {
 		ms.Topo.HashicorpRaft.LeadershipTransfer()
 	}
 	ms.Topo.HashicorpRaft.Shutdown()
+	ms.EventStore.Close()
 }
