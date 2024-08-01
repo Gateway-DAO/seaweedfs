@@ -36,7 +36,7 @@ benchmark_with_pprof: benchmark
 images:
 	make -C gtw/docker images
 
-COMPOSE_FILES := -f ./gtw/docker/docker-compose.local.yml -f ./gtw/docker/docker-compose.kafka.yml
+COMPOSE_FILES := -f ./gtw/docker/docker-compose.local.yml
 COMPOSE_CMD := docker compose $(COMPOSE_FILES)
 
 .PHONY: network stop logs

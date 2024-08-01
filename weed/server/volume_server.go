@@ -38,7 +38,7 @@ type VolumeServer struct {
 	dataCenter      string
 	rack            string
 	store           *storage.Store
-	eventStore      event.VolumeServerEventStore
+	eventStore      *event.LevelDbEventStore[*event.VolumeServerEvent]
 	guard           *security.Guard
 	grpcDialOption  grpc.DialOption
 
@@ -72,7 +72,7 @@ func NewVolumeServer(adminMux, publicMux *http.ServeMux, ip string,
 	hasSlowRead bool,
 	readBufferSizeMB int,
 	ldbTimeout int64,
-	eventStore event.VolumeServerEventStore,
+	eventStore *event.LevelDbEventStore[*event.VolumeServerEvent],
 ) *VolumeServer {
 
 	v := util.GetViper()

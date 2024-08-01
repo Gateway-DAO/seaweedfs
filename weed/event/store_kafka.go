@@ -8,38 +8,29 @@ import (
 )
 
 type KafkaStoreTopics struct {
-	Assignment string `toml:"kafka.topic.assignment"`
-	Volume     string `toml:"kafka.topic.volume"`
+	Master string `toml:"kafka.topic.master"`
+	Volume string `toml:"kafka.topic.volume"`
 }
 
 type KafkaStore struct {
 	brokers []string
-	topics  KafkaStoreTopics
 
 	config *sarama.Config
 
 	producer sarama.SyncProducer
 }
 
-type EventKafkaKey struct {
-	Volume string `json:"volume"`
-	Server string `json:"server"`
-}
-
-func NewKafkaStore(brokers []string, topics KafkaStoreTopics, config *sarama.Config, producer sarama.SyncProducer) *KafkaStore {
+func NewKafkaStore(brokers []string, config *sarama.Config, producer sarama.SyncProducer) *KafkaStore {
 	glog.V(3).Infof("Initializing new kafka store with config: \n%+v", config)
 
 	return &KafkaStore{
 		brokers:  brokers,
-		topics:   topics,
 		config:   config,
 		producer: producer,
 	}
 }
 
 func (ks *KafkaStore) Publish(topic string, key []byte, data []byte) (int32, int64, error) {
-	defer ks.producer.Close()
-
 	glog.V(3).Infof("Publishing event to topic %s", topic)
 
 	msg := &sarama.ProducerMessage{

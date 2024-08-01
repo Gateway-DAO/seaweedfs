@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gateway-dao/seaweedfs/weed/event"
 	"github.com/gateway-dao/seaweedfs/weed/stats"
 
 	"github.com/gateway-dao/seaweedfs/weed/cluster"
@@ -50,6 +51,7 @@ type MasterOption struct {
 	MetricsAddress          string
 	MetricsIntervalSec      int
 	IsFollower              bool
+	EventStore              *event.LevelDbEventStore[*event.MasterServerEvent]
 }
 
 type MasterServer struct {
@@ -76,6 +78,8 @@ type MasterServer struct {
 	adminLocks *AdminLocks
 
 	Cluster *cluster.Cluster
+
+	EventStore *event.LevelDbEventStore[*event.MasterServerEvent]
 }
 
 func NewMasterServer(r *mux.Router, option *MasterOption, peers map[string]pb.ServerAddress) *MasterServer {
@@ -118,6 +122,7 @@ func NewMasterServer(r *mux.Router, option *MasterOption, peers map[string]pb.Se
 		MasterClient:            wdclient.NewMasterClient(grpcDialOption, "", cluster.MasterType, option.Master, "", "", *pb.NewServiceDiscoveryFromMap(peers)),
 		adminLocks:              NewAdminLocks(),
 		Cluster:                 cluster.NewCluster(),
+		EventStore:              option.EventStore,
 	}
 	ms.boundedLeaderChan = make(chan int, 16)
 

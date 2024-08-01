@@ -3,8 +3,10 @@ package weed_server
 import (
 	"context"
 	"fmt"
-	"github.com/gateway-dao/seaweedfs/weed/glog"
 	"time"
+
+	"github.com/gateway-dao/seaweedfs/weed/event"
+	"github.com/gateway-dao/seaweedfs/weed/glog"
 
 	"github.com/seaweedfs/raft"
 
@@ -109,7 +111,7 @@ func (ms *MasterServer) Assign(ctx context.Context, req *master_pb.AssignRequest
 				DataCenter: r.GetDataCenterId(),
 			})
 		}
-		return &master_pb.AssignResponse{
+		assignResponse := &master_pb.AssignResponse{
 			Fid: fid,
 			Location: &master_pb.Location{
 				Url:        dn.Url(),
@@ -120,7 +122,17 @@ func (ms *MasterServer) Assign(ctx context.Context, req *master_pb.AssignRequest
 			Count:    count,
 			Auth:     string(security.GenJwtForVolumeServer(ms.guard.SigningKey, ms.guard.ExpiresAfterSec, fid)),
 			Replicas: replicas,
-		}, nil
+		}
+
+		if ms.option.EventStore != nil {
+			eventLocations := []*master_pb.Location{
+				assignResponse.Location,
+			}
+			eventLocations = append(eventLocations, assignResponse.Replicas...)
+			go ms.EventStore.RegisterEvent(event.NewMasterServerEvent(event.ASSIGN, &assignResponse.Fid, eventLocations, ms.option.Master.ToGrpcAddress()))
+		}
+
+		return assignResponse, nil
 	}
 	return nil, lastErr
 }

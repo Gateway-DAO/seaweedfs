@@ -46,6 +46,8 @@ services:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
             WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
+        volumes:
+            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
     master1:
         container_name: master1
         <<: *master-defaults
@@ -63,6 +65,8 @@ services:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
             WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
+        volumes:
+            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
     master2:
         container_name: master2
         <<: *master-defaults
@@ -79,6 +83,8 @@ services:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
             WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
+        volumes:
+            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
 
     # MARK: Volume Servers
     volume1:
@@ -96,7 +102,7 @@ services:
             -metricsPort=1234
             -preStopSeconds=1
         volumes:
-            - ./config/kafka.toml:/etc/seaweedfs/kafka.toml
+            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
             - volume1-data:/data
         # --dir /etc does not persist on restart
 
@@ -116,7 +122,7 @@ services:
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
-            - ./config/kafka.toml:/etc/seaweedfs/kafka.toml
+            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
             - volume2-data:/data
 
     volume3:
@@ -134,7 +140,7 @@ services:
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
-            - ./config/kafka.toml:/etc/seaweedfs/kafka.toml
+            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
             - volume3-data:/data
 
     volume4:
@@ -152,7 +158,7 @@ services:
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
-            - ./config/kafka.toml:/etc/seaweedfs/kafka.toml
+            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
             - volume4-data:/data
 
     # # MARK: Filer
