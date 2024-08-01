@@ -20,5 +20,5 @@ var Master string
 //go:embed shell.toml
 var Shell string
 
-//go:embed edv.toml
-var Edv string
+//go:embed kafka.toml
+var Kafka string

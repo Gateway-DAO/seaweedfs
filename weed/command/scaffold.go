@@ -50,8 +50,8 @@ func runScaffold(cmd *Command, args []string) bool {
 		content = scaffold.Master
 	case "shell":
 		content = scaffold.Shell
-	case "edv":
-		content = scaffold.Edv
+	case "kafka":
+		content = scaffold.Kafka
 	}
 	if content == "" {
 		println("need a valid -config option")

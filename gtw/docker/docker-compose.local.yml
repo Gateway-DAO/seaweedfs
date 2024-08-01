@@ -96,7 +96,7 @@ services:
             -metricsPort=1234
             -preStopSeconds=1
         volumes:
-            - ./config/edv.toml:/etc/seaweedfs/edv.toml
+            - ./config/kafka.toml:/etc/seaweedfs/kafka.toml
             - volume1-data:/data
         # --dir /etc does not persist on restart
 
@@ -116,7 +116,7 @@ services:
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
-            - ./config/edv.toml:/etc/seaweedfs/edv.toml
+            - ./config/kafka.toml:/etc/seaweedfs/kafka.toml
             - volume2-data:/data
 
     volume3:
@@ -134,7 +134,7 @@ services:
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
-            - ./config/edv.toml:/etc/seaweedfs/edv.toml
+            - ./config/kafka.toml:/etc/seaweedfs/kafka.toml
             - volume3-data:/data
 
     volume4:
@@ -152,7 +152,7 @@ services:
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
-            - ./config/edv.toml:/etc/seaweedfs/edv.toml
+            - ./config/kafka.toml:/etc/seaweedfs/kafka.toml
             - volume4-data:/data
 
     # # MARK: Filer

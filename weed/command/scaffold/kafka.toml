@@ -2,7 +2,6 @@
 brokers = []
 
 [kafka.topics]
-assignment = ""
 volume = ""
 
 [kafka.sasl]

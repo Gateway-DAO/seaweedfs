@@ -253,7 +253,7 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 	// set events directory for all event artifacts
 	var eventStore event.VolumeServerEventStore
 	var es_err error
-	if util.LoadConfiguration("edv", false) {
+	if util.LoadConfiguration("kafka", false) {
 		kafkaBrokers := util.GetViper().GetStringSlice("kafka.brokers")
 		glog.V(3).Infof("Registering brokers %s", kafkaBrokers)
 
