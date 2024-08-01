@@ -15,7 +15,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func registerEvent(eventType event.VolumeServerEventType, vs *VolumeServer, volumeId *needle.VolumeId, needle *needle.Needle) error {
+func registerEvent(eventType event.VolumeServerEventType, fid *string, vs *VolumeServer, volumeId *needle.VolumeId, needle *needle.Needle) error {
 	switch eventType {
 	case event.ALIVE:
 		glog.V(3).Infof("Emitting ALIVE event for %s", vs.store.Ip)
@@ -52,7 +52,7 @@ func registerEvent(eventType event.VolumeServerEventType, vs *VolumeServer, volu
 				Id:       uint64(needle.Id),
 				Checksum: needle.Checksum.Value(),
 				// Hash:     &needle_hash,
-				Fid: needle.Id.FileId(uint32(*volumeId)),
+				Fid: *fid,
 			}
 		}
 	}
