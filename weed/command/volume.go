@@ -257,6 +257,11 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 		kafkaBrokers := util.GetViper().GetStringSlice("kafka.brokers")
 		glog.V(3).Infof("Registering brokers %s", kafkaBrokers)
 
+		kafkaTopics := event.KafkaStoreTopics{
+			Assignment: util.GetViper().GetString("kafka.topics.assignment"),
+			Volume:     util.GetViper().GetString("kafka.topics.volume"),
+		}
+
 		kafkaConfig := sarama.NewConfig()
 		kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
 		kafkaConfig.Producer.Return.Successes = true
@@ -280,10 +285,10 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 		// Producer
 		kafkaConfig.Producer.Retry.Max = util.GetViper().GetInt("kafka.producer.retry_max")
 
-		eventStore, es_err = event.NewLevelDbEventStore(v.eventsDir, &kafkaBrokers, kafkaConfig)
+		eventStore, es_err = event.NewLevelDbEventStore(v.eventsDir, &kafkaBrokers, &kafkaTopics, kafkaConfig)
 	} else {
 		glog.V(3).Infof("events.brokers not specified, skipping kafka configuration for events")
-		eventStore, es_err = event.NewLevelDbEventStore(v.eventsDir, (*[]string)(nil), (*sarama.Config)(nil))
+		eventStore, es_err = event.NewLevelDbEventStore(v.eventsDir, (*[]string)(nil), (*event.KafkaStoreTopics)(nil), (*sarama.Config)(nil))
 	}
 	if es_err != nil {
 		glog.Fatalf("Unable to establish connection to EventStore (LevelDB): %s", es_err)

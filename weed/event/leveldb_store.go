@@ -24,6 +24,7 @@ type LevelDbEventStore struct {
 func NewLevelDbEventStore(
 	eventDir string,
 	kafkaBrokers *[]string,
+	kafkaTopics *KafkaStoreTopics,
 	config *sarama.Config,
 ) (*LevelDbEventStore, error) {
 	es := &LevelDbEventStore{
@@ -31,7 +32,7 @@ func NewLevelDbEventStore(
 		size: 0,
 	}
 
-	if kafkaBrokers != nil {
+	if kafkaBrokers != nil && kafkaTopics != nil {
 		for {
 			producer, err := sarama.NewSyncProducer(*kafkaBrokers, config)
 
@@ -41,9 +42,7 @@ func NewLevelDbEventStore(
 				continue
 			}
 
-			es.kafkaStore = NewKafkaStore(
-				*kafkaBrokers, config, producer,
-			)
+			es.kafkaStore = NewKafkaStore(*kafkaBrokers, *kafkaTopics, config, producer)
 
 			glog.V(3).Infof("connected to brokers: %s", kafkaBrokers)
 			break
