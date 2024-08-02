@@ -69,10 +69,11 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 	// Collect last event's hash
 	var lastHash *string
 	lastEvent, lastEventErr := es.GetLastEvent()
+
 	if e.isAliveType() && (lastEventErr != nil || lastEvent == nil) {
 		glog.V(3).Infof("unable to find previous healthcheck event. emitting GENESIS event")
 		e.SetType("GENESIS")
-	} else {
+	} else if lastEvent != nil {
 		lastHash = &((*lastEvent).GetProofOfHistory().Hash)
 	}
 
