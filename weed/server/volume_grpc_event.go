@@ -6,6 +6,7 @@ import (
 
 	"github.com/gateway-dao/seaweedfs/weed/event"
 	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/pb/event_pb"
 	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 	"github.com/gateway-dao/seaweedfs/weed/storage"
 	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
@@ -14,7 +15,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func registerEvent(eventType event.VolumeServerEventType, vs *VolumeServer, volumeId *needle.VolumeId, needle *needle.Needle) error {
+func registerEvent(eventType event.VolumeServerEventType, fid *string, vs *VolumeServer, volumeId *needle.VolumeId, needle *needle.Needle) error {
 	switch eventType {
 	case event.ALIVE:
 		glog.V(3).Infof("Emitting ALIVE event for %s", vs.store.Ip)
@@ -51,7 +52,7 @@ func registerEvent(eventType event.VolumeServerEventType, vs *VolumeServer, volu
 				Id:       uint64(needle.Id),
 				Checksum: needle.Checksum.Value(),
 				// Hash:     &needle_hash,
-				Fid: needle.Id.FileId(uint32(*volumeId)),
+				Fid: *fid,
 			}
 		}
 	}
@@ -61,7 +62,7 @@ func registerEvent(eventType event.VolumeServerEventType, vs *VolumeServer, volu
 		return fmt.Errorf("unable to load volume server stats, %s", vsStatus_err)
 	}
 
-	vsMerkleTree := &volume_server_pb.VolumeServerMerkleTree{
+	vsMerkleTree := &event_pb.MerkleTree{
 		Digest: vsStatus.GetChecksum(),
 		Tree:   map[string]string{},
 	}
@@ -73,7 +74,7 @@ func registerEvent(eventType event.VolumeServerEventType, vs *VolumeServer, volu
 
 	vse, vse_err := event.NewVolumeServerEvent(
 		eventType,
-		&volume_server_pb.VolumeServerEventResponse_Server{
+		&event_pb.Server{
 			Tree:       vsMerkleTree,
 			PublicUrl:  vs.store.PublicUrl,
 			Rack:       vsStatus.GetRack(),

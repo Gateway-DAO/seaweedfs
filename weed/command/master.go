@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/IBM/sarama"
 	hashicorpRaft "github.com/hashicorp/raft"
 
 	"golang.org/x/exp/slices"
@@ -18,6 +19,7 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc/reflection"
 
+	"github.com/gateway-dao/seaweedfs/weed/event"
 	stats_collect "github.com/gateway-dao/seaweedfs/weed/stats"
 
 	"github.com/gateway-dao/seaweedfs/weed/util/grace"
@@ -57,6 +59,7 @@ type MasterOptions struct {
 	electionTimeout    *time.Duration
 	raftHashicorp      *bool
 	raftBootstrap      *bool
+	eventsDir          string
 }
 
 func init() {
@@ -82,6 +85,7 @@ func init() {
 	m.electionTimeout = cmdMaster.Flag.Duration("electionTimeout", 10*time.Second, "election timeout of master servers")
 	m.raftHashicorp = cmdMaster.Flag.Bool("raftHashicorp", false, "use hashicorp raft")
 	m.raftBootstrap = cmdMaster.Flag.Bool("raftBootstrap", false, "Whether to bootstrap the Raft cluster")
+	m.eventsDir = *masterEventsDir
 }
 
 var cmdMaster = &Command{
@@ -99,12 +103,14 @@ var cmdMaster = &Command{
 var (
 	masterCpuProfile = cmdMaster.Flag.String("cpuprofile", "", "cpu profile output file")
 	masterMemProfile = cmdMaster.Flag.String("memprofile", "", "memory profile output file")
+	masterEventsDir  = cmdMaster.Flag.String("events.dir", os.TempDir(), "directory to store event artifacts")
 )
 
 func runMaster(cmd *Command, args []string) bool {
 
 	util.LoadConfiguration("security", false)
 	util.LoadConfiguration("master", false)
+	util.LoadConfiguration("kafka", false)
 
 	grace.SetupProfiling(*masterCpuProfile, *masterMemProfile)
 
@@ -256,6 +262,8 @@ func startMaster(masterOption MasterOptions, masterWhiteList []string) {
 		go httpS.Serve(masterListener)
 	}
 
+	go ms.EventStore.RegisterEvent(event.NewMasterServerEvent(event.MASTER_ALIVE, nil, nil, *masterOption.ip))
+
 	grace.OnInterrupt(ms.Shutdown)
 	grace.OnInterrupt(grpcS.Stop)
 	grace.OnReload(func() {
@@ -300,6 +308,46 @@ func isTheFirstOne(self pb.ServerAddress, peers []pb.ServerAddress) bool {
 
 func (m *MasterOptions) toMasterOption(whiteList []string) *weed_server.MasterOption {
 	masterAddress := pb.NewServerAddress(*m.ip, *m.port, *m.portGrpc)
+
+	// set events directory for all event artifacts
+	var eventStore *event.LevelDbEventStore[*event.MasterServerEvent]
+	var es_err error
+	if util.LoadConfiguration("kafka", false) {
+		kafkaBrokers := util.GetViper().GetStringSlice("kafka.brokers")
+		glog.V(3).Infof("Registering brokers %s", kafkaBrokers)
+
+		kafkaTopics := event.KafkaStoreTopics{
+			Master: util.GetViper().GetString("kafka.topics.master"),
+		}
+
+		kafkaConfig := sarama.NewConfig()
+		kafkaConfig.Producer.RequiredAcks = sarama.WaitForAll
+		kafkaConfig.Producer.Return.Successes = true
+
+		// SASL
+		kafkaConfig.Net.SASL.Enable = true
+		kafkaConfig.Net.SASL.Handshake = true
+
+		kafkaToml := util.GetViper().GetStringMapString("kafka.sasl")
+		kafkaConfig.Net.SASL.User = kafkaToml["username"]
+		kafkaConfig.Net.SASL.Password = kafkaToml["password"]
+		kafkaConfig.Net.SASL.Mechanism = sarama.SASLTypePlaintext
+
+		// TLS
+		kafkaConfig.Net.TLS.Enable = true
+
+		// Producer
+		kafkaConfig.Producer.Retry.Max = util.GetViper().GetInt("kafka.producer.retry_max")
+
+		eventStore, es_err = event.NewLevelDbEventStore[*event.MasterServerEvent](v.eventsDir, &kafkaBrokers, &kafkaTopics.Master, kafkaConfig)
+	} else {
+		glog.V(3).Infof("events.brokers not specified, skipping kafka configuration for events")
+		eventStore, es_err = event.NewLevelDbEventStore[*event.MasterServerEvent](v.eventsDir, (*[]string)(nil), (*string)(nil), (*sarama.Config)(nil))
+	}
+	if es_err != nil {
+		glog.Fatalf("Unable to establish connection to EventStore (LevelDB): %s", es_err)
+	}
+
 	return &weed_server.MasterOption{
 		Master:            masterAddress,
 		MetaFolder:        *m.metaFolder,
@@ -312,5 +360,6 @@ func (m *MasterOptions) toMasterOption(whiteList []string) *weed_server.MasterOp
 		DisableHttp:             *m.disableHttp,
 		MetricsAddress:          *m.metricsAddress,
 		MetricsIntervalSec:      *m.metricsIntervalSec,
+		EventStore:              eventStore,
 	}
 }

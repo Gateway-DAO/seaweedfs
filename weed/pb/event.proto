@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package event_pb;
+
+option go_package = "github.com/gateway-dao/seaweedfs/weed/pb/event_pb";
+
+message MerkleTree {
+	string digest = 1;
+	map<string, string> tree = 2;
+}
+
+message Server {
+	optional MerkleTree tree = 1;
+
+	string publicUrl = 2;
+	string rack = 3;
+	string dataCenter = 4;
+}
+
+message ProofOfHistory {
+	optional string previous_hash = 1;
+	string hash = 2;
+	string signature = 3;
+}

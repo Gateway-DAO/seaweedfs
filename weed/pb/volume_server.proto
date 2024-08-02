@@ -4,6 +4,7 @@ package volume_server_pb;
 option go_package = "github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb";
 
 import "remote.proto";
+import "event.proto";
 import "google/protobuf/timestamp.proto";
 
 
@@ -284,25 +285,11 @@ message VolumeServerEventResponse {
     }
     optional Volume volume = 4;
 
-    message Server {
-        VolumeServerMerkleTree tree = 1;
-        string publicUrl = 2;
-        string rack = 3;
-        string dataCenter = 4;
-    }
-    Server server = 5;
+    event_pb.Server server = 5;
 
-    message ProofOfHistory {
-        optional string previous_hash = 1;
-        string hash = 2;
-        string signature = 3;
-    }
-    ProofOfHistory proofOfHistory = 6;
+    event_pb.ProofOfHistory proofOfHistory = 6;
 }
-message VolumeServerMerkleTree {
-    string digest = 1;
-    map<string, string> tree = 2;
-}
+
 
 message VolumeCopyRequest {
     uint32 volume_id = 1;

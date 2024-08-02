@@ -7,24 +7,32 @@ import (
 	"github.com/seaweedfs/seaweedfs/weed/glog"
 )
 
+type KafkaStoreTopics struct {
+	Master string `toml:"kafka.topic.master"`
+	Volume string `toml:"kafka.topic.volume"`
+}
+
 type KafkaStore struct {
-	brokers  []string
+	brokers []string
+
+	config *sarama.Config
+
 	producer sarama.SyncProducer
 }
 
-type EventKafkaKey struct {
-	Volume string `json:"volume"`
-	Server string `json:"server"`
-}
+func NewKafkaStore(brokers []string, config *sarama.Config, producer sarama.SyncProducer) *KafkaStore {
+	glog.V(3).Infof("Initializing new kafka store with config: \n%+v", config)
 
-func NewKafkaStore(brokers []string, producer sarama.SyncProducer) *KafkaStore {
 	return &KafkaStore{
 		brokers:  brokers,
+		config:   config,
 		producer: producer,
 	}
 }
 
-func (ks *KafkaStore) sendKafkaMessage(topic string, key []byte, data []byte) (int32, int64, error) {
+func (ks *KafkaStore) Publish(topic string, key []byte, data []byte) (int32, int64, error) {
+	glog.V(3).Infof("Publishing event to topic %s", topic)
+
 	msg := &sarama.ProducerMessage{
 		Topic: topic,
 		Key:   sarama.ByteEncoder(key),
@@ -39,4 +47,8 @@ func (ks *KafkaStore) sendKafkaMessage(topic string, key []byte, data []byte) (i
 	glog.V(3).Infof("kafka message successful: %d, %d", partition, offset)
 
 	return partition, offset, nil
+}
+
+func (ks *KafkaStore) Close() {
+	ks.producer.Close()
 }

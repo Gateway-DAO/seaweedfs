@@ -1,9 +1,9 @@
 .PHONY: image
 images:
-	@./docker_build.sh -t local
+	@./docker_build.sh
 
-images-testnet:
-	@./docker_build.sh -t testnet
+deploy:
+	@./docker_build.sh -t testnet -p
 
 .PHONY: kafka kafka-logs kafka-stop
 KAFKA_COMPOSE_FILES := -f docker-compose.kafka.yml
