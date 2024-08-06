@@ -1,24 +1,36 @@
+# MARK: Network
 networks:
     dfs:
         name: gtw-dfs
     kafka:
         name: gtw-kafka
 
-x-default-network: &default-networks
-    networks:
-        - dfs
+# MARK: Volumes Defaults
+x-default-volumes: &volumes-default ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
 
+# MARK: Master Service Defaults
 x-master-build: &master-build
     image: gateway/master:local
 
+x-master-env-default: &master-env-default
+    WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
+    WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
+    WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
+
+x-master-default: &master-default
+    <<: [*master-build]
+    environment: *master-env-default
+    volumes:
+        - *volumes-default
+    networks:
+        - dfs
+
+# MARK: EDV Service Defaults
 x-edv-build: &edv-build
     image: gateway/edv:local
 
-x-default-master: &master-defaults
-    <<: [*master-build, *default-networks]
-
 x-default-edv: &edv-defaults
-    <<: [*edv-build, *default-networks]
+    <<: [*edv-build]
     depends_on:
         - master0
         - master1
@@ -27,11 +39,12 @@ x-default-edv: &edv-defaults
         - dfs
         - kafka
 
+# MARK: Services
 services:
     # MARK: Master Servers
     master0:
         container_name: master0
-        <<: *master-defaults
+        <<: *master-default
         ports:
             - 9333:9333
             - 19333:19333
@@ -42,15 +55,9 @@ services:
             -peers=master0:9333,master1:9333,master2:9333
             -mdir=/tmp
             --metricsPort=1234
-        environment:
-            WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
-            WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
-            WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
-        volumes:
-            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
     master1:
         container_name: master1
-        <<: *master-defaults
+        <<: *master-default
         ports:
             - 9334:9333
             - 19334:19333
@@ -65,11 +72,9 @@ services:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
             WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
-        volumes:
-            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
     master2:
         container_name: master2
-        <<: *master-defaults
+        <<: *master-default
         ports:
             - 9335:9333
             - 19335:19333
@@ -83,8 +88,6 @@ services:
             WEED_MASTER_VOLUME_GROWTH_COPY_1: 1
             WEED_MASTER_VOLUME_GROWTH_COPY_2: 2
             WEED_MASTER_VOLUME_GROWTH_COPY_OTHER: 1
-        volumes:
-            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
 
     # MARK: Volume Servers
     volume1:
@@ -102,9 +105,8 @@ services:
             -metricsPort=1234
             -preStopSeconds=1
         volumes:
-            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
+            - *volumes-default
             - volume1-data:/data
-        # --dir /etc does not persist on restart
 
     volume2:
         <<: *edv-defaults
@@ -122,8 +124,8 @@ services:
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
-            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
-            - volume2-data:/data
+            - *volumes-default
+            - volume2-data:/data]
 
     volume3:
         <<: *edv-defaults
@@ -139,9 +141,7 @@ services:
             -port=8080 -ip=volume3 -publicUrl=localhost:8082
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
-        volumes:
-            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
-            - volume3-data:/data
+        volumes: [*volumes-default, volume3-data:/data]
 
     volume4:
         <<: *edv-defaults
@@ -157,9 +157,7 @@ services:
             -port=8080 -ip=volume4 -publicUrl=localhost:8083
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
-        volumes:
-            - ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
-            - volume4-data:/data
+        volumes: [*volumes-default, volume4-data:/data]
 
     # # MARK: Filer
     # filer:
@@ -202,7 +200,6 @@ services:
     # MARK: Metrics
     metrics-fe:
         container_name: metrics-fe
-        <<: *default-networks
         image: grafana/grafana:8.1.2 # Match the Grafana version with your requirements
         depends_on:
             - metrics
@@ -217,7 +214,6 @@ services:
 
     metrics:
         container_name: metrics
-        <<: *default-networks
         image: prom/prometheus
         ports:
             - 9090:9090
