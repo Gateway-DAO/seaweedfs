@@ -16,7 +16,7 @@ const (
 	ASSIGN
 )
 
-var msEventTypes = map[MasterServerEventType]string{
+var MasterServerEvents = map[MasterServerEventType]string{
 	MASTER_ALIVE: "MASTER_ALIVE",
 	ASSIGN:       "ASSIGN",
 }
@@ -33,7 +33,8 @@ type MasterServerEvent struct {
 }
 
 type MasterServerEventKey struct {
-	Server string
+	Server string `json:"server"`
+	Type   string `json:"type"`
 }
 
 func NewMasterServerEvent(
@@ -44,7 +45,7 @@ func NewMasterServerEvent(
 ) *MasterServerEvent {
 	mse := new(MasterServerEvent)
 
-	mse.Type = msEventTypes[eventType]
+	mse.Type = MasterServerEvents[eventType]
 	mse.Server = &event_pb.Server{
 		PublicUrl: serverPublicUrl,
 	}
@@ -62,7 +63,7 @@ func NewMasterServerEvent(
 }
 
 func (mse *MasterServerEvent) isAliveType() bool {
-	return mse.GetType() == msEventTypes[MASTER_ALIVE]
+	return mse.GetType() == MasterServerEvents[MASTER_ALIVE]
 }
 
 func (mse *MasterServerEvent) SetType(t string) {
@@ -90,6 +91,7 @@ func (mse *MasterServerEvent) SetProofOfHistory(previousHash *string, hash strin
 
 func (mse *MasterServerEvent) GetKafkaKey() ([]byte, error) {
 	return json.Marshal(MasterServerEventKey{
+		Type:   mse.Type,
 		Server: mse.Server.PublicUrl,
 	})
 }

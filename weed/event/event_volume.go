@@ -18,7 +18,7 @@ const (
 	VACUUM
 )
 
-var vsEventTypes = map[VolumeServerEventType]string{
+var VolumeServerEvents = map[VolumeServerEventType]string{
 	ALIVE:  "ALIVE",
 	WRITE:  "WRITE",
 	DELETE: "DELETE",
@@ -30,6 +30,7 @@ type VolumeServerEvent struct {
 }
 
 type VolumeServerEventKafkaKey struct {
+	Type   string `json:"type"`
 	Volume string `json:"volume"`
 	Server string `json:"server"`
 }
@@ -42,7 +43,7 @@ func NewVolumeServerEvent(
 ) (*VolumeServerEvent, error) {
 	ne := new(VolumeServerEvent)
 	ne.VolumeServerEventResponse = &volume_server_pb.VolumeServerEventResponse{
-		Type:   vsEventTypes[eventType],
+		Type:   VolumeServerEvents[eventType],
 		Volume: volumeMetadata,
 		Server: serverMetadata,
 	}
@@ -65,7 +66,7 @@ func (vse *VolumeServerEvent) GetType() string {
 }
 
 func (vse *VolumeServerEvent) isAliveType() bool {
-	return vse.GetType() == vsEventTypes[ALIVE]
+	return vse.GetType() == VolumeServerEvents[ALIVE]
 }
 
 func (vse *VolumeServerEvent) GetServer() *event_pb.Server {
@@ -85,6 +86,7 @@ func (vse *VolumeServerEvent) GetProofOfHistory() *event_pb.ProofOfHistory {
 
 func (vse *VolumeServerEvent) GetKafkaKey() ([]byte, error) {
 	kafkaEventKey := VolumeServerEventKafkaKey{
+		Type:   vse.Type,
 		Server: vse.Server.PublicUrl,
 	}
 	if vse.Volume != nil {
