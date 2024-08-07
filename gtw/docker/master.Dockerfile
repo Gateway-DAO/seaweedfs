@@ -31,6 +31,7 @@ COPY --from=build /usr/bin/weed /usr/bin/
 # Copy swfs config
 RUN mkdir -p /etc/seaweedfs
 COPY gtw/docker/config/filer.toml /etc/seaweedfs/filer.toml
+COPY gtw/docker/config/kafka-master.toml /etc/seaweedfs/kafka.toml
 
 COPY gtw/docker/config/entrypoint.sh /entrypoint.sh
 RUN apk add --no-cache fuse # for weed mount

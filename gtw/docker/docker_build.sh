@@ -84,4 +84,4 @@ while [[ "$1" != "" ]]; do
   shift
 done
 
-test $(test $should_push && should_push) || build
+test $(test $should_push && push_images) || build
