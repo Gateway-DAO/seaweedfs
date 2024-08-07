@@ -339,10 +339,10 @@ func (m *MasterOptions) toMasterOption(whiteList []string) *weed_server.MasterOp
 		// Producer
 		kafkaConfig.Producer.Retry.Max = util.GetViper().GetInt("kafka.producer.retry_max")
 
-		eventStore, es_err = event.NewLevelDbEventStore[*event.MasterServerEvent](v.eventsDir, &kafkaBrokers, &kafkaTopics.Master, kafkaConfig)
+		eventStore, es_err = event.NewLevelDbEventStore[*event.MasterServerEvent](m.eventsDir, &kafkaBrokers, &kafkaTopics.Master, kafkaConfig)
 	} else {
 		glog.V(3).Infof("events.brokers not specified, skipping kafka configuration for events")
-		eventStore, es_err = event.NewLevelDbEventStore[*event.MasterServerEvent](v.eventsDir, (*[]string)(nil), (*string)(nil), (*sarama.Config)(nil))
+		eventStore, es_err = event.NewLevelDbEventStore[*event.MasterServerEvent](m.eventsDir, (*[]string)(nil), (*string)(nil), (*sarama.Config)(nil))
 	}
 	if es_err != nil {
 		glog.Fatalf("Unable to establish connection to EventStore (LevelDB): %s", es_err)
