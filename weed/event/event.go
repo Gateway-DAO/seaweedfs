@@ -13,6 +13,6 @@ type Event interface {
 	GetProofOfHistory() *event_pb.ProofOfHistory
 	SetProofOfHistory(previousHash *string, hash string)
 
-	GetKafkaKey() ([]byte, error)
+	GetKey() ([]byte, error)
 	GetValue() ([]byte, error)
 }

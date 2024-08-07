@@ -100,23 +100,24 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 
 	// update with proof of history metadata
 	e.SetProofOfHistory(lastHash, stats.Hash(hasher.Sum(nil)).ToString())
+
 	val, ve = e.GetValue()
 	if ve != nil {
 		return ve
+	}
+
+	key, err := e.GetKey()
+	if err != nil {
+		return fmt.Errorf("error encoding event key")
 	}
 
 	if es.kafkaStore != nil && es.kafkaTopic != nil {
 		go func() {
 			glog.V(3).Infof("writing to kafka stream")
 
-			kafkaEncodedKey, err := e.GetKafkaKey()
-			if err != nil {
-				glog.Errorf("unable to encode kafkaKey")
-			}
-
 			_, _, err = es.kafkaStore.Publish(
 				*es.kafkaTopic,
-				kafkaEncodedKey,
+				key,
 				val,
 			)
 			if err != nil {
@@ -133,11 +134,6 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 	glog.V(4).Infof("Writing to database %s", es.Dir)
 	if err != nil {
 		return fmt.Errorf("unable to connect to event store: %s", err)
-	}
-
-	key, err := e.GetKafkaKey()
-	if err != nil {
-		return fmt.Errorf("error encoding event key")
 	}
 
 	db.Put(
@@ -181,11 +177,6 @@ func (es *LevelDbEventStore[T]) GetLastEvent() (*T, error) {
 }
 
 func (es *LevelDbEventStore[T]) ListAllEvents() ([]T, error) {
-	es.mu.RLock()
-	glog.V(3).Info("acquired read lock")
-	defer es.mu.RUnlock()
-	defer glog.V(3).Infof("released read lock")
-
 	dbDir := es.Dir
 	glog.V(4).Infof("Reading database %s", dbDir)
 
@@ -198,6 +189,12 @@ func (es *LevelDbEventStore[T]) ListAllEvents() ([]T, error) {
 	defer iter.Release()
 
 	results := make([]T, es.size)
+
+	glog.V(3).Info("acquired read lock")
+	es.mu.RLock()
+
+	defer es.mu.RUnlock()
+	defer glog.V(3).Infof("released read lock")
 
 	for iter.Next() {
 		key, val := iter.Key(), iter.Value()

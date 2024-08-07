@@ -89,7 +89,7 @@ func (mse *MasterServerEvent) SetProofOfHistory(previousHash *string, hash strin
 	}
 }
 
-func (mse *MasterServerEvent) GetKafkaKey() ([]byte, error) {
+func (mse *MasterServerEvent) GetKey() ([]byte, error) {
 	return json.Marshal(MasterServerEventKey{
 		Type:   mse.Type,
 		Server: mse.Server.PublicUrl,

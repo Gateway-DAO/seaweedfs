@@ -84,7 +84,7 @@ func (vse *VolumeServerEvent) GetProofOfHistory() *event_pb.ProofOfHistory {
 	return vse.ProofOfHistory
 }
 
-func (vse *VolumeServerEvent) GetKafkaKey() ([]byte, error) {
+func (vse *VolumeServerEvent) GetKey() ([]byte, error) {
 	kafkaEventKey := VolumeServerEventKafkaKey{
 		Type:   vse.Type,
 		Server: vse.Server.PublicUrl,
