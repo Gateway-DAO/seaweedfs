@@ -37,7 +37,7 @@ images:
 	make -C gtw/docker images
 
 COMPOSE_FILES := -f ./gtw/docker/docker-compose.local.yml
-COMPOSE_CMD := docker compose $(COMPOSE_FILES)
+COMPOSE_CMD := VOLUME_LOG_LEVEL=4 docker compose $(COMPOSE_FILES)
 
 .PHONY: network stop logs
 network: images

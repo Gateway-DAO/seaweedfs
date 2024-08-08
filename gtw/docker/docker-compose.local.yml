@@ -6,7 +6,7 @@ networks:
         name: gtw-kafka
 
 # MARK: Volumes Defaults
-x-default-volumes: &volumes-default ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
+x-kafka-volume: &kafka-volume ./config/kafka-all.toml:/etc/seaweedfs/kafka.toml
 
 # MARK: Master Service Defaults
 x-master-build: &master-build
@@ -21,7 +21,7 @@ x-master-default: &master-default
     <<: [*master-build]
     environment: *master-env-default
     volumes:
-        - *volumes-default
+        - *kafka-volume
     networks:
         - dfs
 
@@ -97,7 +97,7 @@ services:
             - 8080:8080
             - 18080:18080
         command: >
-            -v=3 volume -dataCenter=gateway -rack=gtw1
+            -v=${VOLUME_LOG_LEVEL:-3} volume -dataCenter=gateway -rack=gtw1
             -dir /data
             -events.dir /data/events
             -port=8080 -ip=volume1 -publicUrl=localhost:8080
@@ -105,7 +105,7 @@ services:
             -metricsPort=1234
             -preStopSeconds=1
         volumes:
-            - *volumes-default
+            - *kafka-volume
             - volume1-data:/data
 
     volume2:
@@ -115,7 +115,7 @@ services:
             - 8081:8080
             - 18081:18080
         command: >
-            -v=3
+            -v=${VOLUME_LOG_LEVEL:-3}
             volume -dataCenter=gateway -rack=gtw2
             -dir /data
             -dir /data
@@ -124,7 +124,7 @@ services:
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
         volumes:
-            - *volumes-default
+            - *kafka-volume
             - volume2-data:/data]
 
     volume3:
@@ -134,14 +134,14 @@ services:
             - 8082:8080
             - 18082:18080
         command: >
-            -v=3
+            -v=${VOLUME_LOG_LEVEL:-3}
             volume -dataCenter=lifi -rack=lifi1
             -dir /data
             -events.dir /data/events
             -port=8080 -ip=volume3 -publicUrl=localhost:8082
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
-        volumes: [*volumes-default, volume3-data:/data]
+        volumes: [*kafka-volume, volume3-data:/data]
 
     volume4:
         <<: *edv-defaults
@@ -150,14 +150,14 @@ services:
             - 8083:8080
             - 18083:18080
         command: >
-            -v=3
+            -v=${VOLUME_LOG_LEVEL:-3}
             volume -dataCenter=dimo -rack=dimo1
             -dir /data
             -events.dir /data/events
             -port=8080 -ip=volume4 -publicUrl=localhost:8083
             -mserver="master0:9333,master1:9333,master2:9333"
             -preStopSeconds=1 -metricsPort=1234
-        volumes: [*volumes-default, volume4-data:/data]
+        volumes: [*kafka-volume, volume4-data:/data]
 
     # # MARK: Filer
     # filer:
@@ -168,7 +168,7 @@ services:
     #         - 18888:18888
     #         - 8111:8111
     #     command: >
-    #         -v=3
+    #         -v=${VOLUME_LOG_LEVEL:-3}
     #         filer -ip filer
     #         -master="master0:9333,master1:9333,master2:9333"
     #         -encryptVolumeData
