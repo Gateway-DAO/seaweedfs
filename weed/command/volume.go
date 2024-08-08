@@ -72,9 +72,7 @@ type VolumeServerOptions struct {
 	hasSlowRead               *bool
 	readBufferSizeMB          *int
 	ldbTimeout                *int64
-	eventsDir                 string
-	eventBrokers              *string
-	eventBrokerIsConfluent    *bool
+	eventsDir                 *string
 }
 
 func init() {
@@ -108,10 +106,7 @@ func init() {
 	v.inflightUploadDataTimeout = cmdVolume.Flag.Duration("inflightUploadDataTimeout", 60*time.Second, "inflight upload data wait timeout of volume servers")
 	v.hasSlowRead = cmdVolume.Flag.Bool("hasSlowRead", true, "<experimental> if true, this prevents slow reads from blocking other requests, but large file read P99 latency will increase.")
 	v.readBufferSizeMB = cmdVolume.Flag.Int("readBufferSizeMB", 4, "<experimental> larger values can optimize query performance but will increase some memory usage,Use with hasSlowRead normally.")
-	v.eventsDir = *eventsDir
-	v.eventBrokers = cmdVolume.Flag.String("events.brokers", "", "comma-separated list of Kafka broker addresses for events")
-	v.eventBrokerIsConfluent = cmdVolume.Flag.Bool("events.brokers.isConfluent", false, "Set this flag to 'true' if the event broker is Confluent Kafka. This enables specific configurations required for interacting with Confluent Kafka services.")
-
+	v.eventsDir = cmdVolume.Flag.String("events.dir", os.TempDir(), "Directory to store event artifacts")
 }
 
 var cmdVolume = &Command{
@@ -128,7 +123,6 @@ var (
 	volumeWhiteListOption = cmdVolume.Flag.String("whiteList", "", "comma separated Ip addresses having write permission. No limit if empty.")
 	minFreeSpacePercent   = cmdVolume.Flag.String("minFreeSpacePercent", "1", "minimum free disk space (default to 1%). Low disk space will mark all volumes as ReadOnly (deprecated, use minFreeSpace instead).")
 	minFreeSpace          = cmdVolume.Flag.String("minFreeSpace", "", "min free disk space (value<=100 as percentage like 1, other as human readable bytes, like 10GiB). Low disk space will mark all volumes as ReadOnly.")
-	eventsDir             = cmdVolume.Flag.String("events.dir", os.TempDir(), "directory to store event artifacts")
 )
 
 func runVolume(cmd *Command, args []string) bool {
@@ -280,10 +274,12 @@ func (v VolumeServerOptions) startVolumeServer(volumeFolders, maxVolumeCounts, v
 		// Producer
 		kafkaConfig.Producer.Retry.Max = util.GetViper().GetInt("kafka.producer.retry_max")
 
-		eventStore, es_err = event.NewLevelDbEventStore[*event.VolumeServerEvent](v.eventsDir, &kafkaBrokers, &kafkaTopics.Volume, kafkaConfig)
+		glog.V(3).Infof("Initializing events dir as %+v", v.eventsDir)
+
+		eventStore, es_err = event.NewLevelDbEventStore[*event.VolumeServerEvent](*v.eventsDir, &kafkaBrokers, &kafkaTopics.Volume, kafkaConfig)
 	} else {
 		glog.V(3).Infof("events.brokers not specified, skipping kafka configuration for events")
-		eventStore, es_err = event.NewLevelDbEventStore[*event.VolumeServerEvent](v.eventsDir, (*[]string)(nil), (*string)(nil), (*sarama.Config)(nil))
+		eventStore, es_err = event.NewLevelDbEventStore[*event.VolumeServerEvent](*v.eventsDir, (*[]string)(nil), (*string)(nil), (*sarama.Config)(nil))
 	}
 	if es_err != nil {
 		glog.Fatalf("Unable to establish connection to EventStore (LevelDB): %s", es_err)

@@ -36,7 +36,7 @@ func NewLevelDbEventStore[T Event](
 	}
 
 	dbDir := es.Dir
-	glog.V(4).Infof("Reading database %s", dbDir)
+	glog.V(2).Infof("Reading event store %s", dbDir)
 
 	db, err := leveldb.OpenFile(es.Dir, nil)
 	if err != nil {
@@ -57,7 +57,7 @@ func NewLevelDbEventStore[T Event](
 			es.kafkaStore = NewKafkaStore(*kafkaBrokers, config, producer)
 			es.kafkaTopic = kafkaTopic
 
-			glog.V(3).Infof("connected to brokers: %s", kafkaBrokers)
+			glog.V(2).Infof("Connected to kafka brokers: %s", kafkaBrokers)
 			break
 		}
 	}
@@ -71,7 +71,8 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 	lastEvent, lastEventErr := es.GetLastEvent()
 
 	if e.isAliveType() && (lastEventErr != nil || lastEvent == nil) {
-		glog.V(3).Infof("unable to find previous healthcheck event. emitting GENESIS event")
+		glog.V(3).Info("Unable to find previous healthcheck event")
+		glog.V(2).Info("Emitting GENESIS event")
 		e.SetType("GENESIS")
 	} else if lastEvent != nil {
 		lastHash = &((*lastEvent).GetProofOfHistory().Hash)
@@ -113,7 +114,7 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 
 	if es.kafkaStore != nil && es.kafkaTopic != nil {
 		go func() {
-			glog.V(3).Infof("writing to kafka stream")
+			glog.V(4).Infof("Writing to kafka stream")
 
 			_, _, err = es.kafkaStore.Publish(
 				*es.kafkaTopic,
@@ -123,7 +124,7 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 			if err != nil {
 				glog.Errorf("unable to publish to kafka topic: %s", err)
 			} else {
-				glog.Infof("successfully published to topic")
+				glog.V(3).Infof("Successfully published to topic")
 			}
 		}()
 	} else {
@@ -131,7 +132,7 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 	}
 
 	db := es.db
-	glog.V(4).Infof("Writing to database %s", es.Dir)
+	glog.V(3).Infof("Writing to event store %s", es.Dir)
 	if err != nil {
 		return fmt.Errorf("unable to connect to event store: %s", err)
 	}
@@ -190,11 +191,11 @@ func (es *LevelDbEventStore[T]) ListAllEvents() ([]T, error) {
 
 	results := make([]T, es.size)
 
-	glog.V(3).Info("acquired read lock")
+	glog.V(4).Info("acquired read lock")
 	es.mu.RLock()
 
 	defer es.mu.RUnlock()
-	defer glog.V(3).Infof("released read lock")
+	defer glog.V(4).Infof("released read lock")
 
 	for iter.Next() {
 		key, val := iter.Key(), iter.Value()

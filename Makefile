@@ -41,7 +41,7 @@ COMPOSE_CMD := VOLUME_LOG_LEVEL=4 docker compose $(COMPOSE_FILES)
 
 .PHONY: network stop logs
 network: images
-	$(COMPOSE_CMD) up -d --build
+	VOLUME_LOG_LEVEL=4 $(COMPOSE_CMD) up -d --build
 restart:
 	$(COMPOSE_CMD) restart
 stop:

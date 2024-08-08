@@ -50,4 +50,4 @@ WORKDIR /data
 RUN chmod +x /usr/bin/weed
 RUN chmod +x /entrypoint.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/usr/bin/weed"]
