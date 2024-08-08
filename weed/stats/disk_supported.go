@@ -44,8 +44,8 @@ func computeDiskChecksum(disk *volume_server_pb.DiskStatus) (DiskChecksum, error
 
 	formattedHashes := make(DiskChecksum, len(hashes))
 
-	for k, v := range hashes {
-		formattedHashes[k] = v.ToString()
+	for k, hash := range hashes {
+		formattedHashes[k] = hash.EncodeToString()
 	}
 
 	timeDuration := float64(time.Since(timeStart).Milliseconds())

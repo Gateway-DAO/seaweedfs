@@ -15,11 +15,11 @@ import (
 
 type Hash []byte
 
-func (h Hash) ToString() string {
+func (h Hash) EncodeToString() string {
 	return base64.RawStdEncoding.EncodeToString(h)
 }
 
-func HashFromString(encodedHash string) (Hash, error) {
+func DecodeString(encodedHash string) (Hash, error) {
 	return base64.RawStdEncoding.DecodeString(encodedHash)
 }
 

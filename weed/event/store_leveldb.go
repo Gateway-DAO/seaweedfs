@@ -92,14 +92,14 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 	if ve != nil {
 		return ve
 	}
-	checksumBytes, err := stats.HashFromString(e.GetServer().GetTree().GetDigest())
+	checksumBytes, err := stats.DecodeString(e.GetServer().GetTree().GetDigest())
 	if err != nil {
 		glog.Errorf("error decoding server checksum digest")
 	}
 	hasher.Write(checksumBytes)
 
 	// update with proof of history metadata
-	e.SetProofOfHistory(lastHash, stats.Hash(hasher.Sum(nil)).ToString())
+	e.SetProofOfHistory(lastHash, stats.Hash(hasher.Sum(nil)).EncodeToString())
 
 	val, ve = e.GetValue()
 	if ve != nil {
