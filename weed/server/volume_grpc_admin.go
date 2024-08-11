@@ -258,24 +258,14 @@ func (vs *VolumeServer) VolumeServerStatus(ctx context.Context, req *volume_serv
 		Rack:         vs.rack,
 	}
 
-	vsChecksumWriter, _ := stats.Blake2b()
-
 	for _, loc := range vs.store.Locations {
 		if dir, e := filepath.Abs(loc.Directory); e == nil {
 			diskStats := stats.NewDiskStatus(dir)
 			resp.DiskStatuses = append(resp.DiskStatuses, diskStats)
-
-			for _, v := range diskStats.Checksum {
-				if hash, h_err := stats.DecodeString(v); h_err == nil {
-					vsChecksumWriter.Write(hash)
-				} else {
-					glog.Errorf("unable to decode distStats.Checksum")
-				}
-			}
 		}
 	}
 
-	resp.Checksum = stats.Hash(vsChecksumWriter.Sum(nil)).EncodeToString()
+	resp.Checksum = vs.store.MerkleTree().ToProto()
 
 	return resp, nil
 

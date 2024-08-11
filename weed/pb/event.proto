@@ -6,7 +6,7 @@ option go_package = "github.com/gateway-dao/seaweedfs/weed/pb/event_pb";
 
 message MerkleTree {
 	string digest = 1;
-	map<string, string> tree = 2;
+	map<string, MerkleTree> tree = 2 [json_name = "tree"];
 }
 
 message Server {

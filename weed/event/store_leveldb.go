@@ -181,21 +181,16 @@ func (es *LevelDbEventStore[T]) ListAllEvents() ([]T, error) {
 	dbDir := es.Dir
 	glog.V(4).Infof("Reading database %s", dbDir)
 
-	db, err := leveldb.OpenFile(es.Dir, nil)
-	if err != nil {
-		return nil, fmt.Errorf("unable to connect to event store: %s", err)
-	}
-
-	iter := db.NewIterator(nil, nil)
-	defer iter.Release()
-
-	results := make([]T, es.size)
-
 	glog.V(4).Info("acquired read lock")
 	es.mu.RLock()
 
 	defer es.mu.RUnlock()
 	defer glog.V(4).Infof("released read lock")
+
+	iter := es.db.NewIterator(nil, nil)
+	defer iter.Release()
+
+	results := make([]T, es.size)
 
 	for iter.Next() {
 		key, val := iter.Key(), iter.Value()

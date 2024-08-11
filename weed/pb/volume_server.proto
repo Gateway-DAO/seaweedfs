@@ -267,7 +267,7 @@ message VolumeServerEventResponse {
 
     message Needle {
         uint64 id = 1;
-        string fid = 2;
+        uint32 cookie = 2;
         uint32 checksum = 3;
         optional string hash = 4;
     }
@@ -488,7 +488,6 @@ message DiskStatus {
     float percent_free = 5;
     float percent_used = 6;
     string disk_type = 7;
-    map<string, string> checksum = 8;
 }
 
 message MemStatus {
@@ -549,7 +548,7 @@ message VolumeServerStatusResponse {
     string version = 3;
     string data_center = 4;
     string rack = 5;
-    string checksum = 6;
+    event_pb.MerkleTree checksum = 6;
 }
 
 message VolumeServerLeaveRequest {

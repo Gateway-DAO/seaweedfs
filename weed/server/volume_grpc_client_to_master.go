@@ -59,7 +59,7 @@ func (vs *VolumeServer) heartbeat() {
 	var err error
 	var newLeader pb.ServerAddress
 	for vs.isHeartbeating {
-		go registerEvent(event.ALIVE, nil, vs, nil, nil)
+		go registerEvent(event.ALIVE, vs, nil, nil)
 
 		for _, master := range vs.SeedMasterNodes {
 			if newLeader != "" {

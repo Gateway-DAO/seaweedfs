@@ -5,7 +5,6 @@ package stats
 
 import (
 	"syscall"
-	"time"
 
 	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 )
@@ -21,43 +20,6 @@ func fillInDiskStatus(disk *volume_server_pb.DiskStatus) {
 	disk.Used = disk.All - disk.Free
 	disk.PercentFree = float32((float64(disk.Free) / float64(disk.All)) * 100)
 	disk.PercentUsed = float32((float64(disk.Used) / float64(disk.All)) * 100)
-
-	checksum, err := computeDiskChecksum(disk)
-	if err == nil {
-		disk.Checksum = checksum
-	}
-	// else err != nil {
-	// 	checksum = map[string]string{"error": err.Error()}
-	// }
-	return
-}
-
-type DiskChecksum map[string]string
-
-func computeDiskChecksum(disk *volume_server_pb.DiskStatus) (DiskChecksum, error) {
-	timeStart := time.Now()
-
-	hashes, err := hashFilteredDirectory(disk.Dir, `\.dat$`)
-	if err != nil {
-		return nil, err
-	}
-
-	formattedHashes := make(DiskChecksum, len(hashes))
-
-	for k, hash := range hashes {
-		formattedHashes[k] = hash.EncodeToString()
-	}
-
-	timeDuration := float64(time.Since(timeStart).Milliseconds())
-	VolumeServerChecksumDuration.Set(timeDuration)
-
-	return formattedHashes, nil
-}
-
-func (d DiskChecksum) convertToString() (result string) {
-	for _, v := range d {
-		result += v
-	}
 
 	return
 }

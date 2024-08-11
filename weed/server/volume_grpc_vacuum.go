@@ -94,7 +94,6 @@ func (vs *VolumeServer) VacuumVolumeCommit(ctx context.Context, req *volume_serv
 
 		go registerEvent(
 			event.VACUUM,
-			nil,
 			vs,
 			&volumeId,
 			nil,

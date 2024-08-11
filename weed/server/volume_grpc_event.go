@@ -15,7 +15,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func registerEvent(eventType event.VolumeServerEventType, fid *string, vs *VolumeServer, volumeId *needle.VolumeId, needle *needle.Needle) error {
+func registerEvent(eventType event.VolumeServerEventType, vs *VolumeServer, vid *needle.VolumeId, n *needle.Needle) error {
 	switch eventType {
 	case event.ALIVE:
 		glog.V(3).Infof("Emitting ALIVE event for %s", vs.store.Ip)
@@ -31,12 +31,12 @@ func registerEvent(eventType event.VolumeServerEventType, fid *string, vs *Volum
 
 	var vse_vol *volume_server_pb.VolumeServerEventResponse_Volume
 	var vse_needle *volume_server_pb.VolumeServerEventResponse_Needle
-	if volumeId != nil {
-		vol := vs.store.GetVolume(*volumeId)
+	if vid != nil {
+		vol := vs.store.GetVolume(*vid)
 		datSize, idxSize, lastModTime := vol.FileStat()
 
 		vse_vol = &volume_server_pb.VolumeServerEventResponse_Volume{
-			Id:           volumeId.String(),
+			Id:           vid.String(),
 			FileCount:    vol.FileCount(),
 			IdxSize:      idxSize,
 			DatSize:      datSize,
@@ -46,13 +46,12 @@ func registerEvent(eventType event.VolumeServerEventType, fid *string, vs *Volum
 			Replication:  vol.ReplicaPlacement.String(),
 		}
 
-		if needle != nil {
+		if n != nil {
 			// needle_hash := hash.ToString()
 			vse_needle = &volume_server_pb.VolumeServerEventResponse_Needle{
-				Id:       uint64(needle.Id),
-				Checksum: needle.Checksum.Value(),
-				// Hash:     &needle_hash,
-				Fid: *fid,
+				Id:       uint64(n.Id),
+				Checksum: n.Checksum.Value(),
+				Cookie:   uint32(n.Cookie),
 			}
 		}
 	}
@@ -62,15 +61,8 @@ func registerEvent(eventType event.VolumeServerEventType, fid *string, vs *Volum
 		return fmt.Errorf("unable to load volume server stats, %s", vsStatus_err)
 	}
 
-	vsMerkleTree := &event_pb.MerkleTree{
-		Digest: vsStatus.GetChecksum(),
-		Tree:   map[string]string{},
-	}
-	for _, diskStatus := range vsStatus.GetDiskStatuses() {
-		for key, value := range diskStatus.Checksum {
-			vsMerkleTree.Tree[key] = value
-		}
-	}
+	// TODO: Update vsMerkleTree
+	vsMerkleTree := vs.store.MerkleTree().ToProto()
 
 	vse, vse_err := event.NewVolumeServerEvent(
 		eventType,

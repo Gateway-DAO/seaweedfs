@@ -71,10 +71,9 @@ func (vs *VolumeServer) PostHandler(w http.ResponseWriter, r *http.Request) {
 	ret.Mime = string(reqNeedle.Mime)
 	SetEtag(w, ret.ETag)
 	w.Header().Set("Content-MD5", contentMd5)
-	glog.V(3).Infof("computed blake2b hash: %s", contentHash.EncodeToString())
 	w.Header().Set("Content-Blake2b", contentHash.EncodeToString())
 
-	go registerEvent(event.WRITE, &fid, vs, &volumeId, reqNeedle)
+	go registerEvent(event.WRITE, vs, &volumeId, reqNeedle)
 
 	writeJsonQuiet(w, r, httpStatus, ret)
 }
@@ -145,7 +144,7 @@ func (vs *VolumeServer) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	writeDeleteResult(err, count, w, r)
 
 	if err == nil {
-		go registerEvent(event.DELETE, &fid, vs, &volumeId, n)
+		go registerEvent(event.DELETE, vs, &volumeId, n)
 	}
 
 }
