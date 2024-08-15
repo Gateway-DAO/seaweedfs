@@ -2,6 +2,9 @@
 images:
 	@./docker_build.sh
 
+testnet:
+	@./docker_build.sh -t testnet
+
 deploy:
 	@./docker_build.sh -t testnet -p
 
