@@ -2,7 +2,10 @@ package event
 
 import (
 	"encoding/binary"
+	"errors"
 )
+
+var LastEventNotFoundError error = errors.New("last event not found")
 
 type EventStore[T Event] interface {
 	RegisterEvent(T) error

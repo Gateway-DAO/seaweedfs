@@ -2,6 +2,7 @@ package event
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -70,12 +71,17 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 	var lastHash *string
 	lastEvent, lastEventErr := es.GetLastEvent()
 
-	if e.isAliveType() && (lastEventErr != nil || lastEvent == nil) {
-		glog.V(3).Info("Unable to find previous healthcheck event")
-		glog.V(2).Info("Emitting GENESIS event")
-		e.SetType("GENESIS")
-	} else if lastEvent != nil {
+	if lastEventErr != nil {
+		if e.isAliveType() && errors.Is(lastEventErr, LastEventNotFoundError) {
+			glog.V(3).Info("Unable to find previous healthcheck event")
+			glog.V(2).Info("Emitting GENESIS event")
+			e.SetType("GENESIS")
+		} else {
+			glog.Errorf("LevelDB store unable to load last event: %s", lastEventErr)
+		}
+	} else {
 		lastHash = &((*lastEvent).GetProofOfHistory().Hash)
+		glog.V(4).Infof("lastHash: %s", *lastHash)
 	}
 
 	es.mu.Lock()
@@ -148,18 +154,13 @@ func (es *LevelDbEventStore[T]) RegisterEvent(e T) error {
 }
 
 func (es *LevelDbEventStore[T]) GetLastEvent() (*T, error) {
-	es.mu.RLock()
-	defer es.mu.RUnlock()
-
 	dbDir := es.Dir
 	glog.V(4).Infof("Reading database %s", dbDir)
 
-	db, err := leveldb.OpenFile(es.Dir, nil)
-	if err != nil {
-		return nil, fmt.Errorf("unable to connect to event store: %s", err)
-	}
+	es.mu.RLock()
+	defer es.mu.RUnlock()
 
-	iter := db.NewIterator(nil, nil)
+	iter := es.db.NewIterator(nil, nil)
 	defer iter.Release()
 
 	if iter.Last() {
@@ -174,7 +175,7 @@ func (es *LevelDbEventStore[T]) GetLastEvent() (*T, error) {
 		return valPtr, nil
 	}
 
-	return nil, fmt.Errorf("no events found")
+	return nil, LastEventNotFoundError
 }
 
 func (es *LevelDbEventStore[T]) ListAllEvents() ([]T, error) {
