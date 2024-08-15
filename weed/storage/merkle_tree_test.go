@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var tree = &MerkleTree{
+var test_tree = &MerkleTree{
 	// root analogous to VolumeServer store
 	root: &MerkleNode{
 		// children analogous to VolumeServer volume(s)
@@ -29,7 +29,7 @@ var tree = &MerkleTree{
 	},
 }
 
-var event = event_pb.MerkleTree{
+var test_event = event_pb.MerkleTree{
 	Digest: "Tk89xUWvQLfcqum2HzfORNoU97hyaCtdeULc3kwVW0A",
 	Tree: map[string]*event_pb.MerkleTree{
 		"1": {
@@ -45,15 +45,15 @@ var event = event_pb.MerkleTree{
 }
 
 func Test_EventToMerkleTree(t *testing.T) {
-	tree := FromProto(&event)
+	tree := FromProto(&test_event)
 
 	// validate independent node elements
 	assert.Equal(t, tree != nil, true)
 	assert.Equal(t, tree.root != nil, true)
-	compareNodeToEvent(t, tree.root, &event)
+	compareNodeToEvent(t, tree.root, &test_event)
 
 	// validate reconstruction
-	assert.Equal(t, reflect.DeepEqual(&event, tree.ToProto()), true)
+	assert.Equal(t, reflect.DeepEqual(&test_event, tree.ToProto()), true)
 }
 
 func compareNodeToEvent(t *testing.T, n *MerkleNode, e *event_pb.MerkleTree) {

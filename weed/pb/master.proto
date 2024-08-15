@@ -4,6 +4,8 @@ package master_pb;
 
 option go_package = "github.com/gateway-dao/seaweedfs/weed/pb/master_pb";
 
+import "event.proto";
+
 //////////////////////////////////////////////////
 
 service Seaweed {
@@ -50,6 +52,8 @@ service Seaweed {
   rpc RaftAddServer (RaftAddServerRequest) returns (RaftAddServerResponse) {
   }
   rpc RaftRemoveServer (RaftRemoveServerRequest) returns (RaftRemoveServerResponse) {
+  }
+  rpc MerkleStatus (MerkleStatusRequest) returns (MerkleStatusResponse) {
   }
 }
 
@@ -418,4 +422,10 @@ message RaftListClusterServersResponse {
     bool   isLeader = 4;
   }
   repeated ClusterServers cluster_servers = 1;
+}
+
+message MerkleStatusRequest {
+}
+message MerkleStatusResponse {
+  event_pb.MerkleTree tree = 1;
 }

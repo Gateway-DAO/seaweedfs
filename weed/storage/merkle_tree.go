@@ -15,6 +15,12 @@ type MerkleTree struct {
 	root *MerkleNode
 }
 
+func NewMerkleTree(root *MerkleNode) *MerkleTree {
+	return &MerkleTree{
+		root: root,
+	}
+}
+
 func (s *Store) MerkleTree() (mt *MerkleTree) {
 	return &MerkleTree{
 		root: s.MerkleNode(),

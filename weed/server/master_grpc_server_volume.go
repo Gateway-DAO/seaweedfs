@@ -11,8 +11,12 @@ import (
 	"github.com/seaweedfs/raft"
 
 	"github.com/gateway-dao/seaweedfs/weed/glog"
+	"github.com/gateway-dao/seaweedfs/weed/operation"
+	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"github.com/gateway-dao/seaweedfs/weed/pb/master_pb"
+	"github.com/gateway-dao/seaweedfs/weed/pb/volume_server_pb"
 	"github.com/gateway-dao/seaweedfs/weed/security"
+	"github.com/gateway-dao/seaweedfs/weed/storage"
 	"github.com/gateway-dao/seaweedfs/weed/storage/needle"
 	"github.com/gateway-dao/seaweedfs/weed/storage/super_block"
 	"github.com/gateway-dao/seaweedfs/weed/storage/types"
@@ -243,4 +247,35 @@ func (ms *MasterServer) VolumeMarkReadonly(ctx context.Context, req *master_pb.V
 	}
 
 	return resp, nil
+}
+
+func (ms *MasterServer) MerkleStatus(ctx context.Context, in *master_pb.MerkleStatusRequest) (*master_pb.MerkleStatusResponse, error) {
+
+	root := storage.NewMerkleNode(nil)
+	tree := storage.NewMerkleTree(root)
+
+	glog.V(3).Infof("Master recognizes %d volume locations", len(ms.Topo.ToVolumeLocations()))
+
+	for _, loc := range ms.Topo.ToVolumeLocations() {
+		vsAddr := pb.NewServerAddressWithGrpcPort(loc.GetUrl(), int(loc.GetGrpcPort()))
+
+		err := operation.WithVolumeServerClient(false, vsAddr, ms.grpcDialOption, func(vsc volume_server_pb.VolumeServerClient) error {
+			resp, err := vsc.VolumeServerStatus(ctx, nil)
+			if err != nil {
+				glog.Error(err)
+				return err
+			}
+
+			root.AddChild(vsAddr.ToGrpcAddress(), storage.MerkleNodeFromEventTree(resp.Checksum))
+
+			return nil
+		})
+		if err != nil {
+			glog.Errorf("Error calling VolumeServer: %s", err)
+		}
+	}
+
+	return &master_pb.MerkleStatusResponse{
+		Tree: tree.ToProto(),
+	}, nil
 }

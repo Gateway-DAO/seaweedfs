@@ -23,7 +23,9 @@ func DecodeString(encodedHash string) (Hash, error) {
 	return base64.RawStdEncoding.DecodeString(encodedHash)
 }
 
-func Blake2b() (hash.Hash, error) { return blake2b.New256(nil) }
+func Blake2b() (hash.Hash, error) { return blake2b.New384(nil) }
+
+func Blake2bHash(data []byte) [48]byte { return blake2b.Sum384(data) }
 
 func hashFile(path string) ([]byte, error) {
 	file, err := os.Open(path)

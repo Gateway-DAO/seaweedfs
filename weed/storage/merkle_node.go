@@ -22,9 +22,52 @@ import (
 // the `Value()` method will compute the hash by aggregating the Blake2b
 // checksums of all its children. This allows for efficient Merkle tree
 // traversal and verification.
+
 type MerkleNode struct {
+	isLeaf   bool
 	value    stats.Hash
 	children map[string]*MerkleNode
+}
+
+func NewMerkleNode(value stats.Hash) *MerkleNode {
+	return &MerkleNode{
+		value: value,
+	}
+}
+
+func MerkleNodeFromEventTree(e *event_pb.MerkleTree) *MerkleNode {
+	digest, err := stats.DecodeString(e.Digest)
+	if err != nil {
+		glog.Error("Unable to decode event digest as hash bytes")
+		return nil
+	}
+	mn := &MerkleNode{
+		value: digest,
+	}
+
+	if len(e.Tree) > 0 {
+		mn.children = make(map[string]*MerkleNode)
+		for k, v := range e.Tree {
+			mn.children[k] = MerkleNodeFromEventTree(v)
+		}
+	} else {
+		mn.isLeaf = true
+	}
+
+	return mn
+}
+
+func (n *MerkleNode) AddChild(key string, nn *MerkleNode) bool {
+	if n.children == nil {
+		n.children = make(map[string]*MerkleNode)
+	}
+	if n.children[key] != nil {
+		return false
+	}
+
+	n.children[key] = nn
+
+	return true
 }
 
 func (s *Store) MerkleNode() *MerkleNode {
@@ -55,7 +98,6 @@ func (s *Store) MerkleNode() *MerkleNode {
 	}
 
 	wg.Wait()
-	mn.value = mn.Value()
 
 	return mn
 }
@@ -66,7 +108,6 @@ func (v *Volume) MerkleNode() (mn *MerkleNode) {
 
 	glog.V(3).Infof("Computing MerkleTree for Volume %s", v.Id)
 
-	hasher, _ := stats.Blake2b()
 	for nId := types.NeedleId(1); nId <= v.nm.MaxFileKey(); nId++ {
 		nv, ok := v.nm.Get(nId)
 
@@ -85,12 +126,13 @@ func (v *Volume) MerkleNode() (mn *MerkleNode) {
 			glog.Errorf("Unable to read data for needle config")
 		}
 
-		hasher.Reset()
+		hasher, _ := stats.Blake2b()
 		hasher.Write(n.Data)
 		checksum := hasher.Sum(nil)
 
 		mn.children[nId.String()] = &MerkleNode{
-			value: checksum,
+			isLeaf: true,
+			value:  checksum,
 		}
 	}
 
@@ -115,28 +157,23 @@ func (mn *MerkleNode) Value() stats.Hash {
 		return nil
 	}
 
-	if mn.value != nil {
+	if mn.isLeaf {
 		return mn.value
 	}
 
 	hasher, _ := stats.Blake2b()
 	if mn.children != nil {
-		for k, v := range mn.children {
+		for _, v := range mn.children {
 			if v == nil {
 				glog.Error("MerkleNode has nil child")
+				continue
 			}
-			var val []byte = merkleNodeChildrenAsBytes(k, v)
-			hasher.Write(val)
+			hasher.Write(v.Value())
 		}
 	}
 	checksum := hasher.Sum(nil)
 
-	mn.value = checksum
 	return checksum
-}
-
-func merkleNodeChildrenAsBytes(k string, v *MerkleNode) []byte {
-	return []byte(k + ":" + v.Value().EncodeToString())
 }
 
 func (mn *MerkleNode) toProto() *event_pb.MerkleTree {
@@ -150,7 +187,6 @@ func (mn *MerkleNode) toProto() *event_pb.MerkleTree {
 	tree.Tree = make(map[string]*event_pb.MerkleTree)
 
 	for k, child := range mn.children {
-		tree.Tree[k] = new(event_pb.MerkleTree)
 		tree.Tree[k] = child.toProto()
 	}
 
@@ -165,9 +201,9 @@ func (mn *MerkleNode) ValidateNode() bool {
 	value := mn.value
 
 	hasher, _ := stats.Blake2b()
-	for k, v := range mn.children {
+	for _, v := range mn.children {
 		if v.ValidateNode() {
-			hasher.Write(merkleNodeChildrenAsBytes(k, v))
+			hasher.Write(v.value)
 		} else {
 			return false
 		}

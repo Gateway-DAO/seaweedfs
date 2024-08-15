@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/gateway-dao/seaweedfs/weed/cluster"
 	"net"
 	"sort"
 	"time"
+
+	"github.com/gateway-dao/seaweedfs/weed/cluster"
+	"github.com/google/uuid"
 
 	"github.com/gateway-dao/seaweedfs/weed/pb"
 	"github.com/gateway-dao/seaweedfs/weed/stats"

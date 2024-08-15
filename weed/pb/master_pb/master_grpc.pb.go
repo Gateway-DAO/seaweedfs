@@ -41,6 +41,7 @@ const (
 	Seaweed_RaftListClusterServers_FullMethodName = "/master_pb.Seaweed/RaftListClusterServers"
 	Seaweed_RaftAddServer_FullMethodName          = "/master_pb.Seaweed/RaftAddServer"
 	Seaweed_RaftRemoveServer_FullMethodName       = "/master_pb.Seaweed/RaftRemoveServer"
+	Seaweed_MerkleStatus_FullMethodName           = "/master_pb.Seaweed/MerkleStatus"
 )
 
 // SeaweedClient is the client API for Seaweed service.
@@ -69,6 +70,7 @@ type SeaweedClient interface {
 	RaftListClusterServers(ctx context.Context, in *RaftListClusterServersRequest, opts ...grpc.CallOption) (*RaftListClusterServersResponse, error)
 	RaftAddServer(ctx context.Context, in *RaftAddServerRequest, opts ...grpc.CallOption) (*RaftAddServerResponse, error)
 	RaftRemoveServer(ctx context.Context, in *RaftRemoveServerRequest, opts ...grpc.CallOption) (*RaftRemoveServerResponse, error)
+	MerkleStatus(ctx context.Context, in *MerkleStatusRequest, opts ...grpc.CallOption) (*MerkleStatusResponse, error)
 }
 
 type seaweedClient struct {
@@ -343,6 +345,15 @@ func (c *seaweedClient) RaftRemoveServer(ctx context.Context, in *RaftRemoveServ
 	return out, nil
 }
 
+func (c *seaweedClient) MerkleStatus(ctx context.Context, in *MerkleStatusRequest, opts ...grpc.CallOption) (*MerkleStatusResponse, error) {
+	out := new(MerkleStatusResponse)
+	err := c.cc.Invoke(ctx, Seaweed_MerkleStatus_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SeaweedServer is the server API for Seaweed service.
 // All implementations must embed UnimplementedSeaweedServer
 // for forward compatibility
@@ -369,6 +380,7 @@ type SeaweedServer interface {
 	RaftListClusterServers(context.Context, *RaftListClusterServersRequest) (*RaftListClusterServersResponse, error)
 	RaftAddServer(context.Context, *RaftAddServerRequest) (*RaftAddServerResponse, error)
 	RaftRemoveServer(context.Context, *RaftRemoveServerRequest) (*RaftRemoveServerResponse, error)
+	MerkleStatus(context.Context, *MerkleStatusRequest) (*MerkleStatusResponse, error)
 	mustEmbedUnimplementedSeaweedServer()
 }
 
@@ -441,6 +453,9 @@ func (UnimplementedSeaweedServer) RaftAddServer(context.Context, *RaftAddServerR
 }
 func (UnimplementedSeaweedServer) RaftRemoveServer(context.Context, *RaftRemoveServerRequest) (*RaftRemoveServerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RaftRemoveServer not implemented")
+}
+func (UnimplementedSeaweedServer) MerkleStatus(context.Context, *MerkleStatusRequest) (*MerkleStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MerkleStatus not implemented")
 }
 func (UnimplementedSeaweedServer) mustEmbedUnimplementedSeaweedServer() {}
 
@@ -875,6 +890,24 @@ func _Seaweed_RaftRemoveServer_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Seaweed_MerkleStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MerkleStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SeaweedServer).MerkleStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Seaweed_MerkleStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SeaweedServer).MerkleStatus(ctx, req.(*MerkleStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Seaweed_ServiceDesc is the grpc.ServiceDesc for Seaweed service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -957,6 +990,10 @@ var Seaweed_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RaftRemoveServer",
 			Handler:    _Seaweed_RaftRemoveServer_Handler,
+		},
+		{
+			MethodName: "MerkleStatus",
+			Handler:    _Seaweed_MerkleStatus_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
